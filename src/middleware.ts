@@ -11,7 +11,7 @@ const PROTECTED_ROUTES = ["/forum", "/profile", "/settings"];
  * Routes that do not require authentication.
  * @type {string[]}
  */
-const AUTH_ROUTES = ["/auth/login", "/landing"];
+const AUTH_ROUTES = ["/auth/login", "/landing", "/register"];
 
 /**
  * Middleware to handle authentication logic for incoming requests.

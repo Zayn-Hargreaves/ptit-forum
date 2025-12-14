@@ -31,10 +31,10 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <QueryProvider>
-            {/* <AuthProvider> */}
-            {children}
-            <ToastProvider />
-            {/* </AuthProvider> */}
+            <AuthProvider>
+              {children}
+              <ToastProvider />
+            </AuthProvider>
           </QueryProvider>
         </ThemeProvider>
       </body>
