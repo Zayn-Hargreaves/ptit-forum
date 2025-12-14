@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import React from "react";
 import { toast } from "sonner";
+import { Toaster } from "../toaster/toaster";
 
 // --- META DEFINITION ---
 
@@ -15,10 +16,11 @@ const meta: Meta<typeof Toaster> = {
     theme: {
       control: "inline-radio",
       options: ["light", "dark", "system"],
-      description: "Theme applied to toast notifications.",
+      description:
+        "Theme cho toaster. Mặc định sẽ sync với theme hiện tại của app (system / next-themes).",
     },
     position: {
-      control: "inline-radio",
+      control: "select",
       options: [
         "top-left",
         "top-center",
@@ -27,100 +29,128 @@ const meta: Meta<typeof Toaster> = {
         "bottom-center",
         "bottom-right",
       ],
-      description: "Placement of toaster container.",
+      description: "Vị trí hiển thị của toast trên màn hình.",
     },
     richColors: {
       control: "boolean",
-      description: "Enables richer accent colors per toast type.",
+      description:
+        "Dùng màu sắc nổi bật cho các loại toast (success/error/...)",
+    },
+    closeButton: {
+      control: "boolean",
+      description: "Hiển thị nút đóng ở mỗi toast.",
     },
     expand: {
       control: "boolean",
-      description: "Expands toast width to available space.",
+      description: "Cho phép toast có thể expand nhiều dòng nội dung.",
+    },
+    duration: {
+      control: "number",
+      description: "Thời gian hiển thị mỗi toast (ms).",
+    },
+    visibleToasts: {
+      control: "number",
+      description: "Giới hạn số lượng toast hiển thị cùng lúc.",
     },
   },
   args: {
     position: "top-right",
     richColors: true,
+    closeButton: true,
     expand: false,
+    duration: 3000,
   },
 };
 
 export default meta;
 
-type Story = StoryObj<typeof Toaster>;
+// ✅ DÙNG meta Ở ĐÂY
+type Story = StoryObj<typeof meta>;
 
 // --- STORIES ---
 
 /**
- * Basic toaster render. Contains a demo button to trigger a toast.
+ * Toaster cơ bản với một vài nút để test các loại toast khác nhau.
  */
 export const Default: Story = {
   render: (args) => (
-    <div className="space-y-4 flex flex-col items-center">
-      <button
-        onClick={() => toast("Hello from toast! 🎉")}
-        className="px-4 py-2 rounded-md bg-primary text-primary-foreground"
-      >
-        Show Toast
-      </button>
+    <div className="space-y-4">
       <Toaster {...args} />
+      <div className="flex flex-wrap gap-2">
+        <button
+          className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-sm font-medium"
+          onClick={() => toast("This is a simple toast")}
+        >
+          Show toast
+        </button>
+        <button
+          className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-sm font-medium"
+          onClick={() => toast.success("Profile saved successfully")}
+        >
+          Success toast
+        </button>
+        <button
+          className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-sm font-medium"
+          onClick={() => toast.error("Something went wrong")}
+        >
+          Error toast
+        </button>
+        <button
+          className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-sm font-medium"
+          onClick={() =>
+            toast("Uploading file...", {
+              description: "This might take a few seconds.",
+            })
+          }
+        >
+          Toast with description
+        </button>
+      </div>
     </div>
   ),
 };
 
 /**
- * Toaster with success, error, and loading variants.
- * Demonstrates richer toast interactions.
+ * Toaster ở vị trí bottom-left, hữu ích cho layout có header cố định phía trên.
  */
-export const Variants: Story = {
-  render: (args) => (
-    <div className="flex gap-2 flex-col">
-      <button
-        className="px-4 py-2 rounded-md bg-green-600 text-white"
-        onClick={() => toast.success("Success message!")}
-      >
-        Success toast
-      </button>
-      <button
-        className="px-4 py-2 rounded-md bg-red-600 text-white"
-        onClick={() => toast.error("Something went wrong!")}
-      >
-        Error toast
-      </button>
-      <button
-        className="px-4 py-2 rounded-md bg-blue-600 text-white"
-        onClick={() =>
-          toast.promise(new Promise((r) => setTimeout(r, 1500)), {
-            loading: "Loading...",
-            success: "Completed!",
-            error: "Failed!",
-          })
-        }
-      >
-        Promise toast
-      </button>
-
-      <Toaster {...args} />
-    </div>
-  ),
+export const BottomLeft: Story = {
+  args: {
+    position: "bottom-left",
+  },
+  render: Default.render,
 };
 
 /**
- * Expanded toaster showing wide layout.
+ * Toaster với màu sắc nhẹ hơn (tắt rich colors).
  */
-export const Expanded: Story = {
+export const Subtle: Story = {
+  args: {
+    richColors: false,
+  },
+  render: Default.render,
+};
+
+/**
+ * Toaster cho các toast dài nội dung, bật chế độ expand.
+ */
+export const Expandable: Story = {
   args: {
     expand: true,
   },
   render: (args) => (
-    <div className="flex flex-col items-center space-y-4">
-      <button
-        onClick={() => toast("Wide toast message example")}
-        className="px-4 py-2 rounded-md bg-primary text-primary-foreground"
-      >
-        Show Expanded Toast
-      </button>
+    <div className="space-y-4">
       <Toaster {...args} />
+      <button
+        className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-sm font-medium"
+        onClick={() =>
+          toast("Terms & Conditions updated", {
+            description:
+              "We’ve updated our Terms & Conditions. Please review the new changes carefully as they affect your continued use of the service.",
+          })
+        }
+      >
+        Show long toast
+      </button>
     </div>
   ),
 };

@@ -4,9 +4,9 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "./collapsible";
-import { Button } from "./button";
 import { ChevronsUpDown, Plus, X } from "lucide-react";
 import { useState } from "react";
+import { Button } from "../button/button";
 
 // --- META DEFINITION ---
 
