@@ -12,25 +12,49 @@ export async function POST(req: Request) {
   });
 
   if (!resBackend.ok) {
-    return new NextResponse(await resBackend.text(), {
-      status: resBackend.status,
-    });
+    const errorText = await resBackend.text();
+    console.log("Backend Login Error:", errorText);
+    return new NextResponse(
+      JSON.stringify({ error: "Authentication failed" }),
+      {
+        status: resBackend.status,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 
-  const data = await resBackend.json();
-  const response = NextResponse.json({ user: data.user });
+  const backendData = await resBackend.json();
+  if (
+    !backendData?.result?.tokenResponse?.accessToken ||
+    !backendData?.result?.tokenResponse?.refreshToken ||
+    !backendData?.result?.userResponse
+  ) {
+    console.error("Invalid backend response structure:", backendData);
+    return new NextResponse(
+      JSON.stringify({ error: "Invalid authentication response" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+  const { result } = backendData;
+  const { accessToken, refreshToken } = result.tokenResponse;
+  const user = result.userResponse;
+
+  const response = NextResponse.json({ user });
 
   const isProd = process.env.NODE_ENV === "production";
 
-  response.cookies.set("accessToken", data.accessToken, {
+  response.cookies.set("accessToken", accessToken, {
     httpOnly: true,
     sameSite: "lax",
     secure: isProd,
     path: "/",
-    maxAge: 60 * 60,
+    maxAge: 15 * 60,
   });
 
-  response.cookies.set("refreshToken", data.refreshToken, {
+  response.cookies.set("refreshToken", refreshToken, {
     httpOnly: true,
     sameSite: "lax",
     secure: isProd,

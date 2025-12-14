@@ -11,7 +11,7 @@ const PROTECTED_ROUTES = ["/forum", "/profile", "/settings"];
  * Routes that do not require authentication.
  * @type {string[]}
  */
-const AUTH_ROUTES = ["/auth/login", "/landing", "/register"];
+const AUTH_ROUTES = ["/login", "/landing", "/register"];
 
 /**
  * Middleware to handle authentication logic for incoming requests.
@@ -27,7 +27,7 @@ export function middleware(request: NextRequest) {
 
   // Redirect unauthenticated users trying to access protected routes.
   if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route)) && !isAuth) {
-    const url = new URL("/auth/login", request.url);
+    const url = new URL("/login", request.url);
     url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
   }
