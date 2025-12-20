@@ -37,5 +37,35 @@ export const registerSchema = z
     path: ["confirmPassword"],
   });
 
+const userAuthResponseSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  fullName: z.string(),
+  avatar: z.string().nullable(),
+  permissions: z.array(
+    z.enum([
+      "read_all",
+      "read_any",
+      "create_all",
+      "create_any",
+      "update_all",
+      "update_any",
+      "delete_all",
+      "delete_any",
+    ])
+  ),
+});
+
+export const BackendResponseSchema = z.object({
+  result: z.object({
+    tokenResponse: z.object({
+      accessToken: z.string(),
+      refreshToken: z.string(),
+    }),
+    userResponse: userAuthResponseSchema,
+  }),
+});
+
+export type BackendResponse = z.infer<typeof BackendResponseSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;

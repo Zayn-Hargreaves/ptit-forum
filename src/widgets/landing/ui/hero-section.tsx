@@ -1,98 +1,144 @@
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { Suspense } from "react";
 import Image from "next/image";
-import { Button } from "@shared/ui";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@shared/ui/button/button";
+import { getLandingStats } from "@entities/landing/api/get-landing-stats";
+
+async function HeroStats() {
+  try {
+    const stats = await getLandingStats();
+
+    return (
+      <div className="mt-20 grid grid-cols-2 gap-8 border-t border-primary/10 pt-10 md:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {stats.map((s) => (
+          <div key={s.label}>
+            <div className="text-3xl font-bold text-foreground md:text-4xl">
+              {s.value}
+            </div>
+            <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              {s.label}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  } catch (error) {
+    console.error("Failed to fetch landing stats:", error);
+    return null;
+  }
+}
+
+function StatsSkeleton() {
+  return (
+    <div className="mt-20 grid grid-cols-2 gap-8 border-t border-primary/10 pt-10 md:grid-cols-3">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="space-y-2">
+          <div className="h-10 w-20 rounded-md bg-muted/50 animate-pulse" />
+          <div className="h-4 w-24 rounded-md bg-muted/30 animate-pulse" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const HERO_CONTENT = {
+  badge: "Cộng đồng sinh viên PTIT",
+  title: "Nơi kết nối và chia sẻ: tri thức",
+  description:
+    "Tham gia cộng đồng sinh viên Học viện Công nghệ Bưu chính Viễn thông. Thảo luận, chia sẻ tài liệu, và cùng nhau phát triển.",
+  primaryAction: { label: "Bắt đầu ngay", href: "/register" },
+  secondaryAction: { label: "Khám phá thư viện", href: "/documents" },
+};
+
+function renderTitle(title: string) {
+  const parts = title.split(":");
+  return (
+    <>
+      <span className="block">{parts[0]?.trim()}:</span>
+      {parts[1] && (
+        <span className="block text-primary italic">
+          {parts.slice(1).join(":").trim()}
+        </span>
+      )}
+    </>
+  );
+}
 
 export function HeroSection() {
+  // Lưu ý: Không còn 'async' ở đây nữa -> Render tức thì
   return (
-    <section className="relative overflow-hidden border-b">
-      <div className="absolute inset-0 -z-10">
+    <section
+      className="relative overflow-hidden border-b py-20 md:py-32"
+      aria-labelledby="hero-heading"
+    >
+      {/* Background Image - LCP Element */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
         <Image
           src="/team-collaboration.png"
-          alt="PTIT Students Collaboration"
+          alt="Sinh viên PTIT hoạt động nhóm"
           fill
-          priority
-          className="object-cover object-center opacity-50 dark:opacity-10"
+          priority // Rất quan trọng cho LCP
+          quality={90}
           sizes="100vw"
+          className="object-cover opacity-30 dark:opacity-20 blur-[2px]" // Giảm opacity để text dễ đọc hơn
         />
-        {/* Overlay gradient để text dễ đọc hơn */}
-        <div className="absolute inset-0 bg-linear-to-b from-background/90 via-background/50 to-background/90" />
+        <div className="absolute inset-0 bg-linear-to-b from-background via-background/80 to-background" />
       </div>
 
-      {/* Decorative Elements (Blur Blobs) - Giữ nguyên nhưng giảm z-index để không che text */}
-      <div className="pointer-events-none absolute left-1/4 top-1/4 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-1/4 right-1/4 -z-10 h-96 w-96 rounded-full bg-accent/10 blur-3xl" />
-
-      <div className="container mx-auto px-4 py-20 md:py-32">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-background/50 px-4 py-1.5 text-sm backdrop-blur-sm">
+      <div className="container mx-auto px-4">
+        <div className="mx-auto max-w-4xl text-center">
+          {/* Badge */}
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border bg-primary/5 px-4 py-1.5 backdrop-blur-md">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
             </span>
-            <span className="text-muted-foreground">
-              Cộng đồng sinh viên PTIT
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">
+              {HERO_CONTENT.badge}
             </span>
           </div>
 
-          <h1 className="mb-6 text-balance text-4xl font-bold tracking-tight md:text-6xl">
-            Nơi kết nối và chia sẻ{" "}
-            <span className="text-primary">tri thức</span>
+          {/* Heading */}
+          <h1
+            id="hero-heading"
+            className="text-balance text-5xl font-extrabold tracking-tight md:text-7xl"
+          >
+            {renderTitle(HERO_CONTENT.title)}
           </h1>
 
-          <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl">
-            Tham gia cộng đồng sinh viên Học viện Công nghệ Bưu chính Viễn
-            thông. Thảo luận, chia sẻ tài liệu, và cùng nhau phát triển.
+          <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground md:text-xl">
+            {HERO_CONTENT.description}
           </p>
 
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+          {/* Actions */}
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button
               size="lg"
               asChild
-              className="w-full min-w-[200px] sm:w-auto font-bold shadow-lg shadow-primary/20"
+              className="w-full sm:w-auto px-10 shadow-xl shadow-primary/20 font-bold"
             >
-              <Link href="/register">
-                Bắt đầu ngay
+              <Link href={HERO_CONTENT.primaryAction.href}>
+                {HERO_CONTENT.primaryAction.label}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
+
             <Button
               size="lg"
               variant="outline"
               asChild
-              className="w-full sm:w-auto bg-background/50 backdrop-blur-sm"
+              className="w-full sm:w-auto bg-background/60 backdrop-blur-sm"
             >
-              <Link href="/forum">Khám phá diễn đàn</Link>
+              <Link href={HERO_CONTENT.secondaryAction.href}>
+                {HERO_CONTENT.secondaryAction.label}
+              </Link>
             </Button>
           </div>
 
-          {/* Quick Stats - Nên tách component nếu tái sử dụng */}
-          <div className="mt-16 grid grid-cols-3 gap-8 border-t border-border/50 pt-8 backdrop-blur-sm">
-            <div>
-              <div className="text-2xl md:text-3xl font-bold text-primary">
-                5,000+
-              </div>
-              <div className="text-xs md:text-sm text-muted-foreground">
-                Sinh viên
-              </div>
-            </div>
-            <div>
-              <div className="text-2xl md:text-3xl font-bold text-primary">
-                1,200+
-              </div>
-              <div className="text-xs md:text-sm text-muted-foreground">
-                Bài viết
-              </div>
-            </div>
-            <div>
-              <div className="text-2xl md:text-3xl font-bold text-primary">
-                800+
-              </div>
-              <div className="text-xs md:text-sm text-muted-foreground">
-                Tài liệu
-              </div>
-            </div>
-          </div>
+          <Suspense fallback={<StatsSkeleton />}>
+            <HeroStats />
+          </Suspense>
         </div>
       </div>
     </section>

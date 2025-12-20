@@ -32,13 +32,14 @@ import { SocialLogin } from "@shared/components/auth/social-login";
 import { authApi } from "@shared/api/auth";
 import { LoginInput, loginSchema } from "@shared/validators/auth";
 import { BACKEND_ERROR_CODES } from "@shared/constants/error-codes";
+import { validateRedirectUrl } from "@shared/lib/utils";
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
 
-  const redirectUrl = searchParams.get("redirect") || "/forum"; // TODO: should redirect to landing page or other page
+  const redirectUrl = validateRedirectUrl(searchParams.get("redirect"));
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),

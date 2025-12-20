@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { isAxiosError } from "axios";
 import { Mail, Loader2 } from "lucide-react";
 import Link from "next/link";
 
@@ -49,16 +50,23 @@ export function RegisterForm() {
       toast.success("Đăng ký thành công!", {
         description: "Vui lòng kiểm tra mã OTP trong email.",
       });
-      router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
-    } catch (error: any) {
-      const { code, message } = error.response?.data || {};
+      sessionStorage.setItem("verification_email", values.email);
+      router.push("/verify-email");
+    } catch (error: unknown) {
+      const data = isAxiosError(error)
+        ? (error.response?.data as Record<string, unknown>) || {}
+        : {};
+      const code = data.code as number | undefined;
       if (code === BACKEND_ERROR_CODES.ACCOUNT_NOT_VERIFIED) {
         toast.info("Tài khoản này đang chờ xác thực.");
-        router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
+        sessionStorage.setItem("verification_email", values.email);
+        router.push("/verify-email");
         return;
       }
 
-      toast.error(ERROR_MESSAGES[code] || "Đăng ký thất bại");
+      toast.error(
+        code && ERROR_MESSAGES[code] ? ERROR_MESSAGES[code] : "Đăng ký thất bại"
+      );
     }
   };
 

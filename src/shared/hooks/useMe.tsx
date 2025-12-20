@@ -1,18 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import { User } from "@shared/types/auth";
 import apiClient from "@shared/lib/axios";
+import type { ApiResponse, UserAuthResponse } from "@shared/types/auth";
+import { useQuery } from "@tanstack/react-query";
 
-export const useMe = () =>
-  useQuery<User | null>({
+export const useMe = (options?: { enabled?: boolean }) => {
+  return useQuery({
     queryKey: ["me"],
     queryFn: async () => {
-      try {
-        const { data } = await apiClient.get<{ user: User | null }>("/auth/me");
-        return data.user ?? null;
-      } catch {
-        return null;
-      }
+      const { data } = await apiClient.get<ApiResponse<UserAuthResponse>>(
+        "/users/me"
+      );
+      return data.result;
     },
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000,
     retry: false,
+    ...options,
   });
+};
