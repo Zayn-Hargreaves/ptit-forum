@@ -12,14 +12,14 @@ export async function POST(req: Request) {
   });
 
   if (!resBackend.ok) {
-    const errorText = await resBackend.text();
-    console.log("Backend Login Error:", errorText);
-    return new NextResponse(
-      JSON.stringify({ error: "Authentication failed" }),
+    const errorText = await resBackend.json();
+    return NextResponse.json(
       {
-        status: resBackend.status,
-        headers: { "Content-Type": "application/json" },
-      }
+        message: errorText.message || "Đăng nhập thất bại",
+        code: errorText.code || "AUTH_ERROR",
+        email: body.email,
+      },
+      { status: resBackend.status }
     );
   }
 
