@@ -7,7 +7,6 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    // Safety 1: Parse body an toàn
     let body;
     try {
       body = await req.json();
@@ -18,7 +17,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Safety 2: Validate Data Shape
     const validation = loginSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json({ message: "Invalid input" }, { status: 400 });
@@ -29,7 +27,6 @@ export async function POST(req: Request) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-
     const data = await res.json();
 
     if (!res.ok) {

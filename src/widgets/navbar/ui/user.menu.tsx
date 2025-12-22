@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, User as UserIcon, LayoutDashboard } from "lucide-react";
+import { LogOut, User as UserIcon } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -13,26 +13,37 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@shared/ui";
-import { UserAuthResponse } from "@shared/types/auth";
-import { getAvatarUrl } from "@shared/lib/avatar";
+import { User } from "@entities/session/model/types";
+import { useMemo } from "react";
 
 interface NavbarUserMenuProps {
-  user: UserAuthResponse;
+  user: User;
   onLogout: () => void;
-  isMobile?: boolean; // Nếu muốn custom style cho mobile
+  isMobile?: boolean;
+}
+
+function stringToColor(str: string) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const c = (hash & 0x00ffffff).toString(16).toUpperCase();
+  return "#" + "00000".substring(0, 6 - c.length) + c;
 }
 
 export function NavbarUserMenu({ user, onLogout }: NavbarUserMenuProps) {
   const displayName = user.fullName || user.email || "User";
-  // Lấy 2 chữ cái đầu nếu có thể: "Nguyen Van A" -> "NA"
-  const fallback = displayName.substring(0, 2).toUpperCase();
 
-  const avatarUrl = getAvatarUrl({
-    avatar: user.avatar,
-    email: user.email,
-    name: user.fullName,
-    size: 64,
-  });
+  const initials = useMemo(() => {
+    return displayName
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .substring(0, 2)
+      .toUpperCase();
+  }, [displayName]);
+
+  const bgColor = useMemo(() => stringToColor(displayName), [displayName]);
 
   return (
     <DropdownMenu>
@@ -43,9 +54,19 @@ export function NavbarUserMenu({ user, onLogout }: NavbarUserMenuProps) {
           className="rounded-full relative h-9 w-9"
         >
           <Avatar className="h-9 w-9 border transition-opacity hover:opacity-80">
-            <AvatarImage src={avatarUrl} alt={displayName} />
-            <AvatarFallback className="bg-primary/10 text-primary text-xs">
-              {fallback}
+            {user.avatarUrl && (
+              <AvatarImage
+                src={user.avatarUrl}
+                alt={displayName}
+                className="object-cover"
+              />
+            )}
+
+            <AvatarFallback
+              className="text-white text-xs font-bold"
+              style={{ backgroundColor: user.avatarUrl ? undefined : bgColor }}
+            >
+              {initials}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -61,9 +82,6 @@ export function NavbarUserMenu({ user, onLogout }: NavbarUserMenuProps) {
           </div>
         </div>
         <DropdownMenuSeparator />
-
-        {/* Logic phân quyền: Nếu là Admin thì hiện Dashboard */}
-        {/* user.roles?.includes('ADMIN') && ... */}
 
         <DropdownMenuItem asChild>
           <Link href="/profile" className="cursor-pointer">

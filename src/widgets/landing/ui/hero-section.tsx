@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@shared/ui/button/button";
 import { getLandingStats } from "@entities/landing/api/get-landing-stats";
+import heroImage from "../../../../public/team-collaboration.png";
 
 async function HeroStats() {
   try {
@@ -66,22 +67,21 @@ function renderTitle(title: string) {
 }
 
 export function HeroSection() {
-  // Lưu ý: Không còn 'async' ở đây nữa -> Render tức thì
   return (
     <section
       className="relative overflow-hidden border-b py-20 md:py-32"
       aria-labelledby="hero-heading"
     >
-      {/* Background Image - LCP Element */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <Image
-          src="/team-collaboration.png"
+          src={heroImage}
           alt="Sinh viên PTIT hoạt động nhóm"
           fill
-          priority // Rất quan trọng cho LCP
+          priority
+          placeholder="blur"
           quality={90}
           sizes="100vw"
-          className="object-cover opacity-30 dark:opacity-20 blur-[2px]" // Giảm opacity để text dễ đọc hơn
+          className="object-cover opacity-30 dark:opacity-20 "
         />
         <div className="absolute inset-0 bg-linear-to-b from-background via-background/80 to-background" />
       </div>

@@ -1,15 +1,14 @@
 "use client";
 
 import React, { createContext, useCallback, useContext, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-
-import { useMe } from "@shared/hooks/useMe";
-import apiClient from "@shared/lib/axios";
-import type { UserAuthResponse, UserPermission } from "@shared/types/auth";
+import { User, UserPermission } from "@entities/session/model/types";
+import { useMe } from "@entities/session/model/queries";
+import { sessionKeys } from "@entities/session/lib/query-keys";
+import { apiClient } from "@shared/api";
 
 type AuthContextValue = {
-  user: UserAuthResponse | null;
+  user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   logout: () => Promise<void>;
@@ -21,11 +20,10 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const qc = useQueryClient();
-  const router = useRouter();
 
   const { data: user, isLoading, isSuccess } = useMe();
 
-  const isAuthenticated = useMemo(() => isSuccess && !!user, [isSuccess, user]);
+  const isAuthenticated = isSuccess && !!user;
 
   const permissions = useMemo(
     () => new Set<UserPermission>(user?.permissions ?? []),
@@ -33,19 +31,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(async () => {
-    qc.setQueryData(["me"], null);
-
     try {
       await apiClient.post("/auth/logout");
     } catch (error) {
-      console.error("Logout failed", error);
+      console.error("Logout failed silently", error);
     } finally {
-      qc.removeQueries({ queryKey: ["me"], exact: true });
+      qc.removeQueries({ queryKey: sessionKeys.me() });
 
-      router.push("/login");
-      router.refresh();
+      window.location.href = "/login";
     }
-  }, [qc, router]);
+  }, [qc]);
 
   const hasPermission = useCallback(
     (p: UserPermission) => permissions.has(p),

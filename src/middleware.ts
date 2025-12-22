@@ -1,30 +1,31 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PROTECTED_ROUTES = ["/forum", "/profile", "/settings"];
-const AUTH_ROUTES = ["/login", "/register"];
+const PUBLIC_ROUTES = new Set([
+  "/",
+  "/login",
+  "/register",
+  "/verify-email",
+  "/forgot-password",
+]);
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const accessToken = request.cookies.get("accessToken")?.value;
-  const refreshToken = request.cookies.get("refreshToken")?.value;
-  const isAuth = !!(accessToken || refreshToken);
+  if (pathname.startsWith("/_next") || pathname.startsWith("/static")) {
+    return NextResponse.next();
+  }
 
-  const isProtectedRoute = PROTECTED_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
-  );
-  const isAuthRoute = AUTH_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
-  );
+  const isAuth = request.cookies.has("refreshToken");
+  const isPublicRoute = PUBLIC_ROUTES.has(pathname);
 
-  if (isProtectedRoute && !isAuth) {
+  if (!isPublicRoute && !isAuth) {
     const url = new URL("/login", request.url);
     url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
   }
 
-  if (isAuthRoute && isAuth) {
+  if (isPublicRoute && isAuth && pathname !== "/") {
     return NextResponse.redirect(new URL("/forum", request.url));
   }
 
@@ -32,7 +33,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.jpg$|.*\\.svg$).*)",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

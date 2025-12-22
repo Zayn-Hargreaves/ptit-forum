@@ -41,3 +41,19 @@ export function validateRedirectUrl(url: string | null): string {
     return "/forum";
   }
 }
+
+/**
+ * Formats a date to a readable string format.
+ * @param date - The date to format (string or Date object)
+ * @returns Formatted date string in DD/MM/YYYY format
+ */
+export function formatDate(date: string | Date): string {
+  const d = new Date(date);
+  if (isNaN(d.getTime())) {
+    return "Invalid Date";
+  }
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}

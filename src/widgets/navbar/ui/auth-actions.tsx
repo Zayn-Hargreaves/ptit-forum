@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { toast } from "sonner";
-import { useAuth } from "@shared/providers/auth-provider"; // Import trực tiếp
+import { useAuth } from "@shared/providers/auth-provider";
 import { Button, Skeleton } from "@shared/ui";
 import { cn } from "@shared/lib/utils";
 import { NavbarUserMenu } from "./user.menu";
@@ -16,10 +16,8 @@ export function NavbarAuthActions({
   isMobile,
   onCloseMobileMenu,
 }: NavbarAuthActionsProps) {
-  // Tự lấy context, không cần cha truyền xuống
   const { user, isLoading, logout } = useAuth();
 
-  // Handle Logout Logic tại đây
   const handleLogout = async () => {
     try {
       await logout();
@@ -65,14 +63,9 @@ export function NavbarAuthActions({
     );
   }
 
-  // User đã login -> Render Menu
   return (
     <div className={cn(isMobile ? "w-full" : "")}>
-      <NavbarUserMenu
-        user={user}
-        onLogout={handleLogout}
-        isMobile={isMobile} // Truyền thêm prop này để style menu trong mobile nếu cần
-      />
+      <NavbarUserMenu user={user} onLogout={handleLogout} isMobile={isMobile} />
     </div>
   );
 }

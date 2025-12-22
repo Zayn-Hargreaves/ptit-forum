@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@shared/api/keys";
 import { fetchAnnouncements } from "@entities/announcement/api";
+import { announcementKeys } from "@entities/announcement/lib/query-keys";
 
 export default function AnnouncementsListClient({
   initialParams,
@@ -10,7 +10,7 @@ export default function AnnouncementsListClient({
   initialParams: { page: number; size: number };
 }) {
   const { data, isLoading, isError } = useQuery({
-    queryKey: queryKeys.announcements(initialParams),
+    queryKey: announcementKeys.list(initialParams),
     queryFn: () => fetchAnnouncements(initialParams),
   });
 

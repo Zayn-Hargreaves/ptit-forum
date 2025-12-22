@@ -40,20 +40,17 @@ export const registerSchema = z
 const userAuthResponseSchema = z.object({
   id: z.string(),
   email: z.string(),
-  fullName: z.string(),
-  avatar: z.string().nullable(),
-  permissions: z.array(
-    z.enum([
-      "read_all",
-      "read_any",
-      "create_all",
-      "create_any",
-      "update_all",
-      "update_any",
-      "delete_all",
-      "delete_any",
-    ])
-  ),
+  fullName: z.string().nullable(),
+  avatarUrl: z.string().nullable(),
+  enabled: z.boolean().optional(),
+  roles: z
+    .array(
+      z.object({
+        name: z.string(),
+        permissions: z.array(z.any()),
+      })
+    )
+    .optional(),
 });
 
 export const BackendResponseSchema = z.object({
@@ -63,6 +60,7 @@ export const BackendResponseSchema = z.object({
       refreshToken: z.string(),
     }),
     userResponse: userAuthResponseSchema,
+    permissionResponse: z.array(z.string()).optional().default([]),
   }),
 });
 
