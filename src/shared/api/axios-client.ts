@@ -1,5 +1,19 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
+const getBaseUrl = (): string => {
+  if (globalThis.window === undefined) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl?.startsWith("http")) {
+      throw new Error(
+        "NEXT_PUBLIC_API_URL must be an absolute URL for server-side requests"
+      );
+    }
+    return apiUrl;
+  }
+
+  return process.env.NEXT_PUBLIC_API_URL || "/api";
+};
+
 let isRefreshing = false;
 let failedQueue: any[] = [];
 
@@ -15,7 +29,7 @@ const processQueue = (error: any, token: string | null = null) => {
 };
 
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "/api",
+  baseURL: getBaseUrl(),
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });

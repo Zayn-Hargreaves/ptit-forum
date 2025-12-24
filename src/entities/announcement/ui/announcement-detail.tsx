@@ -1,40 +1,21 @@
-// 📂 src/entities/announcement/ui/announcement-detail.tsx
-"use client";
-
-import { useMemo } from "react";
-import DOMPurify from "isomorphic-dompurify"; // ✅ Dùng bản này an toàn cho Next.js
-import Link from "next/link";
-import {
-  Calendar,
-  Eye,
-  Pin,
-  Download,
-  FileText,
-  Share2,
-  Bookmark,
-  ChevronLeft,
-} from "lucide-react";
-
-import { Avatar, AvatarImage, AvatarFallback } from "@shared/ui/avatar/avatar";
 import { Badge } from "@shared/ui/badge/badge";
 import { Button } from "@shared/ui/button/button";
 import { Card, CardContent, CardHeader } from "@shared/ui/card/card";
 import { Separator } from "@shared/ui/separator/separator";
-import { formatDate } from "@shared/lib/utils";
-import { Announcement } from "../model/types";
+import { Avatar, AvatarFallback, AvatarImage } from "@shared/ui/avatar/avatar";
+import { Calendar, Eye, Share2, Bookmark, ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import { AnnouncementDetail as AnnouncementDetailType } from "../model/types";
+import DOMPurify from "isomorphic-dompurify";
+import "@shared/styles/globals.css";
 
-interface AnnouncementDetailProps {
-  data: Announcement;
+interface Props {
+  data: AnnouncementDetailType;
 }
 
-export function AnnouncementDetail({ data }: AnnouncementDetailProps) {
-  const sanitizedContent = useMemo(() => {
-    return DOMPurify.sanitize(data.content);
-  }, [data.content]);
-
+export function AnnouncementDetail({ data }: Readonly<Props>) {
   return (
     <div className="space-y-6">
-      {/* Back button */}
       <Button variant="ghost" size="sm" asChild>
         <Link href="/announcements">
           <ChevronLeft className="mr-2 h-4 w-4" />
@@ -44,53 +25,44 @@ export function AnnouncementDetail({ data }: AnnouncementDetailProps) {
 
       <Card>
         <CardHeader className="space-y-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <div className="mb-3 flex items-center gap-2">
-                {data.isPinned && <Pin className="h-5 w-5 text-primary" />}
-                <Badge variant="secondary">{data.category}</Badge>
-              </div>
-              <h1 className="text-balance text-3xl font-bold leading-tight">
-                {data.title}
-              </h1>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary">{data.category}</Badge>
             </div>
+            <h1 className="text-2xl md:text-3xl font-bold leading-tight text-gray-900 dark:text-gray-100">
+              {data.title}
+            </h1>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pt-2">
             <div className="flex items-center gap-4">
               <Avatar>
-                <AvatarImage
-                  src={data.authorAvatar || "/placeholder.svg"}
-                  alt={data.author}
-                />
-                <AvatarFallback>
-                  {data.author?.[0]?.toUpperCase() || "?"}
-                </AvatarFallback>
+                <AvatarImage src="/placeholder-avatar.png" />
+                <AvatarFallback>{data.author.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium">{data.author}</p>
-                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <p className="font-medium text-sm">{data.author}</p>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>{formatDate(data.date)}</span>
+                    <Calendar className="h-3 w-3" />
+                    <span>
+                      {new Date(data.date).toLocaleDateString("vi-VN")}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Eye className="h-4 w-4" />
+                  {/* Backend chưa có views thì ẩn hoặc hardcode */}
+                  {/* <div className="flex items-center gap-1">
+                    <Eye className="h-3 w-3" />
                     <span>{data.views} lượt xem</span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" aria-label="Lưu thông báo">
+            <div className="flex gap-2">
+              <Button variant="outline" size="icon" title="Lưu" disabled>
                 <Bookmark className="h-4 w-4" />
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                aria-label="Chia sẻ thông báo"
-              >
+              <Button variant="outline" size="icon" title="Chia sẻ" disabled>
                 <Share2 className="h-4 w-4" />
               </Button>
             </div>
@@ -100,52 +72,23 @@ export function AnnouncementDetail({ data }: AnnouncementDetailProps) {
         <Separator />
 
         <CardContent className="pt-6">
-          {/* Content đã sanitize */}
+          {/* Render HTML Content từ Backend an toàn */}
           <div
-            className="prose prose-slate max-w-none dark:prose-invert"
-            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+            className="prose prose-slate max-w-none dark:prose-invert prose-img:rounded-lg prose-headings:font-bold"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(data.content),
+            }}
           />
 
-          {/* Attachments Logic */}
-          {data.attachments && data.attachments.length > 0 && (
-            <div className="mt-8">
-              <Separator className="mb-6" />
-              <h3 className="mb-4 text-lg font-semibold">File đính kèm</h3>
-              <div className="space-y-3">
-                {data.attachments.map((file) => (
-                  <Card
-                    key={file.id}
-                    className="border-2 transition-colors hover:bg-muted/50"
-                  >
-                    <CardContent className="flex items-center justify-between p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                          <FileText className="h-6 w-6 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-medium">{file.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {file.type} • {file.size}
-                          </p>
-                        </div>
-                      </div>
-                      <Button variant="secondary" asChild>
-                        <a
-                          href={file.url}
-                          download
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Download className="mr-2 h-4 w-4" />
-                          Tải xuống
-                        </a>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
+          {/*  WARNING: Backend chưa trả về attachments.
+             Phần này comment lại chờ Backend update.
+          */}
+          {/* <div className="mt-8">
+             <Separator className="mb-6" />
+             <h3 className="mb-4 text-lg font-semibold">File đính kèm</h3>
+              ... Logic render file ...
+          </div> 
+          */}
         </CardContent>
       </Card>
     </div>

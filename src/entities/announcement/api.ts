@@ -1,41 +1,110 @@
-import { z } from "zod";
-import { getBaseUrl } from "@shared/lib/base-url";
+import { cache } from "react";
+import { apiClient } from "@shared/api/axios-client";
+import {
+  Announcement,
+  ANNOUNCEMENT_TYPE_LABEL,
+  AnnouncementDetail,
+  ApiResponse,
+  BackendAnnouncement,
+  BackendAnnouncementDetail,
+  FetchAnnouncementsParams,
+  PageResponse,
+} from "./model/types";
 
-const AnnouncementSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  excerpt: z.string().optional(),
-  date: z.string().optional(),
-});
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const AnnouncementListSchema = z.object({
-  items: z.array(AnnouncementSchema),
-  page: z.number(),
-  size: z.number(),
-  total: z.number(),
-});
+export async function fetchAnnouncements(
+  params: FetchAnnouncementsParams,
+  options?: { headers?: Record<string, string> }
+) {
+  const pageIndex = params.page && params.page > 0 ? params.page - 1 : 0;
 
-export type AnnouncementListResponse = z.infer<typeof AnnouncementListSchema>;
-
-export async function fetchAnnouncements(params: {
-  page: number;
-  size: number;
-}) {
-  const qs = new URLSearchParams({
-    page: String(params.page),
-    size: String(params.size),
+  const { data } = await apiClient.get<
+    ApiResponse<PageResponse<BackendAnnouncement>>
+  >("/announcements", {
+    params: {
+      page: pageIndex,
+      size: params.size || 10,
+      sort: "createdDate,desc",
+      keyword: params.keyword,
+      type: params.type,
+      fromDate: params.fromDate,
+      toDate: params.toDate,
+    },
+    paramsSerializer: {
+      indexes: null,
+    },
+    ...options,
   });
 
-  const baseUrl = getBaseUrl();
-  const url = `${baseUrl}/api/announcements?${qs}`;
-
-  const res = await fetch(url, { cache: "no-store" });
-
-  if (!res.ok) {
-    const errText = await res.text().catch(() => "");
-    throw new Error(`Failed to fetch announcements: ${res.status} ${errText}`);
+  if (data.code !== 1000) {
+    throw new Error(data.message || "Lỗi không xác định từ hệ thống");
   }
 
-  const json = await res.json();
-  return AnnouncementListSchema.parse(json);
+  const { result } = data;
+
+  const items: Announcement[] = result.content.map((item) => {
+    const plainText = item.content.replaceAll(/<[^>]+>/g, "");
+    const excerpt =
+      plainText.slice(0, 150) + (plainText.length > 150 ? "..." : "");
+
+    return {
+      id: item.id,
+      title: item.title,
+      excerpt: excerpt,
+      category: ANNOUNCEMENT_TYPE_LABEL[item.announcementType] || "Khác",
+      type: item.announcementType,
+      date: item.createdDate,
+      author: item.createdBy || "Admin",
+    };
+  });
+
+  return {
+    items,
+    page: result.number + 1,
+    size: result.size,
+    total: result.totalElements,
+    totalPages: result.totalPages,
+  };
 }
+
+export const getAnnouncementById = cache(async function getAnnouncementById(
+  id: string,
+  options?: { headers?: Record<string, string> }
+): Promise<AnnouncementDetail> {
+  if (!UUID_REGEX.test(id)) {
+    throw new Error("NOT_FOUND");
+  }
+
+  try {
+    const { data } = await apiClient.get<
+      ApiResponse<BackendAnnouncementDetail>
+    >(`/announcements/${id}`, {
+      ...options, // Inject headers
+    });
+
+    if (data.code !== 1000) {
+      console.error("API Error Detail:", data);
+      throw new Error(data.message || "Failed to fetch detail");
+    }
+
+    const item = data.result;
+
+    return {
+      id: item.id,
+      title: item.title,
+      content: item.content,
+      category: ANNOUNCEMENT_TYPE_LABEL[item.announcementType] ?? "Thông báo",
+      type: item.announcementType,
+      author: item.createdByFullName ?? "Admin",
+      date: item.createdDate,
+      views: 0,
+    };
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      throw new Error("NOT_FOUND");
+    }
+    throw error;
+  }
+});
