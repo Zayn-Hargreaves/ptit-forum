@@ -1,23 +1,35 @@
-export type UserPermission =
-  | "read_all"
-  | "read_any"
-  | "create_all"
-  | "create_any"
-  | "update_all"
-  | "update_any"
-  | "delete_all"
-  | "delete_any";
+// src/entities/session/model/types.ts
+
+export const PERMISSIONS = {
+  READ_ALL: "read_all",
+  READ_ANY: "read_any",
+  CREATE_ALL: "create_all",
+  CREATE_ANY: "create_any",
+  UPDATE_ALL: "update_all",
+  UPDATE_ANY: "update_any",
+  DELETE_ALL: "delete_all",
+  DELETE_ANY: "delete_any",
+} as const;
+
+export type UserPermission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
 export interface User {
   id: string;
   email: string;
   fullName: string;
+  phone?: string;
   avatarUrl?: string;
 
-  studentId?: string;
-  className?: string;
-  faculty?: string;
+  studentCode?: string;
+  classCode?: string;
+  facultyName?: string;
 
-  createdAt: string;
   permissions: UserPermission[];
+}
+
+export interface UpdateProfilePayload {
+  fullName?: string;
+  phone?: string;
+  studentCode?: string;
+  classCode?: string;
 }

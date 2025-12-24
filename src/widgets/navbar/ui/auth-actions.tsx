@@ -15,7 +15,7 @@ interface NavbarAuthActionsProps {
 export function NavbarAuthActions({
   isMobile,
   onCloseMobileMenu,
-}: NavbarAuthActionsProps) {
+}: Readonly<NavbarAuthActionsProps>) {
   const { user, isLoading, logout } = useAuth();
 
   const handleLogout = async () => {

@@ -51,3 +51,4 @@ export * from "./progress/progress";
 export * from "./sheet/sheet";
 export * from "./switch/switch";
 export * from "./tooltip/tooltip";
+export * from "./user-avatar/user-avatar";

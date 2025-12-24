@@ -12,7 +12,7 @@ export const passwordSchema = z
   .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
   .regex(/[A-Z]/, "Mật khẩu phải có ít nhất 1 chữ hoa")
   .regex(/[a-z]/, "Mật khẩu phải có ít nhất 1 chữ thường")
-  .regex(/[0-9]/, "Mật khẩu phải có ít nhất 1 chữ số")
+  .regex(/\d/, "Mật khẩu phải có ít nhất 1 chữ số")
   .regex(/[@$!%*?&]/, "Mật khẩu phải có ít nhất 1 ký tự đặc biệt");
 
 export const nameSchema = z
@@ -63,7 +63,33 @@ export const BackendResponseSchema = z.object({
     permissionResponse: z.array(z.string()).optional().default([]),
   }),
 });
+export const profileSchema = z.object({
+  fullName: z.string().min(2, "Họ tên quá ngắn").trim(),
 
+  phone: z
+    .string()
+    .regex(
+      /^(03|05|07|08|09)\d{8}$/,
+      "SĐT không hợp lệ (Phải là 10 số đúng đầu số VN)"
+    )
+    .optional()
+    .or(z.literal("")),
+
+  studentCode: z
+    .string()
+    .regex(/^[A-Z0-9]{10}$/i, "Mã SV phải là 10 ký tự chữ/số")
+    .optional()
+    .or(z.literal("")),
+
+  classCode: z
+    .string()
+    .min(5, "Mã lớp quá ngắn")
+    .regex(/^[A-Z0-9-]+$/i, "Mã lớp không được chứa ký tự đặc biệt")
+    .optional()
+    .or(z.literal("")),
+});
+
+export type ProfileFormValues = z.infer<typeof profileSchema>;
 export type BackendResponse = z.infer<typeof BackendResponseSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;

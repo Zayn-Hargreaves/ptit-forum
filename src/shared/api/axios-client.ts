@@ -32,7 +32,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry ||
       originalRequest.url?.includes("/auth/refresh")
     ) {
-      return Promise.reject(error);
+      throw error;
     }
 
     if (isRefreshing) {
@@ -43,7 +43,7 @@ apiClient.interceptors.response.use(
           return apiClient(originalRequest);
         })
         .catch((err) => {
-          return Promise.reject(err);
+          throw err;
         });
     }
 
@@ -60,12 +60,14 @@ apiClient.interceptors.response.use(
       processQueue(refreshError, null);
 
       if (
-        typeof window !== "undefined" &&
-        !window.location.pathname.includes("/login")
+        globalThis.window !== undefined &&
+        globalThis.location &&
+        !globalThis.location.pathname.includes("/login")
       ) {
-        window.location.href = "/login?message=session_expired";
+        globalThis.location.href = "/login?message=session_expired";
       }
-      return Promise.reject(refreshError);
+
+      throw refreshError;
     } finally {
       isRefreshing = false;
     }

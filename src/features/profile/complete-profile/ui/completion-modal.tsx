@@ -1,11 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 import {
   Dialog,
@@ -25,8 +24,13 @@ import {
 } from "@shared/ui/form/form";
 import { Input } from "@shared/ui/input/input";
 
-import { updateProfile } from "../api/update-profile";
-import { ProfileFormValues, profileSchema } from "../model/schema";
+import { sessionApi } from "@entities/session/api/session-api";
+import { sessionKeys } from "@entities/session/lib/query-keys";
+import {
+  profileCompletionSchema,
+  ProfileCompletionValues,
+} from "../model/schema";
+import { getErrorMessage } from "@shared/lib/utils";
 
 interface ProfileCompletionModalProps {
   isOpen: boolean;
@@ -36,52 +40,54 @@ interface ProfileCompletionModalProps {
 export default function ProfileCompletionModal({
   isOpen,
   onClose,
-}: ProfileCompletionModalProps) {
-  const router = useRouter();
+}: Readonly<ProfileCompletionModalProps>) {
   const queryClient = useQueryClient();
 
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
+  const form = useForm<ProfileCompletionValues>({
+    resolver: zodResolver(profileCompletionSchema),
     defaultValues: {
-      name: "",
-      studentId: "",
-      faculty: "",
-      class: "",
+      fullName: "",
+      studentCode: "",
+      classCode: "",
+      phone: "",
     },
-    mode: "onSubmit",
+    mode: "onChange",
   });
 
-  const mutation = useMutation({
-    mutationFn: updateProfile,
+  useEffect(() => {
+    if (isOpen) form.reset();
+  }, [isOpen, form]);
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: sessionApi.updateProfile,
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ["me"] });
-
-      toast.success("Hồ sơ của bạn đã được cập nhật thành công!");
+      await queryClient.invalidateQueries({ queryKey: sessionKeys.me() });
+      toast.success("Cập nhật hồ sơ thành công!");
       onClose();
-      router.push("/forum");
     },
-    onError: () => {
-      toast.error("Không thể cập nhật hồ sơ. Vui lòng thử lại.");
+    onError: (error: any) => {
+      const message = getErrorMessage(error);
+      toast.error(message);
     },
   });
 
-  const onSubmit = (values: ProfileFormValues) => {
-    mutation.mutate(values);
+  const onSubmit = (values: ProfileCompletionValues) => {
+    mutate(values);
   };
 
   const handleSkip = () => {
     onClose();
-    toast.info("Bạn có thể cập nhật hồ sơ sau trong phần Cài đặt.");
-    router.push("/forum");
+    toast.info("Bạn có thể cập nhật sau trong phần Cài đặt.");
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleSkip()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Hoàn thiện hồ sơ</DialogTitle>
+          <DialogTitle>Cập nhật thông tin sinh viên 🎓</DialogTitle>
           <DialogDescription>
-            Nhập thông tin chính xác để xác thực sinh viên.
+            Nhập chính xác Mã SV và Lớp để hệ thống tự động xác định Khoa của
+            bạn.
           </DialogDescription>
         </DialogHeader>
 
@@ -89,7 +95,7 @@ export default function ProfileCompletionModal({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="name"
+              name="fullName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Họ và tên</FormLabel>
@@ -101,42 +107,65 @@ export default function ProfileCompletionModal({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="studentId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Mã số sinh viên</FormLabel>
-                  <FormControl>
-                    <Input placeholder="B21DCCN001" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="studentCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Mã sinh viên <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="B21DCCNxxx"
+                        {...field}
+                        className="uppercase placeholder:normal-case"
+                        maxLength={10}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="classCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Mã lớp <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="D21CQCN01-B"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(e.target.value.toUpperCase())
+                        }
+                        className="uppercase placeholder:normal-case"
+                        maxLength={12}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
-              name="faculty"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Khoa/Bộ môn</FormLabel>
+                  <FormLabel>Số điện thoại (tuỳ chọn)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Công nghệ thông tin" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="class"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Lớp</FormLabel>
-                  <FormControl>
-                    <Input placeholder="D21CQCN01-B" {...field} />
+                    <Input
+                      placeholder="0123456789"
+                      inputMode="numeric"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -144,22 +173,18 @@ export default function ProfileCompletionModal({
             />
 
             <div className="flex gap-3 pt-4">
-              <Button
-                type="submit"
-                className="flex-1"
-                disabled={mutation.isPending}
-              >
-                {mutation.isPending ? "Đang lưu..." : "Hoàn tất"}
+              <Button type="submit" className="flex-1" disabled={isPending}>
+                {isPending ? "Đang lưu..." : "Hoàn tất"}
               </Button>
 
               <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 className="flex-1"
                 onClick={handleSkip}
-                disabled={mutation.isPending}
+                disabled={isPending}
               >
-                Bỏ qua
+                Để sau
               </Button>
             </div>
           </form>

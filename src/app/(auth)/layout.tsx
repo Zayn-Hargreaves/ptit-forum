@@ -2,6 +2,7 @@
 
 import type React from "react";
 import Link from "next/link";
+import Image from "next/image"; // 1. Import Image
 import { GraduationCap } from "lucide-react";
 
 interface AuthLayoutProps {
@@ -17,18 +18,19 @@ export default function AuthLayout({
 }: AuthLayoutProps) {
   return (
     <div className="flex min-h-screen">
-      {/* Left side - Image */}
       <div className="hidden w-1/2 lg:flex lg:flex-col lg:items-center lg:justify-center lg:p-12 lg:bg-linear-to-br lg:from-slate-900 lg:to-slate-800">
         <div className="relative h-full w-full overflow-hidden rounded-2xl shadow-2xl">
-          <img
-            src={imageSrc || "/placeholder.svg"}
-            alt={imageAlt}
-            className="h-full w-full object-cover"
+          <Image
+            src={imageSrc}
+            alt={imageAlt || "Authentication Image"}
+            fill
+            className="object-cover"
+            priority
+            sizes="50vw"
           />
         </div>
       </div>
 
-      {/* Right side - Form */}
       <div className="flex w-full flex-col items-center justify-center bg-background p-4 lg:w-1/2 lg:p-12">
         <div className="w-full max-w-md">
           <Link
