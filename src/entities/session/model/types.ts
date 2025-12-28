@@ -1,5 +1,3 @@
-// src/entities/session/model/types.ts
-
 export const PERMISSIONS = {
   READ_ALL: "read_all",
   READ_ANY: "read_any",
@@ -16,15 +14,16 @@ export type UserPermission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 export interface User {
   id: string;
   email: string;
+
   fullName: string;
-  phone?: string;
-  avatarUrl?: string;
+  avatar: string;
 
-  studentCode?: string;
-  classCode?: string;
-  facultyName?: string;
+  phone: string;
+  studentCode: string;
+  classCode: string;
+  facultyName: string;
 
-  permissions: UserPermission[];
+  permissions?: UserPermission[];
 }
 
 export interface UpdateProfilePayload {
@@ -32,4 +31,15 @@ export interface UpdateProfilePayload {
   phone?: string;
   studentCode?: string;
   classCode?: string;
+}
+
+export interface UserProfileResponseDto {
+  id: string;
+  email: string;
+  fullName: string;
+  avatarUrl: string;
+  studentCode: string;
+  classCode: string;
+  phone: string;
+  facultyName: string;
 }

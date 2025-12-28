@@ -1,6 +1,10 @@
 // src/entities/session/api/session-api.ts
 import { apiClient } from "@shared/api/axios-client";
-import { UpdateProfilePayload, User } from "../model/types";
+import {
+  UpdateProfilePayload,
+  User,
+  UserProfileResponseDto,
+} from "../model/types";
 import { ApiResponse } from "@shared/api/types";
 
 const mapToUser = (data: any): User => {
@@ -32,17 +36,20 @@ export const sessionApi = {
     return mapToUser(data.result);
   },
 
-  uploadAvatar: async (file: File) => {
+  uploadAvatar: async (file: File): Promise<User> => {
     const formData = new FormData();
     formData.append("image", file);
 
-    const { data } = await apiClient.put<ApiResponse<any>>(
+    const { data } = await apiClient.put<ApiResponse<UserProfileResponseDto>>(
       "/users/profile/avatar",
       formData,
       {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": null,
+        },
       }
     );
+
     return mapToUser(data.result);
   },
 

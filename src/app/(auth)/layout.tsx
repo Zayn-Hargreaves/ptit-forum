@@ -2,7 +2,7 @@
 
 import type React from "react";
 import Link from "next/link";
-import Image from "next/image"; // 1. Import Image
+import Image from "next/image";
 import { GraduationCap } from "lucide-react";
 
 interface AuthLayoutProps {

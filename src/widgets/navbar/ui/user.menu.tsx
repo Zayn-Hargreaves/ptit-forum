@@ -33,7 +33,7 @@ export function NavbarUserMenu({
         >
           <UserAvatar
             name={user.fullName || user.email}
-            avatarUrl={user.avatarUrl}
+            avatarUrl={user.avatar}
             className="h-9 w-9"
           />
         </Button>

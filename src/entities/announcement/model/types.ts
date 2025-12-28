@@ -65,10 +65,19 @@ export interface BackendAnnouncementDetail {
   announcementType: AnnouncementType;
   announcementStatus: boolean;
   createdByFullName: string | null;
+  // TODO: [BACKEND] Yêu cầu trả về avatar người tạo. Hiện tại FE đang phải fake.
+  // createdByAvatar?: string;
   createdDate: string;
   modifiedDate: string | null;
   // Backend hiện tại CHƯA TRẢ VỀ attachments.
   // Nếu sau này có, thêm vào đây: attachments: { url: string, name: string }[]
+  // Field lạ, cần confirm với BE xem cấu trúc bên trong là gì
+  announcementTargetResponses: any[];
+  // TODO: [BACKEND] Thiếu danh sách file đính kèm.
+  // attachments?: { id: string; name: string; url: string; type: string }[];
+
+  // TODO: [BACKEND] Thiếu lượt xem.
+  // views?: number;
 }
 
 export interface AnnouncementDetail {

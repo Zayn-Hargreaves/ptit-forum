@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,14 +27,11 @@ import { sessionKeys } from "@entities/session/lib/query-keys";
 import { AvatarUploader } from "@features/profile/avatar-uploader/ui/avatar-uploader";
 import { ProfileFormValues, profileSchema } from "@shared/validators/auth";
 import { getErrorMessage } from "@shared/lib/utils";
-import { compressAvatar } from "@shared/lib/file";
 
 export function UpdateProfileForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: user, isLoading: isLoadingUser } = useMe();
-
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -60,17 +57,10 @@ export function UpdateProfileForm() {
 
   const { mutate: handleSave, isPending } = useMutation({
     mutationFn: async (values: ProfileFormValues) => {
-      if (avatarFile) {
-        const compressed = await compressAvatar(avatarFile);
-        await sessionApi.uploadAvatar(compressed);
-      }
-
       return await sessionApi.updateProfile(values);
     },
     onSuccess: async () => {
       toast.success("Cập nhật hồ sơ thành công");
-      setAvatarFile(null);
-
       await queryClient.invalidateQueries({ queryKey: sessionKeys.me() });
       router.push("/");
     },
@@ -103,11 +93,8 @@ export function UpdateProfileForm() {
       <CardContent className="space-y-8">
         <div className="flex flex-col items-center justify-center space-y-4">
           <AvatarUploader
-            currentAvatarUrl={user?.avatarUrl}
+            currentAvatarUrl={user?.avatar}
             fallbackName={user?.fullName || "User"}
-            value={avatarFile}
-            onChange={setAvatarFile}
-            disabled={isPending}
           />
           <p className="text-sm text-muted-foreground">
             Click vào ảnh để thay đổi

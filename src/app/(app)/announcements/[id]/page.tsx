@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
@@ -9,21 +10,27 @@ type PageProps = {
   params: Promise<{ id: string }>;
 };
 
+const getCachedAnnouncement = cache(async (id: string) => {
+  const cookieStore = await cookies();
+  return getAnnouncementById(id, {
+    headers: { Cookie: cookieStore.toString() },
+  });
+});
+
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const params = await props.params;
-  const cookieStore = await cookies();
 
   try {
-    const data = await getAnnouncementById(params.id, {
-      headers: { Cookie: cookieStore.toString() },
-    });
+    const data = await getCachedAnnouncement(params.id);
+
     return {
       title: `${data.title} | PTIT Forum`,
       description: data.content?.slice(0, 160) || "",
     };
   } catch (error) {
-    if ((error as Error).message === "NOT_FOUND") {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
       return { title: "Thông báo không tồn tại" };
+      // notFound();
     }
     throw error;
   }
@@ -31,22 +38,17 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 export default async function AnnouncementDetailPage(props: PageProps) {
   const params = await props.params;
-  const cookieStore = await cookies();
 
   try {
-    const announcement = await getAnnouncementById(params.id, {
-      headers: { Cookie: cookieStore.toString() },
-    });
+    const announcement = await getCachedAnnouncement(params.id);
 
     return (
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="grid gap-8 lg:grid-cols-12">
-          {/* Cột chính */}
           <div className="lg:col-span-8">
             <AnnouncementDetail data={announcement} />
           </div>
 
-          {/* Cột phụ */}
           <div className="lg:col-span-4 space-y-6">
             <RelatedAnnouncements
               currentId={announcement.id}

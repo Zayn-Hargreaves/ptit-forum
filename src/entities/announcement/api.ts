@@ -81,24 +81,29 @@ export const getAnnouncementById = cache(async function getAnnouncementById(
     const { data } = await apiClient.get<
       ApiResponse<BackendAnnouncementDetail>
     >(`/announcements/${id}`, {
-      ...options, // Inject headers
+      ...options,
     });
 
     if (data.code !== 1000) {
-      console.error("API Error Detail:", data);
       throw new Error(data.message || "Failed to fetch detail");
     }
 
     const item = data.result;
-
     return {
       id: item.id,
       title: item.title,
       content: item.content,
       category: ANNOUNCEMENT_TYPE_LABEL[item.announcementType] ?? "Thông báo",
       type: item.announcementType,
-      author: item.createdByFullName ?? "Admin",
+
+      author: item.createdByFullName || "Admin",
+
+      // TODO: [BACKEND] Khi nào có avatar thì map vào đây: item.createdByAvatar
+      avatarUrl: undefined,
+
       date: item.createdDate,
+
+      // TODO: [BACKEND] Khi nào có views thì map vào đây: item.views
       views: 0,
     };
   } catch (error: any) {

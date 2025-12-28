@@ -17,7 +17,7 @@ export function AnnouncementsList() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const page = Number(searchParams.get("page")) || 1;
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
   const types = searchParams.getAll("type") as AnnouncementType[];
   const keyword = searchParams.get("keyword") || undefined;
   const size = 10;
