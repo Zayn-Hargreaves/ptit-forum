@@ -17,7 +17,7 @@ export const createPostSchema = z.object({
 
   topicId: z.string().uuid("Chủ đề không hợp lệ"),
 
-  fileMetadataIds: z.array(z.string().uuid()).default([]),
+  fileMetadataIds: z.array(z.string().uuid()),
 });
 
 export type CreatePostFormValues = z.infer<typeof createPostSchema>;

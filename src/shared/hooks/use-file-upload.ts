@@ -40,7 +40,8 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
     file: File,
     endpoint: string = "/files/upload",
     method: "POST" | "PUT" = "POST",
-    formDataKey: string = "file"
+    formDataKey: string = "file",
+    additionalData?: Record<string, string>
   ) => {
     if (options.validate?.maxSizeMB) {
       if (file.size / 1024 / 1024 > options.validate.maxSizeMB) {
@@ -62,11 +63,19 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
     const formData = new FormData();
     formData.append(formDataKey, file);
 
+    if (additionalData) {
+      Object.entries(additionalData).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+    }
     try {
       const response = await apiClient.request<ApiResponse<any>>({
         method,
         url: endpoint,
         data: formData,
+        headers: {
+          "Content-Type": null,
+        },
         onUploadProgress: (progressEvent) => {
           const total = progressEvent.total || file.size;
           const current = progressEvent.loaded;
