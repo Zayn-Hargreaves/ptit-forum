@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { apiClient } from "@shared/api/axios-client";
+import { PageResponse } from "@shared/api/types";
 import {
   Announcement,
   ANNOUNCEMENT_TYPE_LABEL,
@@ -8,7 +9,6 @@ import {
   BackendAnnouncement,
   BackendAnnouncementDetail,
   FetchAnnouncementsParams,
-  PageResponse,
 } from "./model/types";
 
 const UUID_REGEX =

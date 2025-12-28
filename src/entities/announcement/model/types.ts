@@ -28,17 +28,6 @@ export interface ApiResponse<T> {
   result: T;
 }
 
-export interface PageResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-  size: number;
-  first: boolean;
-  last: boolean;
-  empty: boolean;
-}
-
 export interface Announcement {
   id: string;
   title: string;
