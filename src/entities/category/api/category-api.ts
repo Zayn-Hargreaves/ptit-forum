@@ -1,5 +1,5 @@
-import { apiClient } from "@shared/api/axios-client";
-import { ApiResponse } from "@shared/api/types";
+import { apiClient } from '@shared/api/axios-client';
+import { ApiResponse } from '@shared/api/types';
 
 export interface Category {
   id: string;
@@ -11,9 +11,7 @@ export interface Category {
 
 export const categoryApi = {
   getAll: async () => {
-    const { data } = await apiClient.get<ApiResponse<Category[]>>(
-      "/categories"
-    );
+    const { data } = await apiClient.get<ApiResponse<Category[]>>('/categories');
     return data.result;
   },
 };

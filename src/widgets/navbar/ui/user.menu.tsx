@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, User as UserIcon, Settings } from "lucide-react"; // Import thêm icon Settings
+import { LogOut, User as UserIcon, Settings } from "lucide-react"; 
 import {
   Button,
   DropdownMenu,

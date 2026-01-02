@@ -1,34 +1,30 @@
-export type TrendingPost = {
-  id: string;
-  title: string;
-  author: {
-    id?: string;
-    name: string;
-    avatar?: string;
-  };
-  category: string;
-  comments: number;
-  views: number;
-  createdAt?: string;
-};
-
-// src/entities/post/model/types.ts
-
-export type PostStatus =
-  | "PENDING"
-  | "APPROVED"
-  | "REJECTED"
-  | "DRAFT"
-  | "ARCHIVED"
-  | "DELETED";
-
-export type FileType = "IMAGE" | "VIDEO" | "DOCUMENT";
+export type PostStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'DRAFT' | 'ARCHIVED' | 'DELETED';
+export type FileType = 'IMAGE' | 'VIDEO' | 'DOCUMENT';
 
 export interface PostAuthor {
   id: string;
-  name: string;
+  fullName: string;
   avatarUrl: string;
-  badge?: string;
+  badge: string;
+  faculty: string;
+}
+
+export interface PostStats {
+  viewCount: number;
+  commentCount: number;
+  reactionCount: number;
+}
+
+export interface PostUserState {
+  liked: boolean;
+  saved: boolean;
+  following: boolean;
+}
+
+export interface PostPermissions {
+  canEdit: boolean;
+  canDelete: boolean;
+  canReport: boolean;
 }
 
 export interface PostAttachment {
@@ -39,28 +35,32 @@ export interface PostAttachment {
   size?: number;
 }
 
+export interface PostTopic {
+  id: string;
+  name: string;
+  slug: string | null;
+}
+
 export interface Post {
   id: string;
   title: string;
   content: string;
   excerpt?: string;
-  slug: string;
-
-  status: PostStatus;
-
-  author: PostAuthor;
+  slug: string | null;
   topicId: string;
 
-  viewCount: number;
-  commentCount: number;
-  reactionCount: number;
+  topic?: PostTopic;
 
+  createdDateTime: string;
+  lastModifiedDateTime?: string;
+  approvedAt?: string;
+  postStatus: PostStatus;
+
+  author: PostAuthor;
+  stats: PostStats;
+  userState: PostUserState;
+  permissions: PostPermissions;
   attachments: PostAttachment[];
-  createdAt: string;
-  updatedAt?: string;
-
-  isLiked?: boolean;
-  isSaved?: boolean;
 }
 
 export interface CreatePostPayload {

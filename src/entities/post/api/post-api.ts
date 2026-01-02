@@ -1,13 +1,48 @@
-import { apiClient } from "@shared/api/axios-client";
-import { ApiResponse, PageResponse } from "@shared/api/types";
-import { CreatePostPayload, Post } from "../model/types";
+// src/entities/post/api/post-api.ts
+import { apiClient } from '@shared/api/axios-client';
+import { ApiResponse, PageResponse } from '@shared/api/types';
+import { Post, CreatePostPayload } from '../model/types'; // giữ CreatePostPayload
+
+// Params mapping theo Backend Spec (mode + range)
+// Params mapping theo Backend Spec (mode + range)
+export interface GetPostsParams {
+  pageParam?: number;
+  size?: number;
+  topicId?: string | null;
+  authorId?: string | null;
+
+  // New
+  mode?: 'latest' | 'trending';
+  range?: 'DAY' | 'WEEK' | 'MONTH' | 'ALL'; // Enum uppercase chuẩn BE
+}
 
 export const postApi = {
-  create: async (payload: CreatePostPayload) => {
-    const { data } = await apiClient.post<ApiResponse<Post>>(
-      `/posts/topic/${payload.topicId}`,
-      payload
-    );
+  // 1. Get Newsfeed (Latest / Trending)
+  getNewsfeed: async (params: GetPostsParams) => {
+    const { mode = 'latest', range = 'WEEK', topicId, authorId, pageParam = 0, size = 10 } = params;
+
+    // Trending -> /posts/featured
+    if (mode === 'trending') {
+      const { data } = await apiClient.get<ApiResponse<PageResponse<Post>>>('/posts/featured', {
+        params: {
+          page: pageParam,
+          size,
+          range,
+          topicId: topicId || undefined,
+        },
+      });
+      return data.result;
+    }
+
+    const { data } = await apiClient.get<ApiResponse<PageResponse<Post>>>('/posts', {
+      params: {
+        page: pageParam,
+        size,
+        sort: 'createdDateTime,desc',
+        topicId: topicId || undefined,
+        authorId: authorId || undefined,
+      },
+    });
     return data.result;
   },
 
@@ -16,13 +51,39 @@ export const postApi = {
     return data.result;
   },
 
-  getByTopic: async (topicId: string, page = 0, size = 10) => {
-    const { data } = await apiClient.get<ApiResponse<PageResponse<Post>>>(
-      `/posts/topic/${topicId}`,
-      {
-        params: { page, size, sort: "createdAt,desc" },
-      }
-    );
+  create: async (payload: CreatePostPayload) => {
+    const { topicId, ...body } = payload;
+    const { data } = await apiClient.post<ApiResponse<Post>>(`/posts/topic/${topicId}`, body);
+    return data.result;
+  },
+
+  getByTopic: async (topicId: string, params: GetPostsParams) => {
+    const { pageParam = 0, size = 10 } = params;
+
+    const { data } = await apiClient.get<ApiResponse<PageResponse<Post>>>(`/posts/topic/${topicId}`, {
+      params: {
+        page: pageParam,
+        size,
+        sort: 'createdDateTime,desc',
+      },
+    });
+
+    return data.result;
+  },
+
+  increaseView: async (postId: string) => {
+    const { data } = await apiClient.post<{ code: number; result: { viewCount: number } }>(`/posts/${postId}/view`);
+    return data.result;
+  },
+
+  update: async (id: string, payload: CreatePostPayload) => {
+    const { topicId, ...body } = payload;
+    const { data } = await apiClient.put<ApiResponse<Post>>(`/posts/${id}`, body);
+    return data.result;
+  },
+
+  delete: async (id: string) => {
+    const { data } = await apiClient.patch<ApiResponse<any>>(`/posts/${id}/archive`);
     return data.result;
   },
 };

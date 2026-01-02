@@ -46,7 +46,6 @@ const meta: Meta<typeof Carousel> = {
       description: "Các plugin của Embla (Autoplay, AutoScroll...).",
     },
   },
-  // Decorator để tạo khoảng trống cho 2 nút mũi tên 2 bên
   decorators: [
     (Story) => (
       <div className="w-full max-w-xs px-12 py-4">

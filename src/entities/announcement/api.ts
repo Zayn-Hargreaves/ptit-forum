@@ -98,12 +98,10 @@ export const getAnnouncementById = cache(async function getAnnouncementById(
 
       author: item.createdByFullName || "Admin",
 
-      // TODO: [BACKEND] Khi nào có avatar thì map vào đây: item.createdByAvatar
       avatarUrl: undefined,
 
       date: item.createdDate,
 
-      // TODO: [BACKEND] Khi nào có views thì map vào đây: item.views
       views: 0,
     };
   } catch (error: any) {
