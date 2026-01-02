@@ -1,13 +1,19 @@
+"use client";
+
 import { useMemo } from "react";
 import { Badge } from "@shared/ui/badge/badge";
 import { Button } from "@shared/ui/button/button";
 import { Card, CardContent, CardHeader } from "@shared/ui/card/card";
 import { Separator } from "@shared/ui/separator/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@shared/ui/avatar/avatar";
-import { Calendar, Eye, Share2, Bookmark, ChevronLeft } from "lucide-react";
+import { Calendar, Eye, Share2, Bookmark, ChevronLeft, Paperclip } from "lucide-react";
 import Link from "next/link";
 import { AnnouncementDetail as AnnouncementDetailType } from "../model/types";
+import { format } from "date-fns";
+import { vi } from "date-fns/locale";
+import { AttachmentItem } from "./attachment-item";
 import DOMPurify from "isomorphic-dompurify";
+import { toast } from "sonner";
 
 interface Props {
   data: AnnouncementDetailType;
@@ -18,6 +24,49 @@ export function AnnouncementDetail({ data }: Readonly<Props>) {
     () => DOMPurify.sanitize(data.content),
     [data.content]
   );
+
+  const handleShare = async () => {
+    if (typeof window === "undefined" || !data) return;
+
+    const url = window.location.href;
+    const title = data.title;
+    const text = `Đọc thông báo "${title}" trên Diễn đàn`;
+
+    if (
+      typeof navigator !== "undefined" &&
+      typeof navigator.share === "function"
+    ) {
+      try {
+        await navigator.share({ title, text, url });
+        return;
+      } catch (error: unknown) {
+        if (error instanceof Error && error.name === "AbortError") return;
+      }
+    }
+    // Fallback: copy link
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = url;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+      }
+
+      toast.success("Đã sao chép liên kết", {
+        description: "Bạn có thể dán link này để chia sẻ.",
+      });
+    } catch {
+      toast.error("Lỗi sao chép", {
+        description: "Trình duyệt không hỗ trợ tự động sao chép.",
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -56,11 +105,6 @@ export function AnnouncementDetail({ data }: Readonly<Props>) {
                       {new Date(data.date).toLocaleDateString("vi-VN")}
                     </span>
                   </div>
-                  {/* Backend chưa có views thì ẩn hoặc hardcode */}
-                  {/* <div className="flex items-center gap-1">
-                    <Eye className="h-3 w-3" />
-                    <span>{data.views} lượt xem</span>
-                  </div> */}
                 </div>
               </div>
             </div>
@@ -69,7 +113,12 @@ export function AnnouncementDetail({ data }: Readonly<Props>) {
               <Button variant="outline" size="icon" title="Lưu" disabled>
                 <Bookmark className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon" title="Chia sẻ" disabled>
+              <Button
+                variant="outline"
+                size="icon"
+                title="Chia sẻ"
+                onClick={handleShare}
+              >
                 <Share2 className="h-4 w-4" />
               </Button>
             </div>
@@ -79,7 +128,6 @@ export function AnnouncementDetail({ data }: Readonly<Props>) {
         <Separator />
 
         <CardContent className="pt-6">
-          {/* Render HTML Content từ Backend an toàn */}
           <div
             className="prose prose-slate max-w-none dark:prose-invert prose-img:rounded-lg prose-headings:font-bold"
             dangerouslySetInnerHTML={{
@@ -87,15 +135,19 @@ export function AnnouncementDetail({ data }: Readonly<Props>) {
             }}
           />
 
-          {/*  WARNING: Backend chưa trả về attachments.
-             Phần này comment lại chờ Backend update.
-          */}
-          {/* <div className="mt-8">
-             <Separator className="mb-6" />
-             <h3 className="mb-4 text-lg font-semibold">File đính kèm</h3>
-              ... Logic render file ...
-          </div> 
-          */}
+          {data.attachments && data.attachments.length > 0 && (
+            <div className="mt-8">
+              <Separator className="mb-6" />
+              <h3 className="mb-4 text-lg font-semibold flex items-center gap-2">
+                <Paperclip className="h-4 w-4" /> File đính kèm
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {data.attachments.map((file) => (
+                  <AttachmentItem key={file.id} attachment={file} />
+                ))}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

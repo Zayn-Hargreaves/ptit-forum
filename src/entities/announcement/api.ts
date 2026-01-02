@@ -103,6 +103,7 @@ export const getAnnouncementById = cache(async function getAnnouncementById(
       date: item.createdDate,
 
       views: 0,
+      attachments: item.attachments || [],
     };
   } catch (error: any) {
     if (error.response?.status === 404) {
