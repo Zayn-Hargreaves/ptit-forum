@@ -1,98 +1,74 @@
-'use client';
-
-import * as React from 'react';
-import Image from 'next/image'; // We decided to use <img> standard but user plan said "<img> tag within AspectRatio".
-// Wait, user plan said: "Use a standard <img> tag...". I will follow that strictly.
+import { useState } from 'react';
 import Link from 'next/link';
-import { Document } from '@entities/document/model/schema';
-import { cn } from '@shared/lib/utils';
-import { Eye, FileText, BadgeCheck } from 'lucide-react';
-import { AspectRatio } from '@radix-ui/react-aspect-ratio';
-import { Badge } from '@shared/ui/badge/badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@shared/ui/avatar/avatar';
-import { Card, CardContent, CardFooter } from '@shared/ui/card/card';
+import { Eye, FileText } from 'lucide-react';
+import { Document } from '@/entities/document/model/schema';
+import { AspectRatio } from '@/shared/ui/aspect-ratio/aspect-ratio';
+import { cn } from '@/shared/lib/utils';
 
 interface DocumentCardProps {
   document: Document;
 }
 
-export function DocumentCard({ document }: DocumentCardProps) {
-  const [imgSrc, setImgSrc] = React.useState(document.thumbnailUrl);
-  // Simple fallback image URL
-  const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=500&auto=format&fit=crop&q=60';
+export const DocumentCard = ({ document }: DocumentCardProps) => {
+  const [imgSrc, setImgSrc] = useState(document.thumbnailUrl);
 
   return (
-    <article className="group relative flex flex-col h-full transition-all hover:-translate-y-1 hover:shadow-lg rounded-xl overflow-hidden border bg-card text-card-foreground">
-      {/* Clickable Overlay */}
-      <Link
-        href={`/documents/${document.id}`}
-        className="absolute inset-0 z-10 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-xl"
-        aria-label={`View ${document.title}`}
-      />
+    <article className="group relative flex flex-col space-y-3 rounded-lg border p-3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+      {/* Click Overlay */}
+      <Link href={`/documents/${document.id}`} className="absolute inset-0 z-10">
+        <span className="sr-only">View {document.title}</span>
+      </Link>
 
-      <div className="relative w-full border-b bg-muted/20">
-        <AspectRatio ratio={3 / 4} className="overflow-hidden">
-          {/* Using standard img as requested for mock stability */}
+      {/* Thumbnail Section */}
+      <div className="relative overflow-hidden rounded-md">
+        <AspectRatio ratio={3 / 4}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imgSrc}
             alt={document.title}
-            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-            onError={() => setImgSrc(FALLBACK_IMAGE)}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={() => {
+              if (imgSrc !== 'https://placehold.co/300x400?text=No+Preview') {
+                setImgSrc('https://placehold.co/300x400?text=No+Preview');
+              }
+            }}
           />
         </AspectRatio>
 
+        {/* Badges/Overlays */}
         {document.isPremium && (
-          <div className="absolute top-2 right-2 z-0">
-            <Badge variant="default" className="bg-amber-500 hover:bg-amber-600 text-white border-none shadow-sm">
-              Premium
-            </Badge>
+          <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+            PRO
           </div>
         )}
       </div>
 
-      <div className="flex flex-col flex-1 p-4 gap-3">
-        {/* Subject Badge */}
-        <div className="flex items-start justify-between gap-2">
-          <Badge variant="secondary" className="font-normal text-xs truncate max-w-[70%] z-20">
-            {document.subject.code}
-          </Badge>
-        </div>
-
-        {/* Title */}
-        <h3 className="font-semibold text-base leading-tight line-clamp-2 min-h-10" title={document.title}>
+      {/* Content Section */}
+      <div className="flex flex-col space-y-1">
+        <h3 className="font-semibold leading-tight line-clamp-2 min-h-[2.5rem]" title={document.title}>
           {document.title}
         </h3>
 
-        <div className="mt-auto pt-2 flex items-center justify-between text-muted-foreground text-sm">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Eye className="w-4 h-4" />
-              <span className="text-xs">{document.viewCount.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <FileText className="w-4 h-4" />
-              <span className="text-xs">{document.pageCount}</span>
-            </div>
+        {/* Meta Row */}
+        <div className="flex items-center text-xs text-muted-foreground space-x-3">
+          <div className="flex items-center">
+            <Eye className="mr-1 h-3 w-3" />
+            <span>{document.viewCount.toLocaleString()}</span>
           </div>
+          <div className="flex items-center">
+            <FileText className="mr-1 h-3 w-3" />
+            <span>{document.pageCount} p</span>
+          </div>
+        </div>
 
-          {/* Author Avatar - Z-index higher to allow click interaction independent of card */}
-          <button
-            type="button"
-            className="z-20 relative pointer-events-auto border-none bg-transparent p-0"
-            aria-label={`View author ${document.author.name}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              // Mock navigation or interaction
-              console.log('Clicked author', document.author.name);
-            }}
-          >
-            <Avatar className="w-6 h-6 border cursor-pointer hover:ring-2 hover:ring-primary">
-              <AvatarImage src={document.author.avatarUrl} alt={document.author.name} />
-              <AvatarFallback>{document.author.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-          </button>
+        {/* Author (Optional extra) */}
+        <div className="pt-2 flex items-center gap-2 text-xs text-muted-foreground border-t mt-2">
+          {/* Using a small fallback approach for avatar if needed, but assuming valid currently */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={document.author.avatar} alt={document.author.name} className="w-5 h-5 rounded-full object-cover" />
+          <span className="truncate">{document.author.name}</span>
         </div>
       </div>
     </article>
   );
-}
+};

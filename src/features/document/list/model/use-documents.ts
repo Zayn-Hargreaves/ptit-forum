@@ -1,11 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { getDocuments } from "@shared/api/mock/document.service";
-import { DocumentListParams } from "./types";
+import { useQuery } from '@tanstack/react-query';
+import { documentService, GetDocumentsParams } from '@/shared/api/mock/document.service';
 
-export const useDocuments = (params: DocumentListParams) => {
+export const useDocuments = (params: GetDocumentsParams = {}) => {
     return useQuery({
-        queryKey: ["documents", params],
-        queryFn: () => getDocuments(params),
-        staleTime: 5000,
+        queryKey: ['documents', params],
+        queryFn: () => documentService.getDocuments(params),
+        placeholderData: (previousData) => previousData, // Optional: keep previous data while fetching new (better UX for pagination)
     });
 };

@@ -52,3 +52,4 @@ export * from './switch/switch';
 export * from './tooltip/tooltip';
 export * from './user-avatar/user-avatar';
 export * from './command/command';
+export * from './error-boundary/error-boundary';

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { Document } from '../../../entities/document/model/schema';
+import type { Document } from '@/entities/document/model/schema';
 
 // Helper to convert string ID to a numeric seed
 function stringToSeed(str: string): number {
@@ -11,6 +11,9 @@ function stringToSeed(str: string): number {
   }
   return Math.abs(hash);
 }
+
+// Helper to simulate network delay
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Hardcoded realistic book covers
 const REALISTIC_BOOK_COVERS = [
@@ -32,8 +35,8 @@ export interface GetDocumentsParams {
 export const getDocuments = async (params: GetDocumentsParams = {}): Promise<{ data: Document[]; total: number }> => {
   const { page = 1, limit = 10, subjectId, sort } = params;
 
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  // Simulate network delay (500-800ms)
+  await delay(500 + Math.random() * 300);
 
   // Seed purely based on page/limit to keep list consistent for same params
   // Note: In a real "random" list we might not want this, but for dev stable checks it's good.
@@ -62,7 +65,7 @@ export const getDocuments = async (params: GetDocumentsParams = {}): Promise<{ d
 
 export const getDocumentById = async (id: string): Promise<Document | null> => {
   // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
+  await delay(300 + Math.random() * 200);
 
   // Simulate "not found" cases for testing - return null for IDs starting with "not-found-"
   if (id.startsWith('not-found-')) {

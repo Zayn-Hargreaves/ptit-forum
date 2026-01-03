@@ -1,42 +1,54 @@
 'use client';
 
-import { Button } from '@shared/ui/button/button';
-import { AlertCircle, Download, RefreshCw } from 'lucide-react';
 import { FallbackProps } from 'react-error-boundary';
+import { AlertTriangle, Download, RefreshCw } from 'lucide-react';
+import { Button } from '@/shared/ui/button/button';
 
 interface DocumentErrorFallbackProps extends FallbackProps {
   documentUrl?: string;
 }
 
-export function DocumentErrorFallback({ error, resetErrorBoundary, documentUrl }: DocumentErrorFallbackProps) {
+export const DocumentErrorFallback = ({ error, resetErrorBoundary, documentUrl }: DocumentErrorFallbackProps) => {
   return (
-    <div className="flex flex-col items-center justify-center p-8 border rounded-lg bg-destructive/5 text-center min-h-[400px]">
-      <div className="bg-destructive/10 p-4 rounded-full mb-4">
-        <AlertCircle className="w-8 h-8 text-destructive" />
+    <div className="flex flex-col items-center justify-center p-8 border border-red-200 rounded-lg bg-red-50 dark:bg-red-900/10 dark:border-red-900/50">
+      <div className="rounded-full bg-red-100 p-3 mb-4 dark:bg-red-900/20">
+        <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
       </div>
-      <h3 className="text-lg font-semibold mb-2">Something went wrong</h3>
-      <p className="text-sm text-muted-foreground max-w-xs mb-6">
-        We couldn't load the document viewer. This might be due to a network issue or a corrupted file.
+      <h3 className="text-lg font-semibold text-red-900 dark:text-red-200 mb-2">Unable to load document preview</h3>
+      <p className="text-sm text-red-700 dark:text-red-300 text-center mb-6 max-w-sm">
+        {error.message || 'Something went wrong while displaying this document.'}
       </p>
 
       <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-        <Button onClick={resetErrorBoundary} variant="default" className="gap-2">
-          <RefreshCw className="w-4 h-4" />
+        <Button
+          variant="outline"
+          onClick={resetErrorBoundary}
+          className="gap-2 border-red-200 hover:bg-red-100 hover:text-red-900 dark:border-red-800 dark:hover:bg-red-900/30"
+        >
+          <RefreshCw className="h-4 w-4" />
           Try Again
         </Button>
-        {documentUrl && (
-          <Button variant="outline" className="gap-2" onClick={() => window.open(documentUrl, '_blank')}>
-            <Download className="w-4 h-4" />
+
+        {documentUrl ? (
+          <Button
+            asChild
+            className="gap-2 bg-red-600 hover:bg-red-700 text-white dark:bg-red-700 dark:hover:bg-red-600"
+          >
+            <a href={documentUrl} download>
+              <Download className="h-4 w-4" />
+              Download Original
+            </a>
+          </Button>
+        ) : (
+          <Button
+            disabled
+            className="gap-2 bg-red-600 hover:bg-red-700 text-white dark:bg-red-700 dark:hover:bg-red-600"
+          >
+            <Download className="h-4 w-4" />
             Download Original
           </Button>
         )}
       </div>
-
-      <div className="mt-8 pt-4 border-t w-full max-w-md">
-        <p className="text-xs text-muted-foreground font-mono bg-muted p-2 rounded wrap-break-word">
-          Error: {error.message}
-        </p>
-      </div>
     </div>
   );
-}
+};

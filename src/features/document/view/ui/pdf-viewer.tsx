@@ -1,83 +1,118 @@
 'use client';
 
 import { useState } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
-import { useMeasure } from 'react-use';
-import { PdfToolbar } from './pdf-toolbar';
-import { Loader2, Lock } from 'lucide-react';
-import { Button } from '@shared/ui/button/button';
+import { Document, Page } from 'react-pdf';
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Lock } from 'lucide-react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { Button } from '@/shared/ui/button/button';
+import { Skeleton } from '@/shared/ui/skeleton/skeleton';
+import { setupPdfWorker } from '../model/pdf-worker';
+import { DocumentErrorFallback } from './document-error-fallback';
 
-// Configure worker locally to avoid issues
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Ensure worker is set up
+setupPdfWorker();
+
+const MAX_VIEWER_WIDTH = 800;
 
 interface PdfViewerProps {
   url: string;
   isPremium?: boolean;
-  onUnlock?: () => void;
+  width: number;
 }
 
-export function PdfViewer({ url, isPremium = false, onUnlock }: PdfViewerProps) {
+const PdfViewerContent = ({ url, isPremium = false, width }: PdfViewerProps) => {
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.0);
-
-  // Responsive measure
-  const [ref, { width }] = useMeasure<HTMLDivElement>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     setNumPages(numPages);
+    setIsLoading(false);
   }
 
-  // Freemium Logic
-  const shouldBlur = !isPremium && pageNumber > 3;
+  const changePage = (offset: number) => {
+    setPageNumber((prevPageNumber) => Math.min(Math.max(1, prevPageNumber + offset), numPages));
+  };
+
+  const changeScale = (delta: number) => {
+    setScale((prevScale) => Math.max(0.5, Math.min(2.0, prevScale + delta)));
+  };
+
+  const isBlurred = !isPremium && pageNumber > 3;
 
   return (
-    <div className="flex flex-col border rounded-lg overflow-hidden bg-background shadow-sm">
-      <PdfToolbar
-        scale={scale}
-        setScale={setScale}
-        pageNumber={pageNumber}
-        numPages={numPages}
-        setPageNumber={setPageNumber}
-      />
+    <div className="flex flex-col items-center space-y-4 w-full">
+      {/* Toolbar */}
+      <div className="sticky top-0 z-10 flex w-full max-w-2xl items-center justify-between rounded-lg border bg-background/95 p-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center space-x-2">
+          <Button variant="ghost" size="icon" disabled={pageNumber <= 1} onClick={() => changePage(-1)}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <span className="text-sm font-medium">
+            Page {pageNumber} of {numPages || '--'}
+          </span>
+          <Button variant="ghost" size="icon" disabled={pageNumber >= numPages} onClick={() => changePage(1)}>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
 
-      <div ref={ref} className="relative bg-muted/30 min-h-[500px] flex justify-center p-4 overflow-auto">
+        <div className="flex items-center space-x-2">
+          <Button variant="ghost" size="icon" onClick={() => changeScale(-0.1)}>
+            <ZoomOut className="h-4 w-4" />
+          </Button>
+          <span className="text-sm font-medium">{Math.round(scale * 100)}%</span>
+          <Button variant="ghost" size="icon" onClick={() => changeScale(0.1)}>
+            <ZoomIn className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* PDF Document */}
+      <div className="relative w-full max-w-4xl border rounded-md overflow-hidden bg-slate-50 dark:bg-slate-900 min-h-[500px] flex justify-center">
         <Document
           file={url}
           onLoadSuccess={onDocumentLoadSuccess}
           loading={
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span>Loading PDF...</span>
+            <div className="flex items-center justify-center p-20">
+              <Skeleton className="h-[600px] w-full max-w-2xl" />
             </div>
           }
-          error={<div className="text-destructive font-medium">Failed to load PDF.</div>}
-          className="shadow-lg"
+          error={
+            // We let ErrorBoundary handle this usually, or we can use this internal error prop for load failures.
+            // But the task asked to wrap the viewer in Error Boundary.
+            // If Document fails to load, it might throw or trigger this error prop.
+            // Let's re-throw so ErrorBoundary catches it or use fallback here.
+            // actually react-pdf's error prop renders in place.
+            // Let's keep a simple message here but the ErrorBoundary around the whole component catches crashes.
+            <div className="flex flex-col items-center justify-center p-20 text-red-500">
+              <p>Failed to load PDF.</p>
+            </div>
+          }
+          className="flex justify-center"
         >
           <div className="relative">
             <Page
               pageNumber={pageNumber}
-              width={width ? Math.min(width - 40, 800) : undefined} // Padding margin
+              width={width * 0.95 > MAX_VIEWER_WIDTH ? MAX_VIEWER_WIDTH : width * 0.95} // Cap max width or use responsive width
               scale={scale}
-              className={shouldBlur ? 'blur-md pointer-events-none select-none' : ''}
-              renderTextLayer={!shouldBlur}
-              renderAnnotationLayer={!shouldBlur}
+              className={`shadow-lg transition-all duration-200 ${
+                isBlurred ? 'filter blur-md select-none pointer-events-none' : ''
+              }`}
+              renderTextLayer={!isBlurred}
+              renderAnnotationLayer={!isBlurred}
             />
 
-            {/* Premium Overlay */}
-            {shouldBlur && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/5 z-10 backdrop-blur-[1px]">
-                <div className="bg-background/95 p-6 rounded-lg shadow-xl text-center max-w-sm border backdrop-blur-sm">
-                  <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Lock className="w-6 h-6" />
+            {/* Freemium Overlay */}
+            {isBlurred && (
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/5 text-center">
+                <div className="rounded-xl bg-background/90 p-6 shadow-2xl backdrop-blur-sm border border-border/50 max-w-sm mx-4">
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                    <Lock className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-lg font-bold mb-2">Premium Content</h3>
-                  <p className="text-muted-foreground text-sm mb-4">
-                    This page is part of our Premium collection. Subscribe to unlock full access.
-                  </p>
-                  <Button className="w-full bg-amber-600 hover:bg-amber-700" onClick={onUnlock}>
-                    Unlock Now
-                  </Button>
+                  <h3 className="mb-2 text-lg font-bold">Premium Content</h3>
+                  <p className="mb-4 text-sm text-muted-foreground">Upgrade to premium to unlock the full document.</p>
+                  <Button className="w-full font-semibold">Unlock Now</Button>
                 </div>
               </div>
             )}
@@ -86,4 +121,12 @@ export function PdfViewer({ url, isPremium = false, onUnlock }: PdfViewerProps) 
       </div>
     </div>
   );
-}
+};
+
+export const PdfViewer = (props: PdfViewerProps) => {
+  return (
+    <ErrorBoundary FallbackComponent={DocumentErrorFallback} onReset={() => window.location.reload()}>
+      <PdfViewerContent {...props} />
+    </ErrorBoundary>
+  );
+};
