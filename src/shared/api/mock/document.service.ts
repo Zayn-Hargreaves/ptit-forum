@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { Document } from '@entities/document/model/schema';
 import { User } from '@entities/user/schema';
 import { Subject } from '@entities/subject/model/schema';
+import { DocumentListParams } from '@features/document/list/model/types';
 
 const REALISTIC_TITLES = [
   'Giải tích 1 - Đề thi giữa kỳ 2023',
@@ -20,12 +21,11 @@ const REALISTIC_TITLES = [
   'Cơ sở dữ liệu - Thiết kế ERD quản lý thư viện',
 ];
 
-// Placeholder images representing documents/papers/books
 const DOCUMENT_THUMBNAILS = [
-  'https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=500&auto=format&fit=crop&q=60', // Paper/Study
-  'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=500&auto=format&fit=crop&q=60', // Book stack
-  'https://images.unsplash.com/photo-1517842645767-c639042777db?w=500&auto=format&fit=crop&q=60', // Notes
-  'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=500&auto=format&fit=crop&q=60', // Papers text
+  'https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=500&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=500&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1517842645767-c639042777db?w=500&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=500&auto=format&fit=crop&q=60',
 ];
 
 const SUBJECTS: Subject[] = [
@@ -36,61 +36,71 @@ const SUBJECTS: Subject[] = [
   { id: 'sub_5', name: 'Đại số tuyến tính', code: 'MAT102' },
 ];
 
-const USERS: User[] = Array.from({ length: 5 }).map(() => ({
-  id: faker.string.uuid(),
-  name: faker.person.fullName(),
-  avatarUrl: faker.image.avatar(),
+const USERS: User[] = Array.from({ length: 5 }).map((_, i) => ({
+  id: `user_${i}`,
+  name: `User ${i + 1}`,
+  avatarUrl: `https://avatar.vercel.sh/user_${i}`,
 }));
 
-import { DocumentListParams } from "@features/document/list/model/types";
+// Helper to create a numeric seed from a string ID
+function numericHash(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
 
-export async function getMockDocuments(
+import { Faker } from '@faker-js/faker';
+
+function generateMockDocument(id: string): Document {
+  // Create isolated faker instance with deterministic seed
+  const localFaker = new Faker({ locale: faker.locale });
+  localFaker.seed(numericHash(id));
+
+  const randomTitle = localFaker.helpers.arrayElement(REALISTIC_TITLES);
+  const randomSubject = localFaker.helpers.arrayElement(SUBJECTS);
+  const randomUser = localFaker.helpers.arrayElement(USERS);
+  const randomThumb = localFaker.helpers.arrayElement(DOCUMENT_THUMBNAILS);
+
+  return {
+    id,
+    title: randomTitle,
+    description: localFaker.lorem.paragraph(),
+    fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    thumbnailUrl: randomThumb,
+    pageCount: localFaker.number.int({ min: 1, max: 100 }),
+    viewCount: localFaker.number.int({ min: 100, max: 50000 }),
+    downloadCount: localFaker.number.int({ min: 10, max: 5000 }),
+    uploadDate: localFaker.date.past(),
+    author: randomUser,
+    subject: randomSubject,
+    isPremium: localFaker.datatype.boolean({ probability: 0.3 }),
+    status: 'published',
+  };
+}
+
+export async function getDocuments(
   params: DocumentListParams = {}
 ): Promise<{ data: Document[]; total: number; totalPages: number }> {
   const { page = 1, limit = 10 } = params;
-  // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const total = 50; // Total mock items
+  const total = 50;
   const totalPages = Math.ceil(total / limit);
   const startIndex = (page - 1) * limit;
 
-  const data: Document[] = Array.from({ length: Math.min(limit, total - startIndex) }).map((_, index) => {
-    // Deterministic pseudo-random based on page/index to keep list stable across re-renders if needed
-    // But for simple mock, pure random is fine.
-    const globalIndex = startIndex + index;
+  // Generate IDs deterministically for the list based on index
+  const ids = Array.from({ length: Math.min(limit, total - startIndex) }).map((_, i) => `doc_${startIndex + i}`);
 
-    // Seed faker for deterministic results per document index
-    faker.seed(globalIndex);
+  const data = ids.map((id) => generateMockDocument(id));
 
-    const randomTitle = faker.helpers.arrayElement(REALISTIC_TITLES);
-    const randomSubject = faker.helpers.arrayElement(SUBJECTS);
-    const randomUser = faker.helpers.arrayElement(USERS);
-    const randomThumb = faker.helpers.arrayElement(DOCUMENT_THUMBNAILS);
+  return { data, total, totalPages };
+}
 
-    // If title doesn't match subject, maybe adjust?
-    // To be super realistic, we might map titles to subjects, but random mix is okay for Phase 1.
-
-    return {
-      id: faker.string.uuid(),
-      title: randomTitle,
-      description: faker.lorem.paragraph(),
-      fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', // Valid PDF sample
-      thumbnailUrl: randomThumb,
-      pageCount: faker.number.int({ min: 1, max: 100 }),
-      viewCount: faker.number.int({ min: 100, max: 50000 }),
-      downloadCount: faker.number.int({ min: 10, max: 5000 }),
-      uploadDate: faker.date.past(),
-      author: randomUser,
-      subject: randomSubject,
-      isPremium: faker.datatype.boolean({ probability: 0.3 }), // 30% premium
-      status: 'published', // Mostly published
-    };
-  });
-
-  return {
-    data,
-    total,
-    totalPages,
-  };
+export async function getDocumentById(id: string): Promise<Document> {
+  // Simulate network
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return generateMockDocument(id);
 }

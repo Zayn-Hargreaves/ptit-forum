@@ -29,6 +29,7 @@ export function PdfToolbar({
                     onClick={() => setScale(Math.max(0.5, scale - 0.1))}
                     disabled={scale <= 0.5}
                     title="Zoom Out"
+                    aria-label="Zoom Out"
                 >
                     <ZoomOut className="w-4 h-4" />
                 </Button>
@@ -41,6 +42,7 @@ export function PdfToolbar({
                     onClick={() => setScale(Math.min(2.0, scale + 0.1))}
                     disabled={scale >= 2.0}
                     title="Zoom In"
+                    aria-label="Zoom In"
                 >
                     <ZoomIn className="w-4 h-4" />
                 </Button>
@@ -54,6 +56,7 @@ export function PdfToolbar({
                     onClick={() => setPageNumber(Math.max(1, pageNumber - 1))}
                     disabled={pageNumber <= 1}
                     title="Previous Page"
+                    aria-label="Previous Page"
                 >
                     <ChevronLeft className="w-4 h-4" />
                 </Button>
@@ -69,6 +72,7 @@ export function PdfToolbar({
                                 setPageNumber(val);
                             }
                         }}
+                        aria-label="Page Number"
                     />
                     <span className="text-muted-foreground">of {numPages}</span>
                 </div>
@@ -78,6 +82,7 @@ export function PdfToolbar({
                     onClick={() => setPageNumber(Math.min(numPages, pageNumber + 1))}
                     disabled={pageNumber >= numPages}
                     title="Next Page"
+                    aria-label="Next Page"
                 >
                     <ChevronRight className="w-4 h-4" />
                 </Button>
