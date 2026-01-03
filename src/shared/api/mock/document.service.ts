@@ -42,10 +42,12 @@ const USERS: User[] = Array.from({ length: 5 }).map(() => ({
   avatarUrl: faker.image.avatar(),
 }));
 
+import { DocumentListParams } from "@features/document/list/model/types";
+
 export async function getMockDocuments(
-  page: number = 1,
-  limit: number = 10
+  params: DocumentListParams = {}
 ): Promise<{ data: Document[]; total: number; totalPages: number }> {
+  const { page = 1, limit = 10 } = params;
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
