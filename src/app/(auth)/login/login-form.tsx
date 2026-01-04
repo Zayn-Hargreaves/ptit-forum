@@ -31,13 +31,15 @@ import {
 import { SocialLogin } from "@shared/components/auth/social-login";
 import { authApi } from "@shared/api/auth";
 import { LoginInput, loginSchema } from "@shared/validators/auth";
+import { BACKEND_ERROR_CODES } from "@shared/constants/error-codes";
+import { validateRedirectUrl } from "@shared/lib/utils";
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
 
-  const redirectUrl = searchParams.get("redirect") || "/forum"; // TODO: should redirect to landing page or other page
+  const redirectUrl = validateRedirectUrl(searchParams.get("redirect"));
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -62,11 +64,19 @@ export function LoginForm() {
 
       router.replace(redirectUrl);
     } catch (error: any) {
-      const msg =
-        error?.response?.data?.message || "Thông tin đăng nhập không chính xác";
-      toast.error("Đăng nhập thất bại", {
-        description: msg,
-      });
+      const errorResponse = error.response?.data;
+      if (errorResponse?.code === BACKEND_ERROR_CODES.ACCOUNT_NOT_VERIFIED) {
+        toast.info(
+          "Tài khoản chưa xác thực. Đang chuyển hướng tới trang nhập OTP..."
+        );
+
+        router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
+        return;
+      }
+
+      toast.error(
+        errorResponse?.message || "Thông tin đăng nhập không chính xác"
+      );
     }
   };
 

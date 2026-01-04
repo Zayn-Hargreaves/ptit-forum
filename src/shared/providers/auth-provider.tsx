@@ -1,70 +1,72 @@
 "use client";
 
 import React, { createContext, useCallback, useContext, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+
 import { useMe } from "@shared/hooks/useMe";
 import apiClient from "@shared/lib/axios";
-import { User } from "@shared/types/auth";
+import type { UserAuthResponse, UserPermission } from "@shared/types/auth";
 
 type AuthContextValue = {
-  user: User | null;
+  user: UserAuthResponse | null;
+  isAuthenticated: boolean;
   isLoading: boolean;
-  permissions: Set<string>;
   logout: () => Promise<void>;
-  hasPermission: (p: string) => boolean;
-  hasAnyPermission: (...p: string[]) => boolean;
+  hasPermission: (p: UserPermission) => boolean;
+  hasAnyPermission: (...p: UserPermission[]) => boolean;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const qc = useQueryClient();
-  const { data: user, isLoading } = useMe();
+  const router = useRouter();
 
-  // ✅ Optimistic UI: KHÔNG block toàn app nữa
-  // App shell (layout/navbar/footer) render ngay. Những chỗ cần auth tự handle loading.
+  const { data: user, isLoading, isSuccess } = useMe();
 
-  const permissions = useMemo(() => new Set(user?.permissions ?? []), [user]);
+  const isAuthenticated = useMemo(() => isSuccess && !!user, [isSuccess, user]);
+
+  const permissions = useMemo(
+    () => new Set<UserPermission>(user?.permissions ?? []),
+    [user]
+  );
 
   const logout = useCallback(async () => {
+    qc.setQueryData(["me"], null);
+
     try {
-      // Gọi Route Handler để xóa HttpOnly Cookie
       await apiClient.post("/auth/logout");
     } catch (error) {
       console.error("Logout failed", error);
     } finally {
-      // 1. Set user về null ngay lập tức để update UI
-      qc.setQueryData(["me"], null);
+      qc.removeQueries({ queryKey: ["me"], exact: true });
 
-      // 2. QUAN TRỌNG: Xóa toàn bộ cache của React Query
-      // Để đảm bảo không còn dữ liệu rác của user cũ
-      qc.removeQueries();
-
-      // 3. (Optional) Redirect về trang login hoặc trang chủ
-      // window.location.href = "/auth/login";
+      router.push("/login");
+      router.refresh();
     }
-  }, [qc]);
+  }, [qc, router]);
 
   const hasPermission = useCallback(
-    (p: string) => permissions.has(p),
+    (p: UserPermission) => permissions.has(p),
     [permissions]
   );
 
   const hasAnyPermission = useCallback(
-    (...p: string[]) => p.some((x) => permissions.has(x)),
+    (...p: UserPermission[]) => p.some((x) => permissions.has(x)),
     [permissions]
   );
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user: user ?? null,
+      isAuthenticated,
       isLoading,
-      permissions,
       logout,
       hasPermission,
       hasAnyPermission,
     }),
-    [user, isLoading, permissions, logout, hasPermission, hasAnyPermission]
+    [user, isAuthenticated, isLoading, logout, hasPermission, hasAnyPermission]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

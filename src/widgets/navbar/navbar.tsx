@@ -1,210 +1,94 @@
 "use client";
 
-import Link from "next/link";
-import { Bell, Search, Menu, GraduationCap } from "lucide-react";
-import { Input } from "@shared/ui/input/input";
-import { Button } from "@shared/ui/button/button";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { Bell } from "lucide-react";
+
 import {
+  Badge,
+  Button,
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@shared/ui/dropdown-menu/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@shared/ui/avatar/avatar";
-import { Badge } from "@shared/ui/badge/badge";
+} from "@shared/ui";
+import { useAuth } from "@shared/providers/auth-provider"; // Chỉ dùng để check logic Notification
+
+import { NAV_LINKS, isActiveRoute } from "./model/nav-links";
+import { NavbarLogo } from "./ui/logo";
+import { NavbarNavLinks } from "./ui/nav-links";
+import { NavbarSearchForm } from "./ui/search-form";
+import { NavbarAuthActions } from "./ui/auth-actions";
+import { NavbarMobileMenu } from "./ui/mobile.menu";
 
 export function Navbar() {
-  // Mock authentication state
-  const isAuthenticated = true;
-  const notificationCount = 3;
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, isLoading } = useAuth();
+  const [open, setOpen] = useState(false);
+
+  const onSubmitQuery = (q: string) => {
+    setOpen(false);
+    router.push(`/search?q=${encodeURIComponent(q)}`);
+  };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-md supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <GraduationCap className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="hidden text-lg font-semibold md:inline-block">
-            PTIT Forum
-          </span>
-        </Link>
+        <NavbarLogo />
 
-        {/* Desktop Navigation */}
-        <div className="hidden items-center gap-6 md:flex">
-          <Link
-            href="/"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            Trang chủ
-          </Link>
-          <Link
-            href="/announcements"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            Thông báo
-          </Link>
-          <Link
-            href="/forum"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            Diễn đàn
-          </Link>
-          <Link
-            href="/documents"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            Tài liệu
-          </Link>
-          <Link
-            href="/gpa"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            Tính GPA
-          </Link>
-          <Link
-            href="/events"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            Sự kiện
-          </Link>
-        </div>
+        <NavbarNavLinks
+          links={NAV_LINKS}
+          pathname={pathname}
+          isActiveRoute={isActiveRoute}
+        />
 
-        {/* Search Bar */}
-        <div className="hidden flex-1 items-center justify-center px-8 lg:flex">
-          <div className="relative w-full max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Tìm kiếm bài viết, tài liệu..."
-              className="pl-9"
-            />
-          </div>
-        </div>
-
-        {/* Right Actions */}
         <div className="flex items-center gap-2">
-          {/* Mobile Search */}
-          <Button variant="ghost" size="icon" className="lg:hidden">
-            <Search className="h-5 w-5" />
-          </Button>
+          <NavbarSearchForm
+            pathname={pathname}
+            onSubmitQuery={onSubmitQuery}
+            className="hidden lg:flex flex-1 px-8"
+          />
 
-          {isAuthenticated ? (
-            <>
-              {/* Notifications */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="h-5 w-5" />
-                    {notificationCount > 0 && (
-                      <Badge
-                        variant="destructive"
-                        className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs"
-                      >
-                        {notificationCount}
-                      </Badge>
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80">
-                  <div className="flex items-center justify-between p-2">
-                    <h3 className="font-semibold">Thông báo</h3>
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href="/notifications">Xem tất cả</Link>
-                    </Button>
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/notifications"
-                      className="flex flex-col items-start gap-1 py-3"
-                    >
-                      <p className="text-sm font-medium">
-                        Có người trả lời bài viết của bạn
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        5 phút trước
-                      </p>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/notifications"
-                      className="flex flex-col items-start gap-1 py-3"
-                    >
-                      <p className="text-sm font-medium">
-                        Tài liệu mới được thêm vào môn học
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        1 giờ trước
-                      </p>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/notifications"
-                      className="flex flex-col items-start gap-1 py-3"
-                    >
-                      <p className="text-sm font-medium">Sự kiện sắp diễn ra</p>
-                      <p className="text-xs text-muted-foreground">
-                        2 giờ trước
-                      </p>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/notifications"
-                      className="w-full text-center text-sm font-medium text-primary"
-                    >
-                      Xem tất cả thông báo
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* User Menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback>SV</AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile">Hồ sơ</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/history">Lịch sử</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings">Cài đặt</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Đăng xuất</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" asChild className="hidden sm:flex">
-                <Link href="/login">Đăng nhập</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/register">Đăng ký</Link>
-              </Button>
-            </>
+          {!isLoading && user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative shrink-0"
+                >
+                  <Bell className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  Thông báo (Coming Soon)
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
 
-          {/* Mobile Menu */}
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5" />
-          </Button>
+          <NavbarAuthActions />
+
+          <NavbarMobileMenu
+            open={open}
+            onOpenChange={setOpen}
+            pathname={pathname}
+            isActiveRoute={isActiveRoute}
+            searchSlot={
+              <NavbarSearchForm
+                pathname={pathname}
+                onSubmitQuery={onSubmitQuery}
+                className="block lg:hidden"
+              />
+            }
+            authSlot={
+              <NavbarAuthActions
+                isMobile
+                onCloseMobileMenu={() => setOpen(false)}
+              />
+            }
+          />
         </div>
       </div>
     </nav>
