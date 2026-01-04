@@ -47,15 +47,6 @@ export interface FetchAnnouncementsParams {
   toDate?: string;
 }
 
-export interface FileAttachment {
-  id: string;
-  fileName: string;
-  url: string;
-  size: number;
-  contentType: string;
-  type?: string;
-}
-
 export interface BackendAnnouncementDetail {
   id: string;
   title: string;
@@ -66,9 +57,9 @@ export interface BackendAnnouncementDetail {
   // createdByAvatar?: string;
   createdDate: string;
   modifiedDate: string | null;
-
+  // Backend hiện tại CHƯA TRẢ VỀ attachments.
   announcementTargetResponses: any[];
-  attachments: FileAttachment[];
+  // attachments?: { id: string; name: string; url: string; type: string }[];
 
   // views?: number;
 }
@@ -78,10 +69,9 @@ export interface AnnouncementDetail {
   title: string;
   content: string;
   category: string;
-  type: AnnouncementType;
+  type: AnnouncementType; 
   author: string;
-  avatarUrl?: string;
+  avatarUrl?: string; 
   date: string;
-  views: number;
-  attachments: FileAttachment[];
+  views: number; 
 }
