@@ -22,20 +22,20 @@ export function DocumentGrid({ documents, total, currentPage, currentSort }: Doc
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="text-sm text-muted-foreground">
-                    Showing {documents.length > 0 ? (currentPage - 1) * 12 + 1 : 0} -{" "}
-                    {Math.min(currentPage * 12, total)} of {total} documents
+                    Hiển thị {documents.length > 0 ? (currentPage - 1) * 12 + 1 : 0} -{" "}
+                    {Math.min(currentPage * 12, total)} trong tổng số {total} tài liệu
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">Sort by:</span>
+                    <span className="text-sm font-medium">Sắp xếp theo:</span>
                     <Select value={currentSort} onValueChange={setSort}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Sort by" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="createdAt,desc">Newest First</SelectItem>
-                            <SelectItem value="createdAt,asc">Oldest First</SelectItem>
-                            <SelectItem value="viewCount,desc">Most Viewed</SelectItem>
-                            <SelectItem value="downloadCount,desc">Most Downloaded</SelectItem>
+                            <SelectItem value="createdAt,desc">Mới nhất</SelectItem>
+                            <SelectItem value="createdAt,asc">Cũ nhất</SelectItem>
+                            <SelectItem value="viewCount,desc">Xem nhiều nhất</SelectItem>
+                            <SelectItem value="downloadCount,desc">Tải nhiều nhất</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -50,11 +50,11 @@ export function DocumentGrid({ documents, total, currentPage, currentSort }: Doc
             ) : (
                 <div className="flex flex-col items-center justify-center py-24 text-center">
                     <FileX className="h-16 w-16 text-muted-foreground mb-4" />
-                    <h3 className="text-xl font-semibold mb-2">No documents found</h3>
+                    <h3 className="text-xl font-semibold mb-2">Không tìm thấy tài liệu</h3>
                     <p className="text-muted-foreground max-w-sm mb-6">
-                        We couldn't find any documents matching your current filters. Try adjusting your search criteria.
+                        Chúng tôi không tìm thấy tài liệu nào phù hợp với bộ lọc của bạn. Hãy thử điều chỉnh tiêu chí tìm kiếm.
                     </p>
-                    <Button onClick={clearFilters}>Clear All Filters</Button>
+                    <Button onClick={clearFilters}>Xóa tất cả bộ lọc</Button>
                 </div>
             )}
 
@@ -69,7 +69,7 @@ export function DocumentGrid({ documents, total, currentPage, currentSort }: Doc
                         <ChevronLeft className="h-4 w-4" />
                     </Button>
                     <span className="text-sm font-medium">
-                        Page {currentPage} of {totalPages}
+                        Trang {currentPage} / {totalPages}
                     </span>
                     <Button
                         variant="outline"

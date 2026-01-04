@@ -20,14 +20,21 @@ export function SearchSidebar({ subjects, initialFilters }: SearchSidebarProps) 
         setSearch(term);
     }, 500);
 
+    // Vietnamese mapping for DocumentType
+    const documentTypeLabels: Record<DocumentType, string> = {
+        [DocumentType.COURSE_BOOK]: "Giáo trình",
+        [DocumentType.SLIDE]: "Slide bài giảng",
+        [DocumentType.EXAM]: "Đề thi",
+    };
+
     return (
         <div className="space-y-6">
             <div>
-                <h3 className="mb-4 text-lg font-semibold">Search</h3>
+                <h3 className="mb-4 text-lg font-semibold">Tìm kiếm</h3>
                 <div className="relative">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                        placeholder="Search documents..."
+                        placeholder="Tìm kiếm tài liệu..."
                         className="pl-9"
                         defaultValue={initialFilters.q}
                         onChange={(e) => handleSearch(e.target.value)}
@@ -37,10 +44,10 @@ export function SearchSidebar({ subjects, initialFilters }: SearchSidebarProps) 
 
             <div>
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold">Subjects</h3>
+                    <h3 className="text-lg font-semibold">Môn học</h3>
                     {filters.subjectId && (
                         <Button variant="ghost" size="sm" onClick={() => setSubject(null)} className="h-auto p-0 text-muted-foreground">
-                            Clear
+                            Xóa
                         </Button>
                     )}
                 </div>
@@ -61,10 +68,10 @@ export function SearchSidebar({ subjects, initialFilters }: SearchSidebarProps) 
 
             <div>
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold">Type</h3>
+                    <h3 className="text-lg font-semibold">Loại tài liệu</h3>
                     {filters.type && (
                         <Button variant="ghost" size="sm" onClick={() => setType(null)} className="h-auto p-0 text-muted-foreground">
-                            Clear
+                            Xóa
                         </Button>
                     )}
                 </div>
@@ -73,7 +80,7 @@ export function SearchSidebar({ subjects, initialFilters }: SearchSidebarProps) 
                         <div key={type} className="flex items-center space-x-2 mb-2">
                             <RadioGroupItem value={type} id={type} />
                             <Label htmlFor={type} className="text-sm font-normal cursor-pointer">
-                                {type}
+                                {documentTypeLabels[type]}
                             </Label>
                         </div>
                     ))}
@@ -81,7 +88,7 @@ export function SearchSidebar({ subjects, initialFilters }: SearchSidebarProps) 
             </div>
 
             <Button variant="outline" className="w-full" onClick={clearFilters}>
-                Reset All Filters
+                Đặt lại bộ lọc
             </Button>
         </div>
     );

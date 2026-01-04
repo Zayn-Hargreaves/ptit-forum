@@ -31,9 +31,9 @@ export default async function DocumentsPage({ searchParams }: PageProps) {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col gap-4 mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Documents Library</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Thư Viện Tài Liệu</h1>
                 <p className="text-muted-foreground">
-                    Browse and search through our collection of study materials, exams, and lecture notes.
+                    Duyệt và tìm kiếm qua bộ sưu tập tài liệu học tập, đề thi và bài giảng của chúng tôi.
                 </p>
             </div>
 

@@ -87,7 +87,7 @@ export function DataTable<TData, TValue>({
             <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                     <Input
-                        placeholder="Search titles..."
+                        placeholder="Tìm kiếm tiêu đề..."
                         value={search}
                         onChange={(e) => onSearchChange(e.target.value)}
                         className="w-[200px] h-8"
@@ -97,12 +97,12 @@ export function DataTable<TData, TValue>({
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="ALL">All Status</SelectItem>
-                            <SelectItem value="PENDING">Pending</SelectItem>
-                            <SelectItem value="PROCESSING">Processing</SelectItem>
-                            <SelectItem value="PUBLISHED">Published</SelectItem>
-                            <SelectItem value="REJECTED">Rejected</SelectItem>
-                            <SelectItem value="FAILED">Failed</SelectItem>
+                            <SelectItem value="ALL">Tất cả trạng thái</SelectItem>
+                            <SelectItem value="PENDING">Chờ duyệt</SelectItem>
+                            <SelectItem value="PROCESSING">Đang xử lý</SelectItem>
+                            <SelectItem value="PUBLISHED">Đã xuất bản</SelectItem>
+                            <SelectItem value="REJECTED">Đã từ chối</SelectItem>
+                            <SelectItem value="FAILED">Thất bại</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -113,10 +113,10 @@ export function DataTable<TData, TValue>({
                         onClick={() => table.previousPage()}
                         disabled={!table.getCanPreviousPage() || loading}
                     >
-                        Previous
+                        Trước
                     </Button>
                     <div className="text-sm">
-                        Page {table.getState().pagination.pageIndex + 1} of {Math.max(1, table.getPageCount())}
+                        Trang {table.getState().pagination.pageIndex + 1} / {Math.max(1, table.getPageCount())}
                     </div>
                     <Button
                         variant="outline"
@@ -124,7 +124,7 @@ export function DataTable<TData, TValue>({
                         onClick={() => table.nextPage()}
                         disabled={!table.getCanNextPage() || loading}
                     >
-                        Next
+                        Tiếp
                     </Button>
                 </div>
             </div>
@@ -153,7 +153,7 @@ export function DataTable<TData, TValue>({
                         {loading && data.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    Loading...
+                                    Đang tải...
                                 </TableCell>
                             </TableRow>
                         ) : table.getRowModel().rows?.length ? (
@@ -175,7 +175,7 @@ export function DataTable<TData, TValue>({
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                    Không có kết quả.
                                 </TableCell>
                             </TableRow>
                         )}

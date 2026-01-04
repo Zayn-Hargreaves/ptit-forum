@@ -89,7 +89,7 @@ export const DocumentDetailView = ({ id, initialData }: DocumentDetailViewProps)
           <PdfWrapper className="w-full flex justify-center">
             {(width) => (
               <ErrorBoundary fallback={<div className="text-center py-10">Failed to load PDF</div>}>
-                <PdfViewer url="/sample.pdf" width={width} isPremium={document.isPremium} />
+                <PdfViewer url={document.fileUrl} width={width} isPremium={document.isPremium} />
               </ErrorBoundary>
             )}
           </PdfWrapper>

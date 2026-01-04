@@ -10,9 +10,10 @@ import type { DocumentSubject } from '@/entities/document/model/schema';
 
 export interface SubjectResponse {
     id: string;
-    name: string;
-    code: string;
-    // add other fields if present in backend DTO
+    subjectName: string;
+    subjectCode: string;
+    credit?: number;
+    description?: string;
 }
 
 export const subjectService = {

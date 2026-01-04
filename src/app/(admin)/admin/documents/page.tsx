@@ -5,6 +5,7 @@ import { adminSearchDocuments } from "@shared/api/document.service";
 import { DataTable, columns } from "@features/admin/documents";
 import { useState, useEffect } from "react";
 import { PaginationState, SortingState } from "@tanstack/react-table";
+import { AdminDocumentReviewSheet } from "@features/admin/documents/ui/admin-document-review-sheet";
 
 // Simple Debounce Hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -53,8 +54,8 @@ export default function AdminDocumentsPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-2xl font-bold tracking-tight">Admin Documents</h2>
-                <p className="text-muted-foreground">Manage and approve uploaded documents.</p>
+                <h2 className="text-2xl font-bold tracking-tight">Quản lý tài liệu</h2>
+                <p className="text-muted-foreground">Quản lý và phê duyệt tài liệu đã tải lên.</p>
             </div>
 
             <DataTable
@@ -71,6 +72,8 @@ export default function AdminDocumentsPage() {
                 onSearchChange={setSearch}
                 loading={isLoading}
             />
+
+            <AdminDocumentReviewSheet />
         </div>
     );
 }

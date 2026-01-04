@@ -48,9 +48,30 @@ export const apiClient = axios.create({
 // The Next.js Proxy (BFF) will now handle attaching the token from valid HttpOnly cookies.
 
 // Add Response Interceptor for global error handling
+// Queue to hold requests while refreshing
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value: unknown) => void;
+  reject: (reason?: any) => void;
+}> = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
+// Add Response Interceptor for global error handling & Refresh Token
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosError<{ message?: string; error?: string }>) => {
+  async (error: AxiosError<{ message?: string; error?: string }>) => {
+    const originalRequest = error.config as any;
     const isClient = typeof window !== 'undefined';
 
     // Handle Network Errors
@@ -66,19 +87,59 @@ apiClient.interceptors.response.use(
     const { status, data } = error.response;
     const message = data?.message || data?.error || 'An error occurred';
 
-    // Only show toasts on the client
+    // 1. Handle 401 (Unauthorized) - Auto Refresh Token
+    if (status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // If already refreshing, queue this request
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(() => {
+            return apiClient(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Call the Next.js Proxy Refresh Route
+        const refreshResponse = await axios.post('/api/auth/refresh');
+
+        if (refreshResponse.status === 200) {
+          processQueue(null); // Resolve all queued requests
+          return apiClient(originalRequest); // Retry original
+        }
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        // If refresh fails, we let the 401 error propagate.
+        // The UI (AuthProvider) should listen to strict 401s or we can simply toast here.
+        if (isClient) {
+          toast.error('Session expired. Please login again.');
+          // Optional: Redirect to login or let auth-provider handle it
+          // window.location.href = '/auth/login';
+        }
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    // Only show toasts on the client for other errors
     if (isClient) {
       switch (status) {
-        case 401:
-          // Unclear if we should redirect here instantly or let the AuthProvider handle the null user state.
-          // Usually safe to notify user.
-          // toast.error('Session expired. Please login again.');
-          break;
         case 403:
           toast.error('You do not have permission to perform this action.');
           break;
         case 500:
           toast.error('Server error. Please try again later.');
+          break;
+        case 401:
+          // If we are here, it means 401 happened and retry failed or was not retried (e.g. refresh failed)
+          // We already handled the refresh failure toast above if needed, but if it came from a non-retryable 401 (rare if logic is correct)
           break;
         default:
           toast.error(message);

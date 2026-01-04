@@ -4,7 +4,7 @@ import { UploadDocumentForm } from '@/features/document/upload/ui/upload-documen
 export default function UploadPage() {
     return (
         <div className="container mx-auto py-10 px-4">
-            <Suspense fallback={<div>Loading form...</div>}>
+            <Suspense fallback={<div>Đang tải biểu mẫu...</div>}>
                 <UploadDocumentForm />
             </Suspense>
         </div>

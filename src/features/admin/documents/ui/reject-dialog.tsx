@@ -14,7 +14,7 @@ export const RejectDialog = ({ open, onOpenChange, onConfirm, isPending }: Rejec
 
     const handleSubmit = () => {
         if (!reason.trim()) {
-            setError("Rejection reason is required");
+            setError("Vui lòng nhập lý do từ chối");
             return;
         }
         onConfirm(reason);
@@ -24,17 +24,17 @@ export const RejectDialog = ({ open, onOpenChange, onConfirm, isPending }: Rejec
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Reject Document</DialogTitle>
+                    <DialogTitle>Từ chối tài liệu</DialogTitle>
                     <DialogDescription>
-                        Please provide a reason for rejecting this document. This will be sent to the author.
+                        Vui lòng cung cấp lý do từ chối tài liệu này. Thông tin sẽ được gửi đến tác giả.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="reason">Reason</Label>
+                        <Label htmlFor="reason">Lý do</Label>
                         <Textarea
                             id="reason"
-                            placeholder="e.g. Inappropriate content, Low quality..."
+                            placeholder="VD: Nội dung không phù hợp, Chất lượng thấp..."
                             value={reason}
                             onChange={(e) => {
                                 setReason(e.target.value);
@@ -47,10 +47,10 @@ export const RejectDialog = ({ open, onOpenChange, onConfirm, isPending }: Rejec
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
-                        Cancel
+                        Hủy
                     </Button>
                     <Button variant="destructive" onClick={handleSubmit} disabled={isPending}>
-                        {isPending ? "Rejecting..." : "Reject Document"}
+                        {isPending ? "Đang từ chối..." : "Từ chối tài liệu"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

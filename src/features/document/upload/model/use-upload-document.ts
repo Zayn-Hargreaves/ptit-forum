@@ -6,6 +6,7 @@ interface UploadDocumentVariables {
     title: string;
     description: string;
     subjectId: string;
+    documentType: string;
     file: File;
 }
 
@@ -18,6 +19,7 @@ export const useUploadDocument = () => {
             formData.append('title', data.title);
             formData.append('description', data.description);
             formData.append('subjectId', data.subjectId);
+            formData.append('documentType', data.documentType);
             formData.append('document', data.file);
 
             // Backend expects 'document' part? Or just flat fields?
