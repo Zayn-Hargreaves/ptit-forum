@@ -1,6 +1,5 @@
 import { cache } from "react";
 import { apiClient } from "@shared/api/axios-client";
-import { PageResponse } from "@shared/api/types";
 import {
   Announcement,
   ANNOUNCEMENT_TYPE_LABEL,
@@ -9,6 +8,7 @@ import {
   BackendAnnouncement,
   BackendAnnouncementDetail,
   FetchAnnouncementsParams,
+  PageResponse,
 } from "./model/types";
 
 const UUID_REGEX =
@@ -81,27 +81,24 @@ export const getAnnouncementById = cache(async function getAnnouncementById(
     const { data } = await apiClient.get<
       ApiResponse<BackendAnnouncementDetail>
     >(`/announcements/${id}`, {
-      ...options,
+      ...options, // Inject headers
     });
 
     if (data.code !== 1000) {
+      console.error("API Error Detail:", data);
       throw new Error(data.message || "Failed to fetch detail");
     }
 
     const item = data.result;
+
     return {
       id: item.id,
       title: item.title,
       content: item.content,
       category: ANNOUNCEMENT_TYPE_LABEL[item.announcementType] ?? "Thông báo",
       type: item.announcementType,
-
-      author: item.createdByFullName || "Admin",
-
-      avatarUrl: undefined,
-
+      author: item.createdByFullName ?? "Admin",
       date: item.createdDate,
-
       views: 0,
     };
   } catch (error: any) {

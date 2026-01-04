@@ -28,6 +28,17 @@ export interface ApiResponse<T> {
   result: T;
 }
 
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
 export interface Announcement {
   id: string;
   title: string;
@@ -54,14 +65,10 @@ export interface BackendAnnouncementDetail {
   announcementType: AnnouncementType;
   announcementStatus: boolean;
   createdByFullName: string | null;
-  // createdByAvatar?: string;
   createdDate: string;
   modifiedDate: string | null;
   // Backend hiện tại CHƯA TRẢ VỀ attachments.
-  announcementTargetResponses: any[];
-  // attachments?: { id: string; name: string; url: string; type: string }[];
-
-  // views?: number;
+  // Nếu sau này có, thêm vào đây: attachments: { url: string, name: string }[]
 }
 
 export interface AnnouncementDetail {
@@ -69,9 +76,9 @@ export interface AnnouncementDetail {
   title: string;
   content: string;
   category: string;
-  type: AnnouncementType; 
+  type: AnnouncementType; // Để dùng cho logic related
   author: string;
-  avatarUrl?: string; 
+  avatarUrl?: string; // Backend chưa có, dùng placeholder
   date: string;
-  views: number; 
+  views: number; // Backend chưa có field này, fake hoặc yêu cầu BE thêm
 }

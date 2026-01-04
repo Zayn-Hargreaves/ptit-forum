@@ -25,10 +25,11 @@ export async function RelatedAnnouncements({
         type: [type],
       },
       {
-        headers: { Cookie: cookieStore.toString() }, 
+        headers: { Cookie: cookieStore.toString() }, // Truyền cookie vào header
       }
     );
 
+    // 3. Filter bài viết hiện tại
     const relatedItems = data.items
       .filter((item) => item.id !== currentId)
       .slice(0, 4);

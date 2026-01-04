@@ -1,134 +1,135 @@
-'use client';
+import { Avatar, AvatarFallback } from "@shared/ui/avatar/avatar";
+import { Badge } from "@shared/ui/badge/badge";
+import { Card, CardContent } from "@shared/ui/card/card";
+import { MessageSquare, Eye, ThumbsUp, Pin } from "lucide-react";
+import Link from "next/link";
 
-import { useEffect } from 'react';
-import { useInView } from 'react-intersection-observer';
-import { Loader2, AlertCircle, FileQuestion } from 'lucide-react';
+const posts = [
+  {
+    id: 1,
+    title: "Làm thế nào để tối ưu hóa thuật toán sắp xếp?",
+    author: "Nguyễn Văn A",
+    authorLevel: 3,
+    createdAt: "2 giờ trước",
+    tags: ["thuật-toán", "sắp-xếp", "tối-ưu"],
+    comments: 12,
+    views: 234,
+    likes: 8,
+    isPinned: false,
+    hasAnswer: true,
+  },
+  {
+    id: 2,
+    title: "[THÔNG BÁO] Hướng dẫn đăng ký học phần kỳ 1/2024",
+    author: "Admin",
+    authorLevel: 10,
+    createdAt: "5 giờ trước",
+    tags: ["học-vụ", "đăng-ký"],
+    comments: 45,
+    views: 1200,
+    likes: 23,
+    isPinned: true,
+    hasAnswer: false,
+  },
+  {
+    id: 3,
+    title: "Chia sẻ code giải bài tập Dynamic Programming",
+    author: "Trần Thị B",
+    authorLevel: 5,
+    createdAt: "1 ngày trước",
+    tags: ["lập-trình", "dynamic-programming"],
+    comments: 8,
+    views: 456,
+    likes: 15,
+    isPinned: false,
+    hasAnswer: true,
+  },
+  {
+    id: 4,
+    title: "Có ai biết cách debug lỗi này không?",
+    author: "Lê Văn C",
+    authorLevel: 2,
+    createdAt: "2 ngày trước",
+    tags: ["debug", "javascript"],
+    comments: 3,
+    views: 123,
+    likes: 2,
+    isPinned: false,
+    hasAnswer: false,
+  },
+];
 
-import { useInfinitePosts, type SortMode, type TimeRange } from '@entities/post/model/use-infinite-posts';
-import { PostItem } from '@entities/post/ui/post-item';
-import { PostSkeleton } from '@entities/post/ui/post-skeleton';
-import { Button } from '@shared/ui/button/button';
-
-interface PostListProps {
-  topicId?: string | null;
-  authorId?: string | null;
-  sortMode?: SortMode;
-  timeRange?: TimeRange;
-}
-
-export function PostList({
-  topicId = null,
-  authorId = null,
-  sortMode = 'latest',
-  timeRange = 'all',
-}: Readonly<PostListProps>) {
-  // 1. Destructuring hook một cách rõ ràng
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading, // Trạng thái load lần đầu
-    isError,
-    refetch, // Cần function này để làm nút "Thử lại"
-    error,
-  } = useInfinitePosts({
-    topicId,
-    authorId,
-    sortMode,
-    timeRange,
-  });
-
-  // 2. Intersection Observer configuration
-  const { ref, inView } = useInView({
-    threshold: 0,
-    rootMargin: '400px', // SENIOR TRICK: Pre-fetch khi còn cách đáy 400px. UX mượt hơn hẳn.
-  });
-
-  // 3. Effect để trigger load more
-  useEffect(() => {
-    // Chỉ fetch khi: Đang nhìn thấy đáy + Còn trang sau + Không đang fetch dở + Không bị lỗi
-    if (inView && hasNextPage && !isFetchingNextPage && !isError) {
-      fetchNextPage();
-    }
-  }, [inView, hasNextPage, isFetchingNextPage, isError, fetchNextPage]);
-
-  // ================= RENDER STATES =================
-
-  // CASE 1: Initial Loading (Skeleton)
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {/* Render 3 skeleton giả lập 3 bài viết đang load */}
-        {['skeleton-1', 'skeleton-2', 'skeleton-3'].map((key) => (
-          <PostSkeleton key={key} />
-        ))}
-      </div>
-    );
-  }
-
-  // CASE 2: Error State (Có nút Retry)
-  if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center py-10 space-y-3 text-center border rounded-lg bg-destructive/5 border-destructive/20">
-        <AlertCircle className="h-10 w-10 text-destructive" />
-        <div className="space-y-1">
-          <p className="font-medium text-destructive">Không thể tải bài viết</p>
-          <p className="text-sm text-muted-foreground">
-            {error instanceof Error ? error.message : 'Lỗi không xác định'}
-          </p>
-        </div>
-        <Button variant="outline" onClick={() => refetch()} className="mt-2">
-          Thử lại
-        </Button>
-      </div>
-    );
-  }
-
-  // CASE 3: Empty State (Không có bài nào)
-  const posts = data?.posts ?? [];
-  if (posts.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed rounded-lg bg-muted/5">
-        <div className="rounded-full bg-muted p-4 mb-3">
-          <FileQuestion className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <h3 className="font-semibold text-lg">Chưa có bài viết nào</h3>
-        <p className="text-sm text-muted-foreground max-w-sm mt-1">
-          Chủ đề này hiện tại đang trống. Hãy là người đầu tiên bắt đầu cuộc trò chuyện!
-        </p>
-      </div>
-    );
-  }
-
-  // CASE 4: Success List
+export function PostList({ boxId }: { boxId: string }) {
   return (
     <div className="space-y-4">
       {posts.map((post) => (
-        <PostItem key={post.id} post={post} />
-      ))}
+        <Link key={post.id} href={`/forum/post/${post.id}`}>
+          <Card className="transition-all hover:border-primary/50 hover:shadow-md">
+            <CardContent className="p-6">
+              <div className="flex gap-4">
+                {/* Author Avatar */}
+                <Avatar className="h-10 w-10">
+                  <AvatarFallback>{post.author[0]}</AvatarFallback>
+                </Avatar>
 
-      {/* Infinite Scroll Trigger Area */}
-      <div ref={ref} className="py-6 flex flex-col items-center justify-center min-h-[60px]">
-        {(() => {
-          if (isFetchingNextPage) {
-            return (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                <span>Đang tải thêm...</span>
+                {/* Post Content */}
+                <div className="flex-1">
+                  <div className="mb-2 flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="mb-1 flex items-center gap-2">
+                        {post.isPinned && (
+                          <Pin className="h-4 w-4 text-primary" />
+                        )}
+                        <h3 className="text-lg font-semibold hover:text-primary">
+                          {post.title}
+                        </h3>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span className="font-medium">{post.author}</span>
+                        <Badge variant="secondary" className="text-xs">
+                          Level {post.authorLevel}
+                        </Badge>
+                        <span>•</span>
+                        <span>{post.createdAt}</span>
+                      </div>
+                    </div>
+                    {post.hasAnswer && (
+                      <Badge variant="default" className="bg-green-500">
+                        Đã trả lời
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Tags */}
+                  <div className="mb-3 flex flex-wrap gap-2">
+                    {post.tags.map((tag) => (
+                      <Badge key={tag} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+
+                  {/* Stats */}
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <ThumbsUp className="h-4 w-4" />
+                      <span>{post.likes}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MessageSquare className="h-4 w-4" />
+                      <span>{post.comments} bình luận</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Eye className="h-4 w-4" />
+                      <span>{post.views} lượt xem</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            );
-          } else if (hasNextPage) {
-            return <div className="h-4 w-full" />;
-          } else {
-            return (
-              <div className="flex items-center gap-2 px-4 py-2 bg-muted/20 rounded-full text-xs text-muted-foreground">
-                <span>🎉 Bạn đã xem hết bài viết</span>
-              </div>
-            );
-          }
-        })()}
-      </div>
+            </CardContent>
+          </Card>
+        </Link>
+      ))}
     </div>
   );
 }

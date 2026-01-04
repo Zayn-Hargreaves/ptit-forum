@@ -1,22 +1,20 @@
-import { cookies } from 'next/headers'; // Thư viện của Next.js
-import { topicApi } from '@entities/topic/api/topic-api';
-import { ForumClientView } from './forum-client-view';
-import { Topic } from '@entities/topic/model/types';
+"use client";
+import { Button } from "@shared/ui/button/button";
 
-export const dynamic = 'force-dynamic';
+export default function ForumPage() {
+  return (
+    <div className="p-8 space-y-4">
+      <h1 className="text-3xl font-bold">Forum Dashboard</h1>
+      <p className="text-muted-foreground">
+        Nếu nhìn thấy dòng này nghĩa là Token Refresh đã hoạt động và Route
+        không bị crash.
+      </p>
 
-export default async function ForumPage() {
-  let topics: Topic[] = [];
-
-  const cookieStore = await cookies();
-  const allCookies = cookieStore.toString();
-
-  try {
-    const pageResponse = await topicApi.getAll(allCookies);
-    topics = pageResponse?.content ?? [];
-  } catch (error) {
-    console.error('Failed to fetch topics:', error);
-  }
-
-  return <ForumClientView initialTopics={topics} />;
+      <div className="p-4 border rounded bg-slate-50">
+        <h2 className="font-semibold">Test Area</h2>
+        {/* Nút này để test xem tương tác có bị lỗi không */}
+        <Button onClick={() => alert("It works!")}>Click Me</Button>
+      </div>
+    </div>
+  );
 }

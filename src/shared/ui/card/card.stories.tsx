@@ -21,7 +21,7 @@ const meta: Meta<typeof Card> = {
     layout: "centered",
   },
   args: {
-    className: "w-[350px]", 
+    className: "w-[350px]", // Set độ rộng mặc định để demo đẹp hơn
   },
   argTypes: {
     className: {
