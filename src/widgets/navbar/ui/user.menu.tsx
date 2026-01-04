@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, User as UserIcon, Settings } from "lucide-react"; 
+import { LogOut, User as UserIcon, Settings } from "lucide-react"; // Import thêm icon Settings
 import {
   Button,
   DropdownMenu,
@@ -33,7 +33,7 @@ export function NavbarUserMenu({
         >
           <UserAvatar
             name={user.fullName || user.email}
-            avatarUrl={user.avatar}
+            avatarUrl={user.avatarUrl}
             className="h-9 w-9"
           />
         </Button>

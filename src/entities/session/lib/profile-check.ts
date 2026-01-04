@@ -1,5 +1,5 @@
-import { UserProfile } from '../model/types';
+import { User } from "../model/types";
 
-export const isProfileComplete = (user: UserProfile): boolean => {
+export const isProfileComplete = (user: User): boolean => {
   return !!(user.studentCode && user.classCode && user.fullName);
 };

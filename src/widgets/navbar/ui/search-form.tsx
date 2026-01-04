@@ -25,6 +25,7 @@ export function NavbarSearchForm({
     const q = value.trim();
     if (!q) return;
 
+    // tránh submit lặp vô nghĩa ngay trên /search
     if (
       (pathname === "/search" ||
         pathname.startsWith("/search?") ||
