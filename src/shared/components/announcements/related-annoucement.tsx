@@ -17,12 +17,6 @@ export async function RelatedAnnouncements({
 }: Readonly<Props>) {
   try {
     const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken");
-
-    const headers: Record<string, string> = {};
-    if (accessToken) {
-      headers["Authorization"] = `Bearer ${accessToken.value}`;
-    }
 
     const data = await fetchAnnouncements(
       {
@@ -31,7 +25,7 @@ export async function RelatedAnnouncements({
         type: [type],
       },
       {
-        headers,
+        headers: { Cookie: cookieStore.toString() }, 
       }
     );
 

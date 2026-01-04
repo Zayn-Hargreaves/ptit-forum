@@ -10,6 +10,5 @@ export const mapToUser = (dto: UserProfileResponseDto): UserProfile => {
     classCode: dto.classCode,
     phone: dto.phone,
     facultyName: dto.facultyName,
-    role: 'USER',
   };
 };

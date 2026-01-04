@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, User as UserIcon, Settings } from "lucide-react";
+import { LogOut, User as UserIcon, Settings } from "lucide-react"; 
 import {
   Button,
   DropdownMenu,
@@ -33,7 +33,7 @@ export function NavbarUserMenu({
         >
           <UserAvatar
             name={user.fullName || user.email}
-            avatarUrl={user.avatarUrl}
+            avatarUrl={user.avatar}
             className="h-9 w-9"
           />
         </Button>
@@ -66,18 +66,6 @@ export function NavbarUserMenu({
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
-
-        {user.role === 'ADMIN' && (
-          <>
-            <DropdownMenuItem asChild>
-              <Link href="/admin/documents" className="cursor-pointer font-semibold text-yellow-600 focus:text-yellow-700">
-                <span className="mr-2">⚡</span>
-                Admin Dashboard
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </>
-        )}
 
         <DropdownMenuItem
           onClick={onLogout}
