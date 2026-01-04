@@ -3,8 +3,6 @@ import { MessageSquare, Eye, TrendingUp, FileText } from "lucide-react";
 
 import { fetchTrendingPosts } from "@entities/post/api/fetch-trending";
 import type { TrendingPost } from "@entities/post/model/types";
-// Nếu em chưa có fetchRecentDocuments / fetchTopContributors thì tạm để mock riêng ở sidebar,
-// hoặc ẩn 2 card đó. Anh để TODO để em triển tiếp.
 
 import { Avatar, AvatarFallback } from "@shared/ui/avatar/avatar";
 import { Badge } from "@shared/ui/badge/badge";
@@ -16,7 +14,6 @@ export async function TrendingSection() {
   try {
     posts = await fetchTrendingPosts();
   } catch {
-    // ✅ Fail silently để landing không “chết”
     return null;
   }
 
@@ -51,9 +48,6 @@ export async function TrendingSection() {
                 const authorFallback = (authorName[0] || "U").toUpperCase();
 
                 // Link chuẩn theo routing của em:
-                // hiện em có /forum/[boxSlug] + modal create-post,
-                // còn chi tiết post đang dùng /forum/post/:id ở mock cũ.
-                // Nếu route thật là khác (vd /forum/posts/:id), đổi ở đây 1 chỗ.
                 const href = `/forum/post/${post.id}`;
 
                 return (

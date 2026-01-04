@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Slash } from "lucide-react"; // Import an icon for custom separator
 import * as React from "react";
 
-// Import tất cả các phần của Breadcrumb
 import {
   Breadcrumb,
   BreadcrumbEllipsis,

@@ -1,88 +1,73 @@
-import { Badge } from "@shared/ui/badge/badge";
+import { fetchAnnouncements } from "@entities/announcement/api";
+import { AnnouncementType } from "@entities/announcement/model/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card/card";
-import { Calendar, Eye } from "lucide-react";
+import { Badge } from "@shared/ui/badge/badge";
 import Link from "next/link";
+import { Calendar } from "lucide-react";
+import { cookies } from "next/headers"; // Import cookies
 
-const relatedAnnouncements = [
-  {
-    id: 3,
-    title: "Thông báo tuyển dụng thực tập sinh tại FPT Software",
-    category: "Tuyển dụng",
-    date: "2024-11-05",
-    views: 567,
-  },
-  {
-    id: 4,
-    title: "Kế hoạch tổ chức Ngày hội việc làm PTIT 2024",
-    category: "CLB & Hoạt động",
-    date: "2024-11-03",
-    views: 445,
-  },
-  {
-    id: 5,
-    title: "Hướng dẫn đăng ký học phần học kỳ 2 năm học 2024-2025",
-    category: "Học vụ",
-    date: "2024-11-01",
-    views: 1567,
-  },
-];
+interface Props {
+  currentId: string;
+  type: AnnouncementType;
+}
 
-export function RelatedAnnouncements({ currentId }: { currentId: string }) {
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Thông báo liên quan</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {relatedAnnouncements.map((announcement) => (
-            <Link
-              key={announcement.id}
-              href={`/announcements/${announcement.id}`}
-              className="block rounded-lg border p-4 transition-all hover:border-primary/50 hover:bg-muted/50"
-            >
-              <Badge variant="secondary" className="mb-2">
-                {announcement.category}
-              </Badge>
-              <h4 className="mb-3 line-clamp-2 font-semibold leading-tight">
-                {announcement.title}
-              </h4>
-              <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  <span>
-                    {new Date(announcement.date).toLocaleDateString("vi-VN")}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Eye className="h-3 w-3" />
-                  <span>{announcement.views}</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </CardContent>
-      </Card>
+export async function RelatedAnnouncements({
+  currentId,
+  type,
+}: Readonly<Props>) {
+  try {
+    const cookieStore = await cookies();
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Danh mục thông báo</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {["Học vụ", "Học bổng", "Tuyển dụng", "CLB & Hoạt động", "Khác"].map(
-            (category) => (
+    const data = await fetchAnnouncements(
+      {
+        page: 1,
+        size: 5,
+        type: [type],
+      },
+      {
+        headers: { Cookie: cookieStore.toString() }, 
+      }
+    );
+
+    const relatedItems = data.items
+      .filter((item) => item.id !== currentId)
+      .slice(0, 4);
+
+    if (relatedItems.length === 0) return null;
+
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Thông báo liên quan</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {relatedItems.map((item) => (
               <Link
-                key={category}
-                href={`/announcements?category=${category}`}
-                className="flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-muted"
+                key={item.id}
+                href={`/announcements/${item.id}`}
+                className="block group"
               >
-                <span className="font-medium">{category}</span>
-                <Badge variant="outline">12</Badge>
+                <div className="rounded-lg border p-3 transition-all hover:bg-muted/50 group-hover:border-primary/50">
+                  <Badge variant="secondary" className="mb-2 text-xs">
+                    {item.category}
+                  </Badge>
+                  <h4 className="mb-2 text-sm font-semibold leading-tight line-clamp-2 group-hover:text-primary">
+                    {item.title}
+                  </h4>
+                  <div className="flex items-center text-xs text-muted-foreground">
+                    <Calendar className="mr-1 h-3 w-3" />
+                    {new Date(item.date).toLocaleDateString("vi-VN")}
+                  </div>
+                </div>
               </Link>
-            )
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  } catch (error) {
+    console.error("Failed to load related announcements:", error);
+    return null;
+  }
 }

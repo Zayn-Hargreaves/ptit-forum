@@ -3,25 +3,7 @@ import { Card, CardContent } from "@shared/ui/card/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@shared/ui/tabs/tabs";
 import { MessageSquare, FileText, Calendar, Award } from "lucide-react";
 import Link from "next/link";
-
-const userPosts = [
-  {
-    id: 1,
-    title: "Làm thế nào để tối ưu hóa thuật toán sắp xếp?",
-    box: "Lập trình & Thuật toán",
-    comments: 12,
-    likes: 8,
-    date: "2 ngày trước",
-  },
-  {
-    id: 2,
-    title: "Chia sẻ kinh nghiệm phỏng vấn thực tập FPT",
-    box: "Thực tập & Nghề nghiệp",
-    comments: 32,
-    likes: 23,
-    date: "1 tuần trước",
-  },
-];
+import { PostList } from "@shared/components/forum/post-list";
 
 const userDocuments = [
   {
@@ -79,46 +61,48 @@ const achievements = [
   },
 ];
 
-// pls implement api later
+interface ProfileTabsProps {
+  userId: string;
+}
 
-export function ProfileTabs() {
+export function ProfileTabs({ userId }: ProfileTabsProps) {
   return (
     <Tabs defaultValue="posts" className="space-y-6">
-      <TabsList>
-        <TabsTrigger value="posts">Bài viết</TabsTrigger>
-        <TabsTrigger value="comments">Bình luận</TabsTrigger>
-        <TabsTrigger value="documents">Tài liệu</TabsTrigger>
-        <TabsTrigger value="events">Sự kiện</TabsTrigger>
-        <TabsTrigger value="achievements">Thành tích</TabsTrigger>
+      <TabsList className="w-full justify-start border-b bg-transparent p-0 h-auto rounded-none">
+        <TabsTrigger
+          value="posts"
+          className="relative rounded-none border-b-2 border-transparent bg-transparent px-4 py-3 pb-4 pt-3 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none hover:text-foreground"
+        >
+          Bài viết
+        </TabsTrigger>
+        <TabsTrigger
+          value="comments"
+          className="relative rounded-none border-b-2 border-transparent bg-transparent px-4 py-3 pb-4 pt-3 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none hover:text-foreground"
+        >
+          Bình luận
+        </TabsTrigger>
+        <TabsTrigger
+          value="documents"
+          className="relative rounded-none border-b-2 border-transparent bg-transparent px-4 py-3 pb-4 pt-3 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none hover:text-foreground"
+        >
+          Tài liệu
+        </TabsTrigger>
+        <TabsTrigger
+          value="events"
+          className="relative rounded-none border-b-2 border-transparent bg-transparent px-4 py-3 pb-4 pt-3 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none hover:text-foreground"
+        >
+          Sự kiện
+        </TabsTrigger>
+        <TabsTrigger
+          value="achievements"
+          className="relative rounded-none border-b-2 border-transparent bg-transparent px-4 py-3 pb-4 pt-3 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none hover:text-foreground"
+        >
+          Thành tích
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="posts" className="space-y-4">
-        {userPosts.map((post) => (
-          <Card key={post.id}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <Link href={`/forum/post/${post.id}`}>
-                    <h3 className="mb-2 text-lg font-semibold hover:text-primary">
-                      {post.title}
-                    </h3>
-                  </Link>
-                  <div className="mb-2">
-                    <Badge variant="secondary">{post.box}</Badge>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <MessageSquare className="h-4 w-4" />
-                      <span>{post.comments} bình luận</span>
-                    </div>
-                    <span>{post.likes} lượt thích</span>
-                    <span>{post.date}</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+        <PostList authorId={userId} sortMode="latest" timeRange="all" />
       </TabsContent>
 
       <TabsContent value="comments" className="space-y-4">

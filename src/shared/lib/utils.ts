@@ -1,3 +1,5 @@
+import { BACKEND_ERROR_CODES } from "@shared/constants/error-codes";
+import { ERROR_MESSAGES } from "@shared/constants/error-messages";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -49,7 +51,7 @@ export function validateRedirectUrl(url: string | null): string {
  */
 export function formatDate(date: string | Date): string {
   const d = new Date(date);
-  if (isNaN(d.getTime())) {
+  if (Number.isNaN(d.getTime())) {
     return "Invalid Date";
   }
   const day = String(d.getDate()).padStart(2, "0");
@@ -57,3 +59,24 @@ export function formatDate(date: string | Date): string {
   const year = d.getFullYear();
   return `${day}/${month}/${year}`;
 }
+
+export const getErrorMessage = (error: any) => {
+  if (error?.message) return error.message;
+
+  const backendCode = error?.response?.data?.code;
+  const backendMessage = error?.response?.data?.message;
+
+  if (backendCode === BACKEND_ERROR_CODES.TOKEN_EXPIRED) {
+    return ERROR_MESSAGES[BACKEND_ERROR_CODES.TOKEN_EXPIRED];
+  }
+
+  if (backendMessage) {
+    return backendMessage;
+  }
+
+  if (backendCode && ERROR_MESSAGES[backendCode]) {
+    return ERROR_MESSAGES[backendCode];
+  }
+
+  return "Đã có lỗi xảy ra. Vui lòng thử lại.";
+};
