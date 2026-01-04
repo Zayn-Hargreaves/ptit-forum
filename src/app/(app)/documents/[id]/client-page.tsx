@@ -9,10 +9,37 @@ import { useRouter } from 'next/navigation';
 import { Skeleton } from '@shared/ui/skeleton/skeleton';
 import { DocumentErrorFallback } from '@features/document/view/ui/document-error-fallback';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useEffect, useRef, useState } from 'react';
 
 export default function DocumentDetailClient({ id }: { id: string }) {
   const router = useRouter();
   const { data: document, isLoading, isError } = useDocumentDetail(id);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    }
+
+    updateWidth(); // Initial calculation
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -52,7 +79,7 @@ export default function DocumentDetailClient({ id }: { id: string }) {
 
       <div className="grid lg:grid-cols-[1fr_350px] gap-8 items-start">
         {/* Main Content: PDF Viewer */}
-        <div className="w-full">
+        <div className="w-full" ref={containerRef}>
           <ErrorBoundary
             fallbackRender={({ error, resetErrorBoundary }) => (
               <DocumentErrorFallback
@@ -62,7 +89,7 @@ export default function DocumentDetailClient({ id }: { id: string }) {
               />
             )}
           >
-            <PdfViewer url={document.fileUrl} isPremium={document.isPremium} />
+            {containerWidth > 0 && <PdfViewer url={document.fileUrl} isPremium={document.isPremium} width={containerWidth} />}
           </ErrorBoundary>
         </div>
 

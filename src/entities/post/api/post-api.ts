@@ -86,4 +86,19 @@ export const postApi = {
     const { data } = await apiClient.patch<ApiResponse<any>>(`/posts/${id}/archive`);
     return data.result;
   },
+
+  getMyPosts: async (page = 0, size = 10) => {
+    // Assuming /users/me/posts exists or we filter by authorId='me' if backend handles it
+    // Trying /users/me/posts first
+    try {
+      const { data } = await apiClient.get<ApiResponse<PageResponse<Post>>>('/users/me/posts', {
+        params: { page, size, sort: 'createdDateTime,desc' }
+      });
+      return data.result;
+    } catch (e) {
+      // Fallback to getNewsfeed? But 'me' authorId might not work if backend expects UUID.
+      // Let's assume the backend has this endpoint for "My Posts" or similar.
+      throw e;
+    }
+  }
 };

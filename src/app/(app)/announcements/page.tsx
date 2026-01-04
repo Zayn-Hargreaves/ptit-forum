@@ -37,11 +37,17 @@ export default async function AnnouncementsPage(props: PageProps) {
     keyword: typeof searchParams.keyword === 'string' ? searchParams.keyword : undefined,
   };
 
+  const accessToken = cookieStore.get('accessToken');
+  const headers: Record<string, string> = {};
+  if (accessToken) {
+    headers['Authorization'] = `Bearer ${accessToken.value}`;
+  }
+
   await queryClient.prefetchQuery({
     queryKey: announcementKeys.list(fetchParams),
     queryFn: () =>
       fetchAnnouncements(fetchParams, {
-        headers: { Cookie: cookieStore.toString() },
+        headers,
       }),
   });
 

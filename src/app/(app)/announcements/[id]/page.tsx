@@ -12,8 +12,15 @@ type PageProps = {
 
 const getCachedAnnouncement = cache(async (id: string) => {
   const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken");
+
+  const headers: Record<string, string> = {};
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken.value}`;
+  }
+
   return getAnnouncementById(id, {
-    headers: { Cookie: cookieStore.toString() },
+    headers,
   });
 });
 

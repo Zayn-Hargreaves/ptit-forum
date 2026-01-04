@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getDocumentById } from "@shared/api/mock/document.service";
+import { getDocumentById } from "@/shared/api/document.service";
 
 export const useDocumentDetail = (id: string) => {
   return useQuery({

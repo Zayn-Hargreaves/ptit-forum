@@ -54,7 +54,7 @@ export function DocumentInfo({ document }: DocumentInfoProps) {
       {/* Author */}
       <div className="flex items-center gap-3 p-4 border rounded-lg bg-card">
         <Avatar className="w-10 h-10 border">
-          <AvatarImage src={document.author.avatarUrl} />
+          <AvatarImage src={document.author.avatar} />
           <AvatarFallback>{document.author.name?.charAt(0) || '?'}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import React from "react";
 import { toast } from "sonner";
-import { Toaster } from "../toaster/toaster";
+import { Toaster } from "./sonner";
 
 // --- META DEFINITION ---
 

@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Settings, GraduationCap } from "lucide-react";
-import { User } from "@entities/session/model/types";
+import { UserProfile } from "@entities/session/model/types";
 import { Button, Card, CardContent } from "@shared/ui";
 import { UserAvatar } from "@shared/ui/user-avatar/user-avatar";
 
 interface UserProfileCardProps {
-  user: User;
+  user: UserProfile;
   isOwnProfile?: boolean;
 }
 

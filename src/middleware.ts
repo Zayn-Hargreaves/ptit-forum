@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const PUBLIC_ROUTES = new Set(['/', '/login', '/register', '/verify-email', '/forgot-password']);
+const GUEST_ROUTES = new Set(['/login', '/register', '/verify-email', '/forgot-password']);
+const PUBLIC_ROUTES = new Set(['/', '/documents', ...GUEST_ROUTES]);
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -14,21 +15,26 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const isAuth = request.cookies.has('refreshToken');
+  const isAuth = request.cookies.has('accessToken');
   const isPublicRoute = PUBLIC_ROUTES.has(pathname);
+  const isGuestRoute = GUEST_ROUTES.has(pathname);
 
+  // 1. Redirect unauthenticated users trying to access private routes
   if (!isPublicRoute && !isAuth) {
     const url = new URL('/login', request.url);
     url.searchParams.set('redirect', pathname);
     return NextResponse.redirect(url);
   }
 
-  if (isPublicRoute && isAuth && pathname !== '/') {
+  // 2. Redirect authenticated users trying to access guest-only routes (e.g. login)
+  if (isGuestRoute && isAuth) {
     return NextResponse.redirect(new URL('/forum', request.url));
   }
 
   return NextResponse.next();
 }
+
+
 export const config = {
-  matcher: [String.raw`/((?!api|_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)`],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };

@@ -1,7 +1,8 @@
+
 import { Suspense, cache } from 'react';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { documentService } from '@/shared/api/mock/document.service';
+import { documentService, GetDocumentsParams } from '@/shared/api/document.service';
 import { DocumentDetailView } from './document-detail-view';
 
 function truncate(text: string | null | undefined, maxLen: number): string {
@@ -60,9 +61,9 @@ export default async function DocumentPage(props: Props) {
   // but here we are using a client component that fetches data itself (DocumentDetailView is not created yet, wait).
   // The previous implementation of page.tsx was a client component.
   // Now we are switching to server component for Metadata.
-  // We should move the UI logic to a Client Component `document-detail-view.tsx`
+  // We should move the UI logic to a Client Component `document - detail - view.tsx`
   // OR we can pass the server-fetched initial data to React Query using `initialData`.
-  // Let's create `document-detail-view.tsx` containing the UI that was in page.tsx
+  // Let's create `document - detail - view.tsx` containing the UI that was in page.tsx
 
   return (
     <Suspense

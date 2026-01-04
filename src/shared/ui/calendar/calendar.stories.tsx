@@ -69,7 +69,7 @@ export const Default: Story = {
     const [date, setDate] = useState<Date | undefined>(new Date());
 
     return (
-      <Calendar mode="single" selected={date} onSelect={setDate} {...args} />
+      <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />
     );
   },
 };
@@ -92,7 +92,7 @@ export const DateRangePicker: Story = {
         selected={date}
         onSelect={setDate}
         numberOfMonths={2}
-        {...args}
+        {...(args as any)}
       />
     );
   },
@@ -116,7 +116,7 @@ export const MultipleMonths: Story = {
           selected={date}
           onSelect={setDate}
           className="border-0 shadow-none" // Remove default border to use wrapper's
-          {...args}
+          {...(args as any)}
         />
       </div>
     );
@@ -134,7 +134,7 @@ export const VietnameseLocale: Story = {
   render: (args) => {
     const [date, setDate] = useState<Date | undefined>(new Date());
     return (
-      <Calendar mode="single" selected={date} onSelect={setDate} {...args} />
+      <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />
     );
   },
 };
@@ -146,14 +146,14 @@ export const VietnameseLocale: Story = {
  */
 export const WithDropdowns: Story = {
   args: {
-    captionLayout: "dropdown-buttons",
+    captionLayout: "dropdown",
     fromYear: 2000,
     toYear: 2030,
   },
   render: (args) => {
     const [date, setDate] = useState<Date | undefined>(new Date());
     return (
-      <Calendar mode="single" selected={date} onSelect={setDate} {...args} />
+      <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />
     );
   },
 };
@@ -173,7 +173,7 @@ export const DisabledDates: Story = {
           // Disable weekends (Saturday: 6, Sunday: 0)
           { dayOfWeek: [0, 6] },
         ]}
-        {...args}
+        {...(args as any)}
       />
     );
   },
@@ -189,7 +189,7 @@ export const WithWeekNumbers: Story = {
   render: (args) => {
     const [date, setDate] = useState<Date | undefined>(new Date());
     return (
-      <Calendar mode="single" selected={date} onSelect={setDate} {...args} />
+      <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />
     );
   },
 };

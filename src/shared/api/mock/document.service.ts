@@ -86,12 +86,12 @@ function generateMockDocument(id: string): Document {
 
   // Determine status logic - mostly published
   const statusRaw = faker.helpers.weightedArrayElement([
-    { weight: 4, value: 'published' },
-    { weight: 1, value: 'processing' },
-    { weight: 1, value: 'failed' },
+    { weight: 4, value: 'PUBLISHED' },
+    { weight: 1, value: 'PROCESSING' },
+    { weight: 1, value: 'FAILED' },
   ]);
   // Force published for successful looking mocks mostly
-  const status = statusRaw as 'processing' | 'published' | 'failed';
+  const status = statusRaw as 'PROCESSING' | 'PUBLISHED' | 'FAILED';
 
   const coverImage = faker.helpers.arrayElement(REALISTIC_BOOK_COVERS);
 

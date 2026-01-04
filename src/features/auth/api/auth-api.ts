@@ -14,7 +14,7 @@ export type VerifyEmailPayload = {
 export const authApi = {
   login: async (payload: { email: string; password: string }) => {
     const { data } = await apiClient.post("/auth/login", payload);
-    console.log(data);
+    // Token is now handled by HttpOnly Cookie via Next.js Proxy
     return data;
   },
 

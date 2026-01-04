@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { documentService, GetDocumentsParams } from '@/shared/api/mock/document.service';
+import { documentService, GetDocumentsParams } from '@/shared/api/document.service';
 
 export const useDocuments = (params: GetDocumentsParams = {}) => {
     return useQuery({
