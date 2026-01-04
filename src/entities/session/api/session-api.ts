@@ -10,6 +10,7 @@ const mapToUser = (data: any): UserProfile => {
     studentCode: data.studentCode || data.studentId,
     classCode: data.classCode || data.className,
     facultyName: data.facultyName || data.faculty,
+    role: data.permissions?.includes('ROLE_ADMIN') ? 'ADMIN' : 'USER',
   };
 };
 

@@ -93,7 +93,7 @@ export function UpdateProfileForm() {
       <CardContent className="space-y-8">
         <div className="flex flex-col items-center justify-center space-y-4">
           <AvatarUploader
-            currentAvatarUrl={user?.avatar}
+            currentAvatarUrl={user?.avatarUrl}
             fallbackName={user?.fullName || "User"}
           />
           <p className="text-sm text-muted-foreground">

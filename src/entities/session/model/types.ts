@@ -17,6 +17,7 @@ export interface User {
 
   fullName: string;
   avatarUrl?: string;
+  role: 'USER' | 'ADMIN';
 
   permissions?: UserPermission[];
 }
@@ -67,5 +68,6 @@ export function mapUserProfileResponseDtoToUserProfile(dto: UserProfileResponseD
     classCode: dto.classCode || undefined,
     phone: dto.phone || undefined,
     facultyName: dto.facultyName || undefined,
+    role: 'USER', // Default role for DTO mapping if not present
   };
 }

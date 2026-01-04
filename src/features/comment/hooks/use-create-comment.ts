@@ -39,7 +39,7 @@ export function useCreateComment({ postId, rootCommentId }: UseCreateCommentProp
         author: {
           id: me?.id || 'temp-user',
           fullName: me?.fullName || 'Tôi',
-          avatarUrl: me?.avatar || '',
+          avatarUrl: me?.avatarUrl || '',
         },
         stats: { reactionCount: 0, replyCount: 0 },
         userState: { liked: false },
