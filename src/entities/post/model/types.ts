@@ -69,16 +69,3 @@ export interface CreatePostPayload {
   fileMetadataIds: string[];
   topicId: string;
 }
-
-export interface TrendingPost {
-  id: string;
-  title: string;
-  author: {
-    id?: string;
-    name: string;
-    avatar?: string;
-  };
-  category: string;
-  comments: number;
-  views: number;
-}

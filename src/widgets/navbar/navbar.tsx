@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Bell, Upload } from "lucide-react";
+import { Bell } from "lucide-react";
 
 import {
   Button,
@@ -47,18 +47,6 @@ export function Navbar() {
             onSubmitQuery={onSubmitQuery}
             className="hidden lg:flex flex-1 px-8"
           />
-
-          {!isLoading && user && (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => router.push("/documents/upload")}
-              className="hidden lg:flex gap-2 mr-2"
-            >
-              <Upload className="h-4 w-4" />
-              <span>Đăng tài liệu</span>
-            </Button>
-          )}
 
           {!isLoading && user && (
             <DropdownMenu>

@@ -14,7 +14,6 @@ type AuthContextValue = {
   logout: () => Promise<void>;
   hasPermission: (p: UserPermission) => boolean;
   hasAnyPermission: (...p: UserPermission[]) => boolean;
-  refreshSession: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -22,11 +21,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const qc = useQueryClient();
 
-  // We rely on HttpOnly cookies now, so no need to sync from localStorage to cookies or vice versa.
-  // The 'useMe' query calls /users/me via the proxy, which forwards the cookie.
-  // If the cookie is missing or invalid, useMe returns error/null.
-
-  const { data: user, isLoading, isSuccess, refetch } = useMe();
+  const { data: user, isLoading, isSuccess } = useMe();
 
   const isAuthenticated = isSuccess && !!user;
 
@@ -34,6 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => new Set<UserPermission>(user?.permissions ?? []),
     [user]
   );
+
   const logout = useCallback(async () => {
     try {
       await apiClient.post("/auth/logout");
@@ -64,9 +60,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logout,
       hasPermission,
       hasAnyPermission,
-      refreshSession: async () => { await refetch() },
     }),
-    [user, isAuthenticated, isLoading, logout, hasPermission, hasAnyPermission, refetch]
+    [user, isAuthenticated, isLoading, logout, hasPermission, hasAnyPermission]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

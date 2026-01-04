@@ -9,16 +9,13 @@ export default async function ForumPage() {
   let topics: Topic[] = [];
 
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken')?.value;
+  const allCookies = cookieStore.toString();
 
   try {
-    const pageResponse = await topicApi.getAll(accessToken);
+    const pageResponse = await topicApi.getAll(allCookies);
     topics = pageResponse?.content ?? [];
-  } catch (error: any) {
-    // Suppress 401 errors on Server Side since we don't have cookies yet (Auth Transition)
-    if (error?.response?.status !== 401) {
-      console.error('Failed to fetch topics:', error);
-    }
+  } catch (error) {
+    console.error('Failed to fetch topics:', error);
   }
 
   return <ForumClientView initialTopics={topics} />;

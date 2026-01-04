@@ -1,7 +1,6 @@
 import "server-only";
 import { BackendTrendingResponseSchema } from "./post.schema";
 import { mapTrendingPost } from "../lib/map-post";
-import { cookies } from "next/headers";
 
 export async function fetchTrendingPosts() {
   const baseUrl = process.env.INTERNAL_BACKEND_URL;
@@ -14,17 +13,8 @@ export async function fetchTrendingPosts() {
   url.searchParams.set("sort", "reactionCount,desc");
   url.searchParams.set("size", "3");
 
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken");
-
-  const headers: Record<string, string> = {};
-  if (accessToken) {
-    headers["Authorization"] = `Bearer ${accessToken.value}`;
-  }
-
   try {
     const res = await fetch(url.toString(), {
-      headers,
       next: {
         revalidate: 60,
         tags: ["trending-posts"],

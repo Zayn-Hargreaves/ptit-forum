@@ -27,14 +27,9 @@ export const BackendPostListSchema = z.union([
 
 export const BackendTrendingResponseSchema = z
   .object({
-    result: z.union([
-      z.array(BackendPostDTOSchema), // If result is directly an array
-      z.object({ content: z.array(BackendPostDTOSchema) }) // If result is a Page object
-    ])
+    result: z.array(BackendPostDTOSchema).optional().default([]),
+    content: z.array(BackendPostDTOSchema).optional().default([]), 
   })
   .transform((data) => {
-    if (Array.isArray(data.result)) {
-      return data.result;
-    }
-    return data.result.content;
+    return data.result.length > 0 ? data.result : data.content;
   });

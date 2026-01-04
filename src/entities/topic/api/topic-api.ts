@@ -4,18 +4,13 @@ import { ApiResponse, PageResponse } from '@shared/api/types';
 import { Topic } from '../model/types';
 
 export const topicApi = {
-  getAll: async (accessToken?: string) => {
-    let headers = {};
-    if (accessToken) {
-      headers = { Authorization: `Bearer ${accessToken}` };
-    }
-
+  getAll: async (cookie?: string) => {
     const { data } = await apiClient.get<ApiResponse<PageResponse<Topic>>>('/topics', {
       params: {
         page: 0,
         size: 100,
       },
-      headers: { ...headers },
+      headers: cookie ? { Cookie: cookie } : {}, // Gửi kèm cookie để pass qua Auth
     });
     return data.result;
   },
