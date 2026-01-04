@@ -1,61 +1,66 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { CodeVerification } from "@shared/components/auth/code-verification";
-import { authApi } from "@shared/api/auth";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
+import { authApi } from "@features/auth/api/auth-api";
+import { CodeVerification } from "@features/auth/verify-email/ui/code-verification";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [email, setEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
-    const storedEmail = sessionStorage.getItem("verification_email");
-    if (!storedEmail) {
-      router.push("/login");
+    const emailFromUrl = searchParams.get("email");
+    const emailFromStorage = sessionStorage.getItem("verification_email");
+
+    const finalEmail = emailFromUrl || emailFromStorage;
+
+    if (!finalEmail) {
+      toast.error("Không tìm thấy thông tin email cần xác thực");
+      router.replace("/login");
     } else {
-      setEmail(storedEmail);
-      sessionStorage.removeItem("verification_email");
+      setEmail(finalEmail);
+      if (emailFromStorage) {
+        sessionStorage.removeItem("verification_email");
+      }
     }
-  }, [router]);
+  }, [router, searchParams]);
 
   const handleVerify = async (code: string) => {
-    if (!email) {
-      toast.error("Email not found");
-      return;
-    }
+    if (!email) return;
     setIsLoading(true);
     try {
       await authApi.verifyEmail({ email, verificationCode: code });
       toast.success("Xác thực thành công. Vui lòng đăng nhập.");
-      router.push("/login");
+      router.replace("/login");
     } catch (error: any) {
-      toast.error("Xác thực thất bại.");
+      toast.error(error?.response?.data?.message || "Mã xác thực không đúng.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleResend = async () => {
-    if (!email) {
-      toast.error("Email not found");
-      return;
-    }
+    if (!email) return;
     setIsResending(true);
     try {
       await authApi.resendVerifyCode(email);
-      toast.info("Đã gửi lại mã mới.");
+      toast.success(`Đã gửi lại mã mới tới ${email}`);
     } catch (error: any) {
-      toast.error("Không thể gửi lại mã.");
+      toast.error(error?.response?.data?.message || "Không thể gửi lại mã.");
     } finally {
       setIsResending(false);
     }
   };
 
-  return email ? (
+  if (!email) return null;
+
+  return (
     <div className="flex justify-center items-center min-h-[60vh]">
       <CodeVerification
         email={email}
@@ -65,5 +70,5 @@ export default function VerifyEmailPage() {
         onBack={() => router.back()}
       />
     </div>
-  ) : null;
+  );
 }

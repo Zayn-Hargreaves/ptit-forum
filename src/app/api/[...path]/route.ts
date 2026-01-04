@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const BACKEND_URL = process.env.INTERNAL_BACKEND_URL || process.env.BACKEND_URL;
+if (!BACKEND_URL) {
+  throw new Error("❌ MISSING ENV: INTERNAL_BACKEND_URL is not defined");
+}
 
 async function refreshTokens(refreshToken: string) {
   try {
@@ -11,10 +14,15 @@ async function refreshTokens(refreshToken: string) {
       body: JSON.stringify({ refreshToken }),
     });
 
-    if (!res.ok) return null;
-    return await res.json();
+    if (!res.ok) {
+      console.error(`[Refresh] Failed with status: ${res.status}`);
+      return null;
+    }
+
+    const data = await res.json();
+    return data.result;
   } catch (error) {
-    console.error("Refresh token failed", error);
+    console.error("[Refresh] Network error:", error);
     return null;
   }
 }
@@ -30,6 +38,7 @@ async function handleProxy(req: NextRequest, params: { path: string[] }) {
   const headers = new Headers(req.headers);
   headers.delete("host");
   headers.delete("cookie");
+
   if (accessToken) {
     headers.set("Authorization", `Bearer ${accessToken}`);
   }
@@ -50,7 +59,9 @@ async function handleProxy(req: NextRequest, params: { path: string[] }) {
 
     const newTokens = await refreshTokens(refreshToken);
 
-    if (newTokens) {
+    if (newTokens && newTokens.accessToken) {
+      console.log("[Proxy] Refresh success. Retrying request...");
+
       headers.set("Authorization", `Bearer ${newTokens.accessToken}`);
 
       backendRes = await fetch(url, {
@@ -65,7 +76,17 @@ async function handleProxy(req: NextRequest, params: { path: string[] }) {
 
       return copyResponseWithNewCookies(backendRes, newTokens);
     } else {
-      console.log(" [Proxy] Refresh failed. Session expired.");
+      console.log("[Proxy] Refresh failed. Session expired.");
+
+      const response = NextResponse.json(
+        { message: "Session expired, please login again" },
+        { status: 401 }
+      );
+
+      response.cookies.delete("accessToken");
+      response.cookies.delete("refreshToken");
+
+      return response;
     }
   }
 
@@ -98,12 +119,13 @@ function copyResponseWithNewCookies(backendRes: Response, newTokens: any) {
   });
 
   const isProd = process.env.NODE_ENV === "production";
+
   response.cookies.set("accessToken", newTokens.accessToken, {
     httpOnly: true,
     sameSite: "lax",
     secure: isProd,
     path: "/",
-    maxAge: 60 * 60,
+    maxAge: 15 * 60,
   });
 
   if (newTokens.refreshToken) {
@@ -112,7 +134,7 @@ function copyResponseWithNewCookies(backendRes: Response, newTokens: any) {
       sameSite: "lax",
       secure: isProd,
       path: "/",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: 7 * 24 * 60 * 60,
     });
   }
 
@@ -138,6 +160,12 @@ export async function PUT(
   return handleProxy(req, await params);
 }
 export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> }
+) {
+  return handleProxy(req, await params);
+}
+export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
 ) {

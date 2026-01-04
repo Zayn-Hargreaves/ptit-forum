@@ -1,6 +1,5 @@
-import { AuthLayout } from "@shared/components/auth/auth-layout";
+import { RegisterForm } from "@features/auth/register/ui/register-form";
 import { Metadata } from "next";
-import { RegisterForm } from "./register-form";
 
 export const metadata: Metadata = {
   title: "Đăng ký tài khoản | PTIT Forum",
@@ -8,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-  return (
-    <AuthLayout imageSrc="/ptit-building.png" imageAlt="PTIT Environment">
-      <RegisterForm />
-    </AuthLayout>
-  );
+  return <RegisterForm />;
 }

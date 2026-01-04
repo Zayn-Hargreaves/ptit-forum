@@ -11,7 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@shared/ui";
-import { useAuth } from "@shared/providers/auth-provider"; // Chỉ dùng để check logic Notification
+import { useAuth } from "@shared/providers/auth-provider";
 
 import { NAV_LINKS, isActiveRoute } from "./model/nav-links";
 import { NavbarLogo } from "./ui/logo";

@@ -50,7 +50,7 @@ export async function TrendingSection() {
                 const authorName = post.author?.name?.trim() || "Ẩn danh";
                 const authorFallback = (authorName[0] || "U").toUpperCase();
 
-                // ✅ Link chuẩn theo routing của em:
+                // Link chuẩn theo routing của em:
                 // hiện em có /forum/[boxSlug] + modal create-post,
                 // còn chi tiết post đang dùng /forum/post/:id ở mock cũ.
                 // Nếu route thật là khác (vd /forum/posts/:id), đổi ở đây 1 chỗ.
