@@ -87,7 +87,6 @@ export const Destructive: Story = {
  * automatically handles spacing and icon sizing.
  */
 export const WithIcon: Story = {
-  // Dùng `render` function khi `children` phức tạp
   render: (args) => (
     <Badge {...args}>
       <Rocket />

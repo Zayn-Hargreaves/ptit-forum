@@ -1,8 +1,13 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+/* 👇 QUAN TRỌNG: Load plugin typography tại đây cho Tailwind v4 */
+@plugin "@tailwindcss/typography";
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
+/* =========================================
+   THEME CONFIGURATION
+   ========================================= */
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -11,7 +16,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
 
-  /* --- CHANGE HERE: PTIT RED (Light Mode) --- */
+  /* PTIT RED (Light Mode) */
   --primary: oklch(0.52 0.2 25);
   --primary-foreground: oklch(0.985 0 0);
 
@@ -44,6 +49,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.55 0.22 27);
+
+  /* Code block variables */
+  --code-block-bg: #f6f8fa;
+  --code-block-fg: #24292f;
 }
 
 .dark {
@@ -54,7 +63,7 @@
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
 
-  /* --- CHANGE HERE: PTIT RED (Dark Mode) --- */
+  /* PTIT RED (Dark Mode) */
   --primary: oklch(0.6 0.2 25);
   --primary-foreground: oklch(0.985 0 0);
 
@@ -71,7 +80,6 @@
   --input: oklch(0.269 0 0);
   --ring: oklch(0.6 0.22 27);
 
-  /* Chart colors dark mode */
   --chart-1: oklch(0.6 0.22 27);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -86,11 +94,15 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.6 0.22 27);
+
+  /* Code block variables dark */
+  --code-block-bg: #0d1117;
+  --code-block-fg: #c9d1d9;
 }
 
 @theme inline {
-  --font-sans: "Geist", "Geist Fallback";
-  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --font-sans: 'Geist', 'Geist Fallback';
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -136,4 +148,117 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* =========================================
+   RICH TEXT STYLES (Overrides .prose)
+   ========================================= */
+
+/* --- Code Block Styles --- */
+/* Target vào .prose để đảm bảo độ ưu tiên */
+.prose pre {
+  background: var(--code-block-bg);
+  color: var(--code-block-fg);
+  font-family: var(--font-mono);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.prose code {
+  color: inherit;
+  padding: 0;
+  background: none;
+  font-size: 0.9em;
+}
+
+/* Syntax Highlighting (GitHub Theme) */
+.hljs-comment,
+.hljs-quote {
+  color: #8b949e;
+  font-style: italic;
+}
+.hljs-doctag,
+.hljs-keyword,
+.hljs-formula {
+  color: #ff7b72;
+}
+.hljs-section,
+.hljs-name,
+.hljs-selector-tag,
+.hljs-deletion,
+.hljs-subst {
+  color: #79c0ff;
+}
+.hljs-literal {
+  color: #a5d6ff;
+}
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta .hljs-string {
+  color: #a5d6ff;
+}
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-type,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-number {
+  color: #79c0ff;
+}
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link,
+.hljs-meta,
+.hljs-selector-id,
+.hljs-title {
+  color: #d2a8ff;
+}
+
+/* --- Table Styles (Fix for Typography Plugin) --- */
+/* Chuyển từ .ProseMirror sang .prose để ăn khớp với frontend */
+
+.prose table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 2em 0;
+  overflow: hidden;
+  border-radius: var(--radius); /* Bo góc bảng nếu muốn */
+}
+
+.prose td,
+.prose th {
+  min-width: 1em;
+  /* Sử dụng biến --border thay vì --color-border để chắc chắn ăn theo theme */
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.prose th {
+  font-weight: 600; /* Bold vừa phải */
+  text-align: left;
+  background-color: var(--muted); /* Nền header bảng ăn theo theme */
+  color: var(--foreground);
+}
+
+.prose td {
+  color: var(--foreground);
+}
+
+/* Fix ảnh trong bài viết */
+.prose img {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin: 1.5em auto; /* Căn giữa */
+  display: block;
 }

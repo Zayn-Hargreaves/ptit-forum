@@ -1,89 +1,30 @@
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import axios from 'axios';
 
 const getBaseUrl = (): string => {
-  if (globalThis.window === undefined) {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!apiUrl?.startsWith("http")) {
-      throw new Error(
-        "NEXT_PUBLIC_API_URL must be an absolute URL for server-side requests"
-      );
-    }
+  // Nếu ở Server, phải dùng URL đầy đủ của Backend (VD: Spring Boot, Node.js...)
+  if (typeof window === 'undefined') {
+    // Ưu tiên dùng biến môi trường riêng cho Server nếu cần,
+    // hoặc dùng chung NEXT_PUBLIC_API_URL nhưng phải là FULL URL
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
     return apiUrl;
   }
-
-  return process.env.NEXT_PUBLIC_API_URL || "/api";
-};
-
-let isRefreshing = false;
-let failedQueue: any[] = [];
-
-const processQueue = (error: any, token: string | null = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
-    }
-  });
-  failedQueue = [];
+  // Nếu ở Client, dùng proxy /api để tránh CORS
+  return '/api';
 };
 
 export const apiClient = axios.create({
   baseURL: getBaseUrl(),
   withCredentials: true,
-  headers: { "Content-Type": "application/json" },
 });
 
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
-    const originalRequest = error.config as AxiosRequestConfig & {
-      _retry?: boolean;
-    };
-
-    if (
-      error.response?.status !== 401 ||
-      originalRequest._retry ||
-      originalRequest.url?.includes("/auth/refresh")
-    ) {
-      throw error;
-    }
-
-    if (isRefreshing) {
-      return new Promise(function (resolve, reject) {
-        failedQueue.push({ resolve, reject });
-      })
-        .then(() => {
-          return apiClient(originalRequest);
-        })
-        .catch((err) => {
-          throw err;
-        });
-    }
-
-    originalRequest._retry = true;
-    isRefreshing = true;
-
-    try {
-      await apiClient.post("/auth/refresh");
-
-      processQueue(null);
-
-      return apiClient(originalRequest);
-    } catch (refreshError) {
-      processQueue(refreshError, null);
-
-      if (
-        globalThis.window !== undefined &&
-        globalThis.location &&
-        !globalThis.location.pathname.includes("/login")
-      ) {
-        globalThis.location.href = "/login?message=session_expired";
+  (error) => {
+    if (error.response?.status === 401) {
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        window.location.href = '/login?message=session_expired';
       }
-
-      throw refreshError;
-    } finally {
-      isRefreshing = false;
     }
+    return Promise.reject(error);
   }
 );

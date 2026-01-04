@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Badge } from "@shared/ui/badge/badge";
 import { Button } from "@shared/ui/button/button";
 import { Card, CardContent, CardHeader } from "@shared/ui/card/card";
@@ -7,13 +8,17 @@ import { Calendar, Eye, Share2, Bookmark, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { AnnouncementDetail as AnnouncementDetailType } from "../model/types";
 import DOMPurify from "isomorphic-dompurify";
-import "@shared/styles/globals.css";
 
 interface Props {
   data: AnnouncementDetailType;
 }
 
 export function AnnouncementDetail({ data }: Readonly<Props>) {
+  const sanitized = useMemo(
+    () => DOMPurify.sanitize(data.content),
+    [data.content]
+  );
+
   return (
     <div className="space-y-6">
       <Button variant="ghost" size="sm" asChild>
@@ -37,8 +42,10 @@ export function AnnouncementDetail({ data }: Readonly<Props>) {
           <div className="flex items-center justify-between pt-2">
             <div className="flex items-center gap-4">
               <Avatar>
-                <AvatarImage src="/placeholder-avatar.png" />
-                <AvatarFallback>{data.author.charAt(0)}</AvatarFallback>
+                <AvatarImage src="/placeholder-avatar.png" alt={data.author} />
+                <AvatarFallback>
+                  {data.author?.charAt(0)?.toUpperCase() || "A"}
+                </AvatarFallback>
               </Avatar>
               <div>
                 <p className="font-medium text-sm">{data.author}</p>
@@ -76,7 +83,7 @@ export function AnnouncementDetail({ data }: Readonly<Props>) {
           <div
             className="prose prose-slate max-w-none dark:prose-invert prose-img:rounded-lg prose-headings:font-bold"
             dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(data.content),
+              __html: sanitized,
             }}
           />
 

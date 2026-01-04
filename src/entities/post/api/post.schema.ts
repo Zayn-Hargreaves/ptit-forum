@@ -28,9 +28,8 @@ export const BackendPostListSchema = z.union([
 export const BackendTrendingResponseSchema = z
   .object({
     result: z.array(BackendPostDTOSchema).optional().default([]),
-    content: z.array(BackendPostDTOSchema).optional().default([]), // Support trường hợp Paging của Spring Boot
+    content: z.array(BackendPostDTOSchema).optional().default([]), 
   })
   .transform((data) => {
-    // Ưu tiên result, fallback sang content
     return data.result.length > 0 ? data.result : data.content;
   });

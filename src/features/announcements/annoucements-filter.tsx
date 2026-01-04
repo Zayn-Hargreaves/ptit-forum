@@ -16,7 +16,7 @@ export function AnnouncementsFilter() {
   const searchParams = useSearchParams();
 
   const handleTypeChange = useCallback(
-    (type: string) => {
+    (type: AnnouncementType) => {
       const params = new URLSearchParams(searchParams.toString());
       const currentTypes = params.getAll("type");
 
@@ -36,7 +36,7 @@ export function AnnouncementsFilter() {
   );
 
   const clearFilters = () => {
-    router.push("/announcements");
+    router.push("/announcements", { scroll: false });
   };
 
   return (

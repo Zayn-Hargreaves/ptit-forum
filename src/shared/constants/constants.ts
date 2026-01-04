@@ -20,7 +20,7 @@ function parseExpiry(
   }
 
   const parsed = Number(envValue);
-  if (!isFinite(parsed) || isNaN(parsed)) {
+  if (!Number.isFinite(parsed) || Number.isNaN(parsed)) {
     console.error(
       `Invalid ${envName}: "${envValue}" is not a valid number. Using default: ${defaultVal}`
     );
@@ -59,3 +59,23 @@ export const REFRESH_TOKEN_EXPIRY = parseExpiry(
     allowZero: false,
   }
 ); // 7 days
+
+export const ALLOWED_DOCUMENT_MIMES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "text/markdown",
+  "text/plain",
+  "text/csv",
+];
+
+export const ALLOWED_MEDIA_MINES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "video/mp4",
+  "video/webm",
+];

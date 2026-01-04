@@ -1,24 +1,45 @@
-"use client";
+import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
+import { getUserProfile } from '@entities/user/api/user-api';
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { ClientProfileRedirect } from '@features/profile/view-profile/ui/client-profile-redirect';
+import { ProfileView } from '@features/profile/view-profile/ui/profile-view';
 
-import { useParams } from "next/navigation";
-import { ProfileHeader } from "@features/profile/view-profile/ui/profile-header";
-import { useMe } from "@entities/session/model/queries";
-import { ProfileTabs } from "@widgets/user-profile/profile-tabs";
+export const metadata: Metadata = {
+  title: 'User Profile | Ptit Forum',
+  description: 'View user profile, posts and documents.',
+};
 
-export default function ProfilePage() {
-  const params = useParams();
-  const { data: me } = useMe();
+interface ProfilePageProps {
+  params: Promise<{ id: string }>;
+}
 
-  // Logic:
-  // 1. Nếu params.id === me.id -> Hiển thị profile của mình (có nút Edit).
-  // 2. Nếu params.id !== me.id -> Gọi API lấy user khác (chưa có nút Edit).
+export default async function ProfilePage({ params }: ProfilePageProps) {
+  const { id } = await params;
 
-  if (!me) return <div>Loading...</div>;
+  if (id === 'me') {
+    return <ClientProfileRedirect />;
+  }
+
+  const queryClient = new QueryClient();
+
+  try {
+    await queryClient.prefetchQuery({
+      queryKey: ['profile', id],
+      queryFn: () => getUserProfile(id),
+    });
+  } catch (error: unknown) {
+    // Handle user not found
+    if (error instanceof Error && error.message.includes('404')) {
+      notFound();
+    }
+    // Re-throw other errors to be caught by error boundary
+    throw error;
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <ProfileHeader user={me} isOwnProfile={true} />
-      <ProfileTabs />
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ProfileView userId={id} />
+    </HydrationBoundary>
   );
 }
