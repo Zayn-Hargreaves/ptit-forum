@@ -71,6 +71,7 @@ const meta: Meta<typeof ChartContainer> = {
       description: "Recharts components (BarChart, LineChart, etc.).",
     },
   },
+  // Decorator để giới hạn chiều rộng biểu đồ trong Storybook cho dễ nhìn
   decorators: [
     (Story) => (
       <div className="mx-auto max-w-2xl w-full p-4 border rounded-xl">

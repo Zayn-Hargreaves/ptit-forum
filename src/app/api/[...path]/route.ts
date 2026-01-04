@@ -1,165 +1,139 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 const BACKEND_URL = process.env.INTERNAL_BACKEND_URL || process.env.BACKEND_URL;
-
-const log = (step: string, msg: string, data?: any) => {
-  console.log(`\x1b[36m[Proxy ${step}]\x1b[0m ${msg}`, data || '');
-};
+if (!BACKEND_URL) {
+  throw new Error("❌ MISSING ENV: INTERNAL_BACKEND_URL is not defined");
+}
 
 async function refreshTokens(refreshToken: string) {
   try {
-    log('Refresh', 'Attempting to refresh token...');
-    const res = await fetch(`${BACKEND_URL}/api/auth/refresh`, {
-      method: 'POST',
-      headers: {
-        Cookie: `refreshToken=${refreshToken}`,
-      },
-      cache: 'no-store',
+    const res = await fetch(`${BACKEND_URL}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
     });
 
     if (!res.ok) {
-      log('Refresh', `Failed with status: ${res.status}`);
-      const text = await res.text();
-      log('Refresh', `Error body:`, text);
+      console.error(`[Refresh] Failed with status: ${res.status}`);
       return null;
     }
 
     const data = await res.json();
-    log('Refresh', 'Success!');
     return data.result;
   } catch (error) {
-    console.error('[Refresh] Error:', error);
+    console.error("[Refresh] Network error:", error);
     return null;
   }
 }
 
 async function handleProxy(req: NextRequest, params: { path: string[] }) {
-  const path = params.path.join('/');
-  const method = req.method;
+  const path = params.path.join("/");
   const url = `${BACKEND_URL}/${path}${req.nextUrl.search}`;
 
-  log('In', `Incoming ${method} Request to: ${path}`);
-
-  // 1. Check Cookies
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken')?.value;
-  const refreshToken = cookieStore.get('refreshToken')?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
 
-  log('Auth', `Tokens present? Access: ${!!accessToken}, Refresh: ${!!refreshToken}`);
-
-  // 2. Handle Body
-  let requestBody: ArrayBuffer | undefined = undefined;
-  if (method !== 'GET' && method !== 'HEAD') {
-    try {
-      requestBody = await req.arrayBuffer();
-      log('Body', `Read body size: ${requestBody.byteLength} bytes`);
-    } catch (e) {
-      log('Body', 'Error reading body', e);
-      return NextResponse.json({ message: 'Failed to read request body' }, { status: 400 });
-    }
-  }
-
-  // 3. Prepare Headers
   const headers = new Headers(req.headers);
-  headers.delete('host');
-  headers.delete('cookie');
-
-  headers.delete('content-length');
-  headers.delete('content-encoding');
+  headers.delete("host");
+  headers.delete("cookie");
 
   if (accessToken) {
-    headers.set('Authorization', `Bearer ${accessToken}`);
+    headers.set("Authorization", `Bearer ${accessToken}`);
   }
 
-  // 4. Send to Backend
-  let backendRes: Response;
-  try {
-    backendRes = await fetch(url, {
-      method: method,
-      headers: headers,
-      body: requestBody,
-      cache: 'no-store',
-      redirect: 'manual',
-    });
-    log('Backend', `Response Status: ${backendRes.status}`);
-  } catch (e) {
-    log('Backend', 'Network Error', e);
-    return NextResponse.json({ message: 'Proxy Error' }, { status: 500 });
-  }
+  let backendRes = await fetch(url, {
+    method: req.method,
+    headers: headers,
+    body:
+      req.method !== "GET" && req.method !== "HEAD"
+        ? await req.clone().arrayBuffer()
+        : undefined,
+    cache: "no-store",
+    redirect: "manual",
+  });
 
-  // 5. Handle 401 & Refresh
-  if (backendRes.status === 401) {
-    log('401', 'Detected 401. Checking refresh capability...');
+  if (backendRes.status === 401 && refreshToken) {
+    console.log("[Proxy] Token expired. Refreshing...");
 
-    if (refreshToken) {
-      const newTokens = await refreshTokens(refreshToken);
+    const newTokens = await refreshTokens(refreshToken);
 
-      if (newTokens?.accessToken) {
-        log('Retry', 'Refreshing successful. Retrying original request...');
+    if (newTokens && newTokens.accessToken) {
+      console.log("[Proxy] Refresh success. Retrying request...");
 
-        headers.set('Authorization', `Bearer ${newTokens.accessToken}`);
+      headers.set("Authorization", `Bearer ${newTokens.accessToken}`);
 
-        try {
-          backendRes = await fetch(url, {
-            method: method,
-            headers: headers,
-            body: requestBody,
-            cache: 'no-store',
-            redirect: 'manual',
-          });
+      backendRes = await fetch(url, {
+        method: req.method,
+        headers: headers,
+        body:
+          req.method !== "GET" && req.method !== "HEAD"
+            ? await req.clone().arrayBuffer()
+            : undefined,
+        cache: "no-store",
+      });
 
-          log('Retry', `Retry Status: ${backendRes.status}`);
-
-          return copyResponseWithNewCookies(backendRes, newTokens);
-        } catch (e) {
-          log('Retry', 'Retry Network Error', e);
-        }
-      } else {
-        log('Refresh', 'Refresh failed or returned no tokens. Logout user.');
-      }
+      return copyResponseWithNewCookies(backendRes, newTokens);
     } else {
-      log('401', 'No refresh token available.');
-    }
+      console.log("[Proxy] Refresh failed. Session expired.");
 
-    return clearCookiesAndReturn401(backendRes);
+      const response = NextResponse.json(
+        { message: "Session expired, please login again" },
+        { status: 401 }
+      );
+
+      response.cookies.delete("accessToken");
+      response.cookies.delete("refreshToken");
+
+      return response;
+    }
   }
 
-  return copyResponse(backendRes);
-}
-
-// ================= Helpers =================
-
-function copyResponse(backendRes: Response) {
   const response = new NextResponse(backendRes.body, {
     status: backendRes.status,
     statusText: backendRes.statusText,
   });
 
-  copyHeaders(backendRes, response);
+  const safeHeaders = ["content-type", "content-length", "content-disposition"];
+  safeHeaders.forEach((key) => {
+    if (backendRes.headers.has(key)) {
+      response.headers.set(key, backendRes.headers.get(key)!);
+    }
+  });
+
   return response;
 }
 
 function copyResponseWithNewCookies(backendRes: Response, newTokens: any) {
-  const response = copyResponse(backendRes);
+  const response = new NextResponse(backendRes.body, {
+    status: backendRes.status,
+    statusText: backendRes.statusText,
+  });
 
-  const isProd = process.env.NODE_ENV === 'production';
-  if (newTokens.accessToken) {
-    response.cookies.set('accessToken', newTokens.accessToken, {
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: isProd,
-      path: '/',
-      maxAge: 15 * 60,
-    });
-  }
+  const safeHeaders = ["content-type", "content-length"];
+  safeHeaders.forEach((key) => {
+    if (backendRes.headers.has(key)) {
+      response.headers.set(key, backendRes.headers.get(key)!);
+    }
+  });
+
+  const isProd = process.env.NODE_ENV === "production";
+
+  response.cookies.set("accessToken", newTokens.accessToken, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: isProd,
+    path: "/",
+    maxAge: 15 * 60,
+  });
 
   if (newTokens.refreshToken) {
-    response.cookies.set('refreshToken', newTokens.refreshToken, {
+    response.cookies.set("refreshToken", newTokens.refreshToken, {
       httpOnly: true,
-      sameSite: 'strict',
+      sameSite: "lax",
       secure: isProd,
-      path: '/',
+      path: "/",
       maxAge: 7 * 24 * 60 * 60,
     });
   }
@@ -167,41 +141,33 @@ function copyResponseWithNewCookies(backendRes: Response, newTokens: any) {
   return response;
 }
 
-function clearCookiesAndReturn401(backendRes: Response) {
-  const response = new NextResponse(backendRes.body, {
-    status: backendRes.status,
-    statusText: backendRes.statusText,
-  });
-
-  copyHeaders(backendRes, response);
-
-  response.cookies.set('accessToken', '', { maxAge: 0, path: '/' });
-  response.cookies.set('refreshToken', '', { maxAge: 0, path: '/' });
-
-  return response;
-}
-
-function copyHeaders(source: Response, target: NextResponse) {
-  ['content-type', 'content-length', 'content-disposition'].forEach((key) => {
-    if (source.headers.has(key)) {
-      target.headers.set(key, source.headers.get(key)!);
-    }
-  });
-}
-
-// Next.js 15+ Params handling
-export async function GET(req: NextRequest, { params }: any) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> }
+) {
   return handleProxy(req, await params);
 }
-export async function POST(req: NextRequest, { params }: any) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> }
+) {
   return handleProxy(req, await params);
 }
-export async function PUT(req: NextRequest, { params }: any) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> }
+) {
   return handleProxy(req, await params);
 }
-export async function DELETE(req: NextRequest, { params }: any) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> }
+) {
   return handleProxy(req, await params);
 }
-export async function PATCH(req: NextRequest, { params }: any) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> }
+) {
   return handleProxy(req, await params);
 }
