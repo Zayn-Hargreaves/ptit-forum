@@ -4,8 +4,9 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
-
+    console.log("1. Access Token from Cookie:", accessToken ? `${accessToken.substring(0, 10)}...` : "UNDEFINED");
   if (!accessToken) {
+      console.log("-> Lỗi: Không có token trong cookie");
     return NextResponse.json({ message: "Unauthenticated" }, { status: 401 });
   }
 

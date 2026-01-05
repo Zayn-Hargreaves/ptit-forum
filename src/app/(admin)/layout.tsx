@@ -1,15 +1,15 @@
 "use client";
 
-import { useAuth } from "@shared/providers/auth-provider";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
+import {useAuth} from "@shared/providers/auth-provider";
+import {usePathname, useRouter} from "next/navigation";
+import {useEffect} from "react";
 import Link from "next/link";
-import { Button } from "@shared/ui";
-import {FileText, Users, Settings, Home, LogOut, School} from "lucide-react";
-import { cn } from "@shared/lib/utils";
+import {Button} from "@shared/ui";
+import {FileText, GraduationCap, LogOut, Megaphone, Presentation, Settings, Users} from "lucide-react";
+import {cn} from "@shared/lib/utils";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const { user, isLoading, isAuthenticated } = useAuth();
+export default function AdminLayout({children}: { children: React.ReactNode }) {
+    const {user, isLoading, isAuthenticated} = useAuth();
     const router = useRouter();
     const pathname = usePathname();
 
@@ -29,10 +29,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!user || user.role !== 'ADMIN') return null;
 
     const navItems = [
-        { href: "/admin/faculties", label: "Faculties", icon: School },
-        { href: "/admin/documents", label: "Documents", icon: FileText },
-        { href: "/admin/users", label: "Users", icon: Users },
-        { href: "/admin/settings", label: "Settings", icon: Settings },
+        {href: "/admin/faculties", label: "Faculties", icon: GraduationCap,},
+        {href: "/admin/classrooms", label: "Classrooms", icon: Presentation,},
+        {href: "/admin/announcements", label: "Announcements", icon: Megaphone,},
+        {href: "/admin/documents", label: "Documents", icon: FileText},
+        {href: "/admin/users", label: "Users", icon: Users},
+        {href: "/admin/settings", label: "Settings", icon: Settings},
     ];
 
     return (
@@ -55,7 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                         pathname.startsWith(item.href) ? "bg-slate-800 text-white" : "text-slate-400"
                                     )}
                                 >
-                                    <item.icon className="h-4 w-4" />
+                                    <item.icon className="h-4 w-4"/>
                                     {item.label}
                                 </Link>
                             </li>
@@ -63,9 +65,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </ul>
                 </nav>
                 <div className="p-4 border-t border-slate-800">
-                    <Button variant="ghost" className="w-full оправ-start text-slate-400 hover:text-white hover:bg-slate-800" asChild>
+                    <Button variant="ghost"
+                            className="w-full оправ-start text-slate-400 hover:text-white hover:bg-slate-800" asChild>
                         <Link href="/">
-                            <LogOut className="mr-2 h-4 w-4" /> Exit Admin
+                            <LogOut className="mr-2 h-4 w-4"/> Exit Admin
                         </Link>
                     </Button>
                 </div>
