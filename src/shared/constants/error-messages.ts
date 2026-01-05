@@ -3,7 +3,7 @@ import { BACKEND_ERROR_CODES } from "./error-codes";
 export const ERROR_MESSAGES: Record<number, string> = {
   // Authentication & Authorization
   [BACKEND_ERROR_CODES.UNAUTHORIZED]: "Bạn không có quyền truy cập",
-  [BACKEND_ERROR_CODES.UNAUTHENTICATED]: "Vui lòng đăng nhập",
+  [BACKEND_ERROR_CODES.UNAUTHENTICATED]: "Email hoặc mật khẩu không chính xác",
   [BACKEND_ERROR_CODES.TOKEN_EXPIRED]: "Phiên đăng nhập đã hết hạn",
   [BACKEND_ERROR_CODES.INVALID_TOKEN]: "Token không hợp lệ",
   [BACKEND_ERROR_CODES.FORBIDDEN]: "Bạn không được phép thực hiện hành động này",
@@ -16,7 +16,7 @@ export const ERROR_MESSAGES: Record<number, string> = {
 
   // User
   [BACKEND_ERROR_CODES.USER_EXISTED]: "Người dùng đã tồn tại",
-  [BACKEND_ERROR_CODES.USER_NOT_FOUND]: "Không tìm thấy người dùng",
+  [BACKEND_ERROR_CODES.USER_NOT_FOUND]: "Email hoặc mật khẩu không chính xác",
   [BACKEND_ERROR_CODES.INVALID_PASSWORD]: "Mật khẩu không chính xác",
   [BACKEND_ERROR_CODES.INVALID_STUDENT_CODE]: "Mã sinh viên không hợp lệ",
 

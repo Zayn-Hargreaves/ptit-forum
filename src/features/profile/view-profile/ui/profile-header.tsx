@@ -74,15 +74,7 @@ export function ProfileHeader({ user, isOwnProfile }: Readonly<ProfileHeaderProp
                   {user.fullName}
                 </h1>
                 <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-                  {user.facultyName && (
-                    <>
-                      <span className="flex items-center hover:text-primary transition-colors cursor-pointer">
-                        <Shield className="mr-1 h-3.5 w-3.5" />
-                        {user.facultyName}
-                      </span>
-                      <span>•</span>
-                    </>
-                  )}
+{/* facultyName removed as it is not in backend response */}
                   <span className="text-xs">User/Student</span>
                 </div>
               </div>

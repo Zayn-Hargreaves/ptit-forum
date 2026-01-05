@@ -59,7 +59,7 @@ export default function ProfileCompletionModal({
   }, [isOpen, form]);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: sessionApi.updateProfile,
+    mutationFn: (values: ProfileCompletionValues) => sessionApi.updateProfile(values),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: sessionKeys.me() });
       toast.success("Cập nhật hồ sơ thành công!");

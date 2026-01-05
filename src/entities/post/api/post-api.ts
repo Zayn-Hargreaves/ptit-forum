@@ -100,5 +100,24 @@ export const postApi = {
       // Let's assume the backend has this endpoint for "My Posts" or similar.
       throw e;
     }
-  }
+  },
+
+  getPendingByTopic: async (topicId: string, page = 0, size = 10) => {
+    const { data } = await apiClient.get<ApiResponse<PageResponse<Post>>>(`/posts/topic/${topicId}/search`, {
+      params: {
+        postStatus: 'PENDING',
+        page,
+        size,
+        sort: 'createdDateTime,desc',
+      },
+    });
+    return data.result;
+  },
+
+  upgradeStatus: async (postId: string, status: 'APPROVED' | 'REJECTED' | 'PENDING') => {
+    const { data } = await apiClient.put<ApiResponse<Post>>(`/posts/upgrade-post/${postId}`, null, {
+      params: { postStatus: status }
+    });
+    return data.result;
+  },
 };

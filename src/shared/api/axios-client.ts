@@ -6,9 +6,16 @@ import { toast } from 'sonner';
 // - Client-side: Proxy through Next.js API Routes ('/api')
 const getBaseUrl = (): string => {
   if (typeof window === 'undefined') {
+    // 🟢 SERVER SIDE
+    if (process.env.INTERNAL_API_URL) {
+        console.log('Server fetching data from:', process.env.INTERNAL_API_URL);
+        return process.env.INTERNAL_API_URL;
+    }
     return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
   }
-  return '/api';
+  
+  // 🔵 CLIENT SIDE
+  return '/api'; 
 };
 
 export const API_URL = getBaseUrl();
@@ -106,8 +113,17 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        // Create a dedicated instance for auth calls to avoid circular deps and ensure credentials
+        const authClient = axios.create({
+          baseURL: API_URL,
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
         // Call the Next.js Proxy Refresh Route
-        const refreshResponse = await axios.post('/api/auth/refresh');
+        const refreshResponse = await authClient.post('/auth/refresh');
 
         if (refreshResponse.status === 200) {
           processQueue(null); // Resolve all queued requests

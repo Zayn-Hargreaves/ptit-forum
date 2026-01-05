@@ -23,17 +23,28 @@ export async function POST() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Cookie: `refreshToken=${refreshToken}`,
         },
         body: JSON.stringify({ refreshToken }),
         signal: AbortSignal.timeout(10000),
       }
     );
 
+
     const data = await res.json();
 
     if (!res.ok || data.code !== 1000) {
-      cookieStore.delete("accessToken");
-      cookieStore.delete("refreshToken");
+      // ⚠️ WARNING: Don't delete cookies immediately. Log for debug.
+      console.error("❌ Refresh Token Failed from Backend:", {
+        status: res.status,
+        backendResponse: data,
+        sentRefreshToken: refreshToken ? "Present" : "Missing"
+      });
+
+      // Only delete if explicitly unauthorized or session broken (e.g. specific error code)
+      // For now, we return 401 and let the frontend handle the redirect if needed.
+      // cookieStore.delete("accessToken");
+      // cookieStore.delete("refreshToken");
 
       return NextResponse.json(
         { message: data.message || "Refresh failed" },

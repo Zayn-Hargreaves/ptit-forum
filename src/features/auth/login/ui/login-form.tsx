@@ -166,7 +166,7 @@ export function LoginForm() {
       </CardContent>
 
       <CardFooter className="flex justify-center">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-center text-sm text-muted-foreground">
           Chưa có tài khoản?{" "}
           <Link
             href="/register"

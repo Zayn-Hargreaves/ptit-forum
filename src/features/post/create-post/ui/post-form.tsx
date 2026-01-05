@@ -36,6 +36,7 @@ interface PostFormProps {
   popoverContainer?: HTMLElement | null;
   initialData?: Post;
   mode?: 'create' | 'edit';
+  defaultTopicId?: string;
 }
 
 interface TopicItemProps {
@@ -57,6 +58,7 @@ export function PostForm({
   popoverContainer,
   initialData,
   mode = 'create',
+  defaultTopicId,
 }: Readonly<PostFormProps>) {
   const queryClient = useQueryClient();
   const [openTopic, setOpenTopic] = useState(false);

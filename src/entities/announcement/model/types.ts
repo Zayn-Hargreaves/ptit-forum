@@ -52,8 +52,7 @@ export interface FileAttachment {
   fileName: string;
   url: string;
   size: number;
-  contentType: string;
-  type?: string;
+  fileType: string;
 }
 
 export interface BackendAnnouncementDetail {
@@ -68,7 +67,13 @@ export interface BackendAnnouncementDetail {
   modifiedDate: string | null;
 
   announcementTargetResponses: any[];
-  attachments: FileAttachment[];
+  attachments: {
+    id: string;
+    fileName: string;
+    url: string;
+    fileType: string;
+    size: number;
+  }[];
 
   // views?: number;
 }

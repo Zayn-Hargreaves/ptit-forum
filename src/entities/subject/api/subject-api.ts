@@ -1,5 +1,5 @@
 import { apiClient } from "@/shared/api/axios-client";
-import { ApiResponse } from "@/shared/api/types";
+import { ApiResponse, PageResponse } from "@/shared/api/types";
 
 export interface Subject {
     id: string;
@@ -9,7 +9,13 @@ export interface Subject {
 
 export const subjectApi = {
     getAll: async () => {
-        const response = await apiClient.get<ApiResponse<Subject[]>>("/subjects");
-        return response.data.result;
+        // Backend only has /search endpoint, not /api/subjects list
+        const response = await apiClient.get<ApiResponse<PageResponse<Subject>>>("/subjects/search", {
+            params: {
+                page: 0,
+                size: 100 // Get enough subjects for filter
+            }
+        });
+        return response.data.result.content;
     },
 };

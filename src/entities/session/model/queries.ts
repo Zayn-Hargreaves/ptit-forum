@@ -6,8 +6,9 @@ export const useMe = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: sessionKeys.me(),
     queryFn: sessionApi.me,
-    staleTime: 1000 * 60 * 5,
-    retry: false,
+    staleTime: Infinity, // User data is stable, verify only on reload/login
+    retry: false, // Fail fast on 401
+    refetchOnWindowFocus: false,
     enabled: options?.enabled,
   });
 };

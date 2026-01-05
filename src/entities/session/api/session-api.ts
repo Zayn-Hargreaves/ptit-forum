@@ -16,8 +16,8 @@ const mapToUser = (data: any): UserProfile => {
 
 export const sessionApi = {
   me: async () => {
-    const { data } = await apiClient.get<ApiResponse<any>>('/users/me');
-    return mapToUser(data.result);
+    const { data } = await apiClient.get<{ user: UserProfile }>('/auth/me'); // Call local Next.js API
+    return data.user;
   },
 
   getProfile: async () => {
@@ -25,21 +25,25 @@ export const sessionApi = {
     return mapToUser(data.result);
   },
 
-  updateProfile: async (payload: UpdateProfilePayload) => {
-    const { data } = await apiClient.patch<ApiResponse<any>>('/users/profile', payload);
-    return mapToUser(data.result);
-  },
-
-  uploadAvatar: async (file: File): Promise<UserProfile> => {
+  updateProfile: async (payload: UpdateProfilePayload, avatar?: File) => {
     const formData = new FormData();
-    formData.append('image', file);
-
-    const { data } = await apiClient.put<ApiResponse<UserProfileResponseDto>>('/users/profile/avatar', formData, {
+    
+    // CRITICAL: Create Blob with application/json type for Spring Boot @RequestPart
+    const jsonPart = new Blob([JSON.stringify(payload)], { 
+      type: "application/json" 
+    });
+    formData.append("data", jsonPart);
+    
+    if (avatar) {
+      formData.append("avatar", avatar);
+    }
+    
+    // CRITICAL: Remove Content-Type header to let axios auto-set multipart/form-data with boundary
+    const { data } = await apiClient.put<ApiResponse<any>>('/users/profile', formData, {
       headers: {
-        'Content-Type': null,
+        'Content-Type': undefined, // Let axios handle it
       },
     });
-
     return mapToUser(data.result);
   },
 

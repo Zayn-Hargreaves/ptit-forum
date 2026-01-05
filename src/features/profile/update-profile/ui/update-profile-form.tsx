@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +20,6 @@ import {
   FormMessage,
 } from "@shared/ui/form/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card/card";
-
 import { sessionApi } from "@entities/session/api/session-api";
 import { useMe } from "@entities/session/model/queries";
 import { sessionKeys } from "@entities/session/lib/query-keys";
@@ -44,6 +43,8 @@ export function UpdateProfileForm() {
     mode: "onChange",
   });
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   useEffect(() => {
     if (!user) return;
 
@@ -51,17 +52,19 @@ export function UpdateProfileForm() {
       fullName: user.fullName || "",
       phone: user.phone || "",
       studentCode: user.studentCode || "",
+
       classCode: user.classCode || "",
     });
   }, [user, form]);
 
   const { mutate: handleSave, isPending } = useMutation({
     mutationFn: async (values: ProfileFormValues) => {
-      return await sessionApi.updateProfile(values);
+      return await sessionApi.updateProfile(values, selectedFile ?? undefined);
     },
     onSuccess: async () => {
       toast.success("Cập nhật hồ sơ thành công");
       await queryClient.invalidateQueries({ queryKey: sessionKeys.me() });
+      setSelectedFile(null); // Clear selected file after success
       router.push("/");
     },
     onError: (error: any) => {
@@ -95,6 +98,7 @@ export function UpdateProfileForm() {
           <AvatarUploader
             currentAvatarUrl={user?.avatarUrl}
             fallbackName={user?.fullName || "User"}
+            onFileSelect={setSelectedFile}
           />
           <p className="text-sm text-muted-foreground">
             Click vào ảnh để thay đổi
@@ -179,6 +183,8 @@ export function UpdateProfileForm() {
                     </FormItem>
                   )}
                 />
+
+
               </div>
             </div>
 
@@ -194,7 +200,7 @@ export function UpdateProfileForm() {
 
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isPending || (!form.formState.isDirty && !selectedFile)}
                 className="min-w-[150px]"
               >
                 {isPending ? (

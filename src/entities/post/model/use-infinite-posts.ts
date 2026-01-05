@@ -18,21 +18,36 @@ const TIME_RANGE_MAP: Record<TimeRange, 'WEEK' | 'MONTH' | 'ALL'> = {
   all: 'ALL',
 };
 
-export function useInfinitePosts({ topicId = null, authorId = null, sortMode = 'latest', timeRange = 'week' }: UseInfinitePostsProps) {
+export type FetchMode = 'feed' | 'topic' | 'pending';
+
+export function useInfinitePosts({ 
+  topicId = null, 
+  authorId = null, 
+  sortMode = 'latest', 
+  timeRange = 'week',
+  fetchMode = 'feed' 
+}: UseInfinitePostsProps & { fetchMode?: FetchMode }) {
   const apiRange = TIME_RANGE_MAP[timeRange];
 
   return useInfiniteQuery({
-    queryKey: ['posts', 'feed', topicId, authorId, sortMode, apiRange],
+    queryKey: ['posts', fetchMode, topicId, authorId, sortMode, apiRange],
 
-    queryFn: ({ pageParam = 0 }) =>
-      postApi.getNewsfeed({
+    queryFn: ({ pageParam = 0 }) => {
+      if (fetchMode === 'topic' && topicId) {
+        return postApi.getByTopic(topicId, { pageParam, size: 10 });
+      }
+      if (fetchMode === 'pending' && topicId) {
+        return postApi.getPendingByTopic(topicId, pageParam, 10);
+      }
+      return postApi.getNewsfeed({
         pageParam,
         size: 10,
         topicId,
         authorId,
         mode: sortMode,
         range: apiRange,
-      }),
+      });
+    },
 
     initialPageParam: 0,
 

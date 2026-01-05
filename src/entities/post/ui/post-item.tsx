@@ -14,6 +14,7 @@ import type { Post } from '../model/types';
 
 interface PostItemProps {
   post: Post;
+  actions?: React.ReactNode;
 }
 
 const formatPostDate = (dateTime: string | undefined) => {
@@ -23,7 +24,7 @@ const formatPostDate = (dateTime: string | undefined) => {
   return formatDistanceToNow(date, { addSuffix: true, locale: vi });
 };
 
-export function PostItem({ post }: Readonly<PostItemProps>) {
+export function PostItem({ post, actions }: Readonly<PostItemProps>) {
   // Defensive checks
   const authorName = post.author?.fullName ?? 'Người dùng ẩn danh';
   const authorAvatar = post.author?.avatarUrl;
@@ -98,6 +99,13 @@ export function PostItem({ post }: Readonly<PostItemProps>) {
 
       {/* ================= FOOTER ================= */}
       <CardFooter className="p-6 pt-0 flex items-center justify-between mt-auto">
+        {/* Actions Area (e.g. Approve/Reject) */}
+        {actions && (
+            <div className="flex gap-2 mr-4 z-20">
+                {actions}
+            </div>
+        )}
+
         {/* Stats Area - Chỉ là thông tin, click xuyên qua vào bài viết */}
         <div className="flex items-center gap-4 text-xs text-muted-foreground font-medium">
           <div className="flex items-center gap-1.5 bg-muted/30 px-2 py-1 rounded-md">

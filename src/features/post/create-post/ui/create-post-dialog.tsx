@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@shared/ui/drawer/drawer';
 import { PostForm } from './post-form';
 
-export function CreatePostDialog() {
+export function CreatePostDialog({ defaultTopicId }: { defaultTopicId?: string }) {
   const [open, setOpen] = React.useState(false);
   const isMobile = useIsMobile();
 
@@ -37,7 +37,7 @@ export function CreatePostDialog() {
           </DrawerHeader>
 
           <div ref={setPopoverContainer} className="px-4 pb-4 overflow-y-auto">
-            <PostForm onSuccess={handleSuccess} popoverContainer={popoverContainer} />
+            <PostForm onSuccess={handleSuccess} popoverContainer={popoverContainer} defaultTopicId={defaultTopicId} />
           </div>
         </DrawerContent>
       </Drawer>
@@ -61,7 +61,7 @@ export function CreatePostDialog() {
         </DialogHeader>
 
         <div ref={setPopoverContainer} className="flex-1 overflow-y-auto px-6 py-4">
-          <PostForm onSuccess={handleSuccess} popoverContainer={popoverContainer} />
+          <PostForm onSuccess={handleSuccess} popoverContainer={popoverContainer} defaultTopicId={defaultTopicId} />
         </div>
       </DialogContent>
     </Dialog>

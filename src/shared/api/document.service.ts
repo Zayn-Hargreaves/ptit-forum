@@ -166,12 +166,22 @@ export const getMyDocuments = async (params: GetDocumentsParams = {}): Promise<{
 };
 
 export const updateDocumentMetadata = async (id: string, data: { title: string; description: string; subjectId: string }): Promise<Document> => {
-    const response = await apiClient.put<ApiResponse<DocumentDto>>(`/documents/${id}`, data);
+    // Use the new JSON-only endpoint
+    const response = await apiClient.put<ApiResponse<DocumentDto>>(`/users/me/documents/${id}/info`, {
+        title: data.title,
+        description: data.description,
+        subjectId: data.subjectId
+    });
     return mapDtoToDocument(response.data.result);
 };
 
 export const deleteDocument = async (id: string): Promise<void> => {
-    await apiClient.delete(`/documents/${id}`);
+    // User deletes their own document
+    await apiClient.delete(`/users/me/documents/${id}`);
+};
+
+export const adminDeleteDocument = async (id: string): Promise<void> => {
+    await apiClient.delete(`/admin/documents/${id}`);
 };
 
 export const documentService = {
@@ -183,4 +193,5 @@ export const documentService = {
     getMyDocuments,
     updateDocumentMetadata,
     deleteDocument,
+    adminDeleteDocument,
 };

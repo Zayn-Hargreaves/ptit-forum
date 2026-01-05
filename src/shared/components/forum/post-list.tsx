@@ -5,6 +5,8 @@ import { useInView } from 'react-intersection-observer';
 import { Loader2, AlertCircle, FileQuestion } from 'lucide-react';
 
 import { useInfinitePosts, type SortMode, type TimeRange } from '@entities/post/model/use-infinite-posts';
+import { postApi } from '@entities/post/api/post-api';
+import { toast } from 'sonner';
 import { PostItem } from '@entities/post/ui/post-item';
 import { PostSkeleton } from '@entities/post/ui/post-skeleton';
 import { Button } from '@shared/ui/button/button';
@@ -21,7 +23,8 @@ export function PostList({
   authorId = null,
   sortMode = 'latest',
   timeRange = 'all',
-}: Readonly<PostListProps>) {
+  fetchMode = 'feed', // Default to feed
+}: Readonly<PostListProps & { fetchMode?: 'feed' | 'topic' | 'pending' }>) {
   // 1. Destructuring hook một cách rõ ràng
   const {
     data,
@@ -37,6 +40,7 @@ export function PostList({
     authorId,
     sortMode,
     timeRange,
+    fetchMode,
   });
 
   // 2. Intersection Observer configuration
@@ -105,7 +109,50 @@ export function PostList({
   return (
     <div className="space-y-4">
       {posts.map((post) => (
-        <PostItem key={post.id} post={post} />
+        <PostItem 
+            key={post.id} 
+            post={post} 
+            actions={fetchMode === 'pending' ? (
+                <>
+                    <Button 
+                        size="sm" 
+                        className="bg-green-600 hover:bg-green-700 text-white z-20"
+                        onClick={(e) => {
+                            e.preventDefault(); // Prevent link click
+                            toast.promise(postApi.upgradeStatus(post.id, 'APPROVED'), {
+                                loading: 'Đang duyệt...',
+                                success: () => {
+                                    refetch();
+                                    return 'Đã duyệt bài viết';
+                                },
+                                error: 'Lỗi khi duyệt bài'
+                            });
+                        }}
+                    >
+                        Duyệt
+                    </Button>
+                    <Button 
+                        size="sm" 
+                        variant="destructive"
+                        className="z-20"
+                         onClick={(e) => {
+                            e.preventDefault();
+                            if(!confirm("Chắc chắn từ chối bài này?")) return;
+                            toast.promise(postApi.upgradeStatus(post.id, 'REJECTED'), {
+                                loading: 'Đang từ chối...',
+                                success: () => {
+                                    refetch();
+                                    return 'Đã từ chối bài viết';
+                                },
+                                error: 'Lỗi khi từ chối'
+                            });
+                        }}
+                    >
+                        Từ chối
+                    </Button>
+                </>
+            ) : null}
+        />
       ))}
 
       {/* Infinite Scroll Trigger Area */}

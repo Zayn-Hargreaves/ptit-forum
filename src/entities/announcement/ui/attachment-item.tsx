@@ -27,7 +27,7 @@ export function AttachmentItem({ attachment }: AttachmentItemProps) {
                 <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-2">
                     {formatFileSize(attachment.size)}
                     <span className="w-1 h-1 rounded-full bg-gray-300" />
-                    <span className="uppercase">{attachment.contentType.split('/').pop()}</span>
+                    <span className="uppercase">{attachment.fileType.split('/').pop()}</span>
                 </p>
             </div>
 
