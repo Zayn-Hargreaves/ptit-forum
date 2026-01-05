@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@shared/ui";
-import { FileText, Users, Settings, Home, LogOut } from "lucide-react";
+import {FileText, Users, Settings, Home, LogOut, School} from "lucide-react";
 import { cn } from "@shared/lib/utils";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -29,6 +29,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!user || user.role !== 'ADMIN') return null;
 
     const navItems = [
+        { href: "/admin/faculties", label: "Faculties", icon: School },
         { href: "/admin/documents", label: "Documents", icon: FileText },
         { href: "/admin/users", label: "Users", icon: Users },
         { href: "/admin/settings", label: "Settings", icon: Settings },
