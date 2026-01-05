@@ -6,7 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, Save } from "lucide-react";
+import { CalendarIcon, Loader2, Save } from "lucide-react";
+import { format } from "date-fns";
 
 import { Button } from "@shared/ui/button/button";
 import { Input } from "@shared/ui/input/input";
@@ -20,6 +21,13 @@ import {
   FormMessage,
 } from "@shared/ui/form/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card/card";
+import { Calendar } from "@shared/ui/calendar/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@shared/ui/popover/popover";
+import { cn } from "@shared/lib/utils";
 
 import { sessionApi } from "@entities/session/api/session-api";
 import { useMe } from "@entities/session/model/queries";
@@ -40,6 +48,7 @@ export function UpdateProfileForm() {
       phone: "",
       studentCode: "",
       classCode: "",
+      dob: undefined,
     },
     mode: "onChange",
   });
@@ -51,13 +60,19 @@ export function UpdateProfileForm() {
       fullName: user.fullName || "",
       phone: user.phone || "",
       studentCode: user.studentCode || "",
+
       classCode: user.classCode || "",
+      dob: user.dob ? new Date(user.dob) : undefined,
     });
   }, [user, form]);
 
   const { mutate: handleSave, isPending } = useMutation({
     mutationFn: async (values: ProfileFormValues) => {
-      return await sessionApi.updateProfile(values);
+      const payload = {
+        ...values,
+        dob: values.dob ? format(values.dob, "yyyy-MM-dd") : undefined,
+      };
+      return await sessionApi.updateProfile(payload);
     },
     onSuccess: async () => {
       toast.success("Cập nhật hồ sơ thành công");
@@ -175,6 +190,48 @@ export function UpdateProfileForm() {
                       <FormDescription className="text-xs">
                         Liên hệ admin nếu cần thay đổi mã SV
                       </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="dob"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Ngày sinh</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "dd/MM/yyyy")
+                              ) : (
+                                <span>Chọn ngày sinh</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}

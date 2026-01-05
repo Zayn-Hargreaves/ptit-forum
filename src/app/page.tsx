@@ -28,16 +28,16 @@ export default function HomePage() {
       <main className="flex-1">
         <LandingHero />
 
-        <Suspense fallback={<DocumentSectionSkeleton />}>
+        {/* <Suspense fallback={<DocumentSectionSkeleton />}>
           <ServerDocumentSection title="Trending Documents" sort="viewCount,desc" />
         </Suspense>
 
         <Suspense fallback={<DocumentSectionSkeleton />}>
           <ServerDocumentSection title="Recent Uploads" sort="createdAt,desc" />
-        </Suspense>
+        </Suspense> */}
 
         <FeaturesSection />
-        <TrendingSection />
+        {/* <TrendingSection /> */}
         <CTASection />
       </main>
       <Footer />

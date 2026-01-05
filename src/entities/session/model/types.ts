@@ -31,6 +31,7 @@ export interface UserStats {
 
 export interface UserProfile extends User {
   facultyName?: string;
+  dob?: string;
   bio?: string;
   studentCode?: string;
   classCode?: string;
@@ -42,6 +43,7 @@ export interface UserProfile extends User {
 
 export interface UpdateProfilePayload {
   fullName?: string;
+  dob?: string;
   phone?: string;
   studentCode?: string;
   classCode?: string;
@@ -51,6 +53,7 @@ export interface UserProfileResponseDto {
   id: string;
   email: string;
   fullName: string;
+  dob: string;
   avatarUrl: string;
   studentCode: string;
   classCode: string;
@@ -63,6 +66,7 @@ export function mapUserProfileResponseDtoToUserProfile(dto: UserProfileResponseD
     id: dto.id,
     email: dto.email,
     fullName: dto.fullName,
+    dob: dto.dob || undefined,
     avatarUrl: dto.avatarUrl || undefined,
     studentCode: dto.studentCode || undefined,
     classCode: dto.classCode || undefined,

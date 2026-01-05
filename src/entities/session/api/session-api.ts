@@ -16,8 +16,8 @@ const mapToUser = (data: any): UserProfile => {
 
 export const sessionApi = {
   me: async () => {
-    const { data } = await apiClient.get<ApiResponse<any>>('/users/me');
-    return mapToUser(data.result);
+    const { data } = await apiClient.get<{ user: UserProfile }>('/auth/me'); // Call local Next.js API
+    return data.user;
   },
 
   getProfile: async () => {
@@ -34,7 +34,7 @@ export const sessionApi = {
     const formData = new FormData();
     formData.append('image', file);
 
-    const { data } = await apiClient.put<ApiResponse<UserProfileResponseDto>>('/users/profile/avatar', formData, {
+    const { data } = await apiClient.put<ApiResponse<UserProfileResponseDto>>('/users/profile', formData, {
       headers: {
         'Content-Type': null,
       },

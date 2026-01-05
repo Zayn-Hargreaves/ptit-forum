@@ -80,7 +80,18 @@ export const DocumentDetailView = ({ id, initialData }: DocumentDetailViewProps)
         </div>
 
         {/* PDF Viewer Section */}
-        <div className="w-full">
+        <div className="w-full relative">
+          {document.status === 'PENDING' && (
+            <div className="absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-lg">
+              <div className="bg-white p-6 rounded-lg shadow-xl text-center max-w-md">
+                <h3 className="text-xl font-bold text-yellow-600 mb-2">Đang chờ duyệt</h3>
+                <p className="text-gray-600 mb-4">
+                  Tài liệu này đang được BQT kiểm duyệt. Chỉ có bạn (tác giả) và Admin mới có thể xem nội dung lúc này.
+                </p>
+                {/* We assume the user seeing this IS the author or admin because API would throw 404 otherwise */}
+              </div>
+            </div>
+          )}
           {/* 
                In a real app, document.fileUrl would be the PDF source. 
                For this phase, we use the local sample.pdf as requested 

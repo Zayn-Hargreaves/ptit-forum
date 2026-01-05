@@ -46,14 +46,14 @@ export async function POST(req: Request) {
       return NextResponse.json(data, { status: res.status });
     }
 
+
     const parsedData = BackendResponseSchema.safeParse(data);
     if (!parsedData.success) {
       console.error('Backend login contract changed:', parsedData.error);
       return NextResponse.json({ message: 'Upstream Server Error: Invalid response format' }, { status: 502 });
     }
 
-    const { accessToken, refreshToken } = parsedData.data.result.tokenResponse;
-    const user = parsedData.data.result.userResponse;
+    const { accessToken, refreshToken, user } = parsedData.data.result;
 
     const response = NextResponse.json({ user });
 
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
       response.cookies.set(name, value, {
         httpOnly: true,
         secure: isProduction,
-        sameSite: 'strict',
+        sameSite: 'lax',
         path: '/',
         maxAge: maxAge,
       });

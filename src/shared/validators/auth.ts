@@ -48,16 +48,15 @@ const userAuthResponseSchema = z.object({
 
 export const BackendResponseSchema = z.object({
   result: z.object({
-    tokenResponse: z.object({
-      accessToken: z.string(),
-      refreshToken: z.string(),
-    }),
-    userResponse: userAuthResponseSchema,
-    permissionResponse: z.array(z.string()).optional().default([]),
+    accessToken: z.string(),
+    refreshToken: z.string(),
+    user: userAuthResponseSchema,
   }),
 });
 export const profileSchema = z.object({
   fullName: z.string().min(2, 'Họ tên quá ngắn').trim(),
+  
+  dob: z.date().optional(),
 
   phone: z
     .string()

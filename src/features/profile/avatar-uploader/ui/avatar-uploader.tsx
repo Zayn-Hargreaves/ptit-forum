@@ -66,7 +66,7 @@ export function AvatarUploader({
     const objectUrl = URL.createObjectURL(file);
     setPreviewUrl(objectUrl);
 
-    await upload(file, "/users/profile/avatar", "PUT", "image");
+    await upload(file, "/users/profile", "PUT", "image");
 
     if (fileInputRef.current) fileInputRef.current.value = "";
   };

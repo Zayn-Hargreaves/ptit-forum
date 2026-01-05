@@ -34,4 +34,22 @@ export const authApi = {
     });
     return data;
   },
+
+  requestResetPassword: async (email: string) => {
+    const { data } = await apiClient.post("/users/password/reset", { email });
+    return data;
+  },
+
+  verifyOtp: async (email: string, otp: string) => {
+    const { data } = await apiClient.post("/users/otp", { email, otp });
+    return data;
+  },
+
+  resetPassword: async (payload: {
+    passwordSessionId: string;
+    newPassword: string;
+  }) => {
+    const { data } = await apiClient.put("/users/change-password", payload);
+    return data;
+  },
 };

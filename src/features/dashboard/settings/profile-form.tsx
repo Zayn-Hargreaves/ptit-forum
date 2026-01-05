@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useAuth } from "@shared/providers/auth-provider";
-import { updateProfile } from "@shared/api/user.service";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateProfile, getMyProfile } from "@shared/api/user.service";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
     Button,
@@ -23,30 +23,74 @@ import {
     CardDescription,
     Avatar,
     AvatarFallback,
-    AvatarImage
+    AvatarImage,
+    Skeleton
 } from "@shared/ui";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Camera } from "lucide-react";
 
+// Validate file size/type
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
 const profileSchema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters").max(50),
+    fullName: z.string().min(2, "Name must be at least 2 characters").max(50),
+    phone: z.string().optional(),
+    studentCode: z.string().optional(),
+    classCode: z.string().optional(),
+    image: z
+        .any()
+        .refine((file) => !file || file instanceof File, "Expected a file")
+        .refine((file) => !file || (file instanceof File && file.size <= MAX_FILE_SIZE), `Max file size is 5MB.`)
+        .refine(
+            (file) => !file || (file instanceof File && ACCEPTED_IMAGE_TYPES.includes(file.type)),
+            "Only .jpg, .jpeg, .png and .webp formats are supported."
+        )
+        .optional(),
 });
 
-export function ProfileForm() {
-    const { user, refreshSession } = useAuth();
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
-    const form = useForm<z.infer<typeof profileSchema>>({
+export function ProfileForm() {
+    const { user: authUser, refreshSession } = useAuth();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    const { data: userProfile, isLoading: isLoadingProfile } = useQuery({
+        queryKey: ['my-profile'],
+        queryFn: getMyProfile,
+    });
+
+    const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            name: user?.fullName || "",
+            fullName: "",
+            phone: "",
+            studentCode: "",
+            classCode: "",
         },
     });
 
+    // Sync form with profile data when loaded
     useEffect(() => {
-        if (user) {
-            form.reset({ name: user.fullName });
+        if (userProfile) {
+            form.reset({
+                fullName: userProfile.fullName || "",
+                phone: userProfile.phone || "",
+                studentCode: userProfile.studentCode || "",
+                classCode: userProfile.classCode || "",
+            });
         }
-    }, [user, form]);
+    }, [userProfile, form]);
+
+    // Cleanup preview URL
+    useEffect(() => {
+        return () => {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
 
     const mutation = useMutation({
         mutationFn: updateProfile,
@@ -56,11 +100,49 @@ export function ProfileForm() {
         },
         onError: (error: any) => {
             toast.error(error.message || "Failed to update profile");
+            console.error(error);
         },
     });
 
-    function onSubmit(values: z.infer<typeof profileSchema>) {
-        mutation.mutate(values);
+    function onSubmit(values: ProfileFormValues) {
+        // Construct payload
+        const payload = {
+            fullName: values.fullName,
+            phone: values.phone,
+            studentCode: values.studentCode,
+            classCode: values.classCode,
+            image: values.image instanceof File ? values.image : undefined,
+        };
+        mutation.mutate(payload);
+    }
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Manual validation check
+            const validationResult = profileSchema.shape.image.safeParse(file);
+            if (!validationResult.success) {
+                // Access issues safely
+                if (validationResult.error.issues && validationResult.error.issues.length > 0) {
+                    toast.error(validationResult.error.issues[0].message);
+                } else {
+                    toast.error("Invalid file");
+                }
+                return;
+            }
+
+            form.setValue("image", file, { shouldValidate: true });
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+        }
+    };
+
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
+    };
+
+    if (isLoadingProfile) {
+        return <Skeleton className="w-full h-[400px]" />;
     }
 
     return (
@@ -73,44 +155,102 @@ export function ProfileForm() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col gap-6">
-                        <div className="flex items-center gap-4">
-                            <div className="relative group cursor-pointer">
-                                <Avatar className="h-20 w-20">
-                                    <AvatarImage src={user?.avatarUrl} />
-                                    <AvatarFallback className="text-lg">{user?.fullName?.[0]?.toUpperCase()}</AvatarFallback>
-                                </Avatar>
-                                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Camera className="h-6 w-6 text-white" />
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+
+                            {/* Avatar Section */}
+                            <div className="flex items-center gap-4">
+                                <div
+                                    className="relative group cursor-pointer"
+                                    onClick={triggerFileInput}
+                                >
+                                    <Avatar className="h-20 w-20">
+                                        <AvatarImage
+                                            src={previewUrl || userProfile?.avatarUrl || authUser?.avatarUrl}
+                                            className="object-cover"
+                                        />
+                                        <AvatarFallback className="text-lg">
+                                            {(userProfile?.fullName || authUser?.fullName)?.[0]?.toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Camera className="h-6 w-6 text-white" />
+                                    </div>
+                                    <Input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <h4 className="font-medium">Profile Picture</h4>
+                                    <p className="text-xs text-muted-foreground">Click the image to upload new avatar.</p>
                                 </div>
                             </div>
-                            <div className="space-y-1">
-                                <h4 className="font-medium">Profile Picture</h4>
-                                <p className="text-xs text-muted-foreground">Click to upload (Not implemented in MVP)</p>
-                            </div>
-                        </div>
 
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-md">
+                            <FormField
+                                control={form.control}
+                                name="fullName"
+                                render={({ field }) => (
+                                    <FormItem className="max-w-md">
+                                        <FormLabel>Full Name</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Your Name" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
                                 <FormField
                                     control={form.control}
-                                    name="name"
+                                    name="phone"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Display Name</FormLabel>
+                                            <FormLabel>Phone</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Your Name" {...field} />
+                                                <Input placeholder="09xxx..." {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-                                <Button type="submit" disabled={mutation.isPending}>
-                                    {mutation.isPending ? "Saving..." : "Save Changes"}
-                                </Button>
-                            </form>
-                        </Form>
-                    </div>
+                                <FormField
+                                    control={form.control}
+                                    name="studentCode"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Student Code</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="B21..." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="classCode"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Class Code</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="D21..." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <Button type="submit" disabled={mutation.isPending}>
+                                {mutation.isPending ? "Saving..." : "Save Changes"}
+                            </Button>
+                        </form>
+                    </Form>
                 </CardContent>
             </Card>
 
@@ -122,7 +262,7 @@ export function ProfileForm() {
                     <div className="space-y-4">
                         <div className="grid gap-2">
                             <FormLabel>Email</FormLabel>
-                            <Input value={user?.email} disabled readOnly />
+                            <Input value={authUser?.email} disabled readOnly />
                             <p className="text-xs text-muted-foreground">Email cannot be changed.</p>
                         </div>
                     </div>
