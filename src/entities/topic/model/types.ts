@@ -8,9 +8,13 @@ export interface ITopic {
   postCount?: number;
   topicVisibility?: 'PUBLIC' | 'PRIVATE';
   currentUserContext?: {
-    topicMember: boolean;  // Backend returns without 'is' prefix
+    topicMember: boolean; // Backend returns without 'is' prefix
     topicManager: boolean;
     topicCreator: boolean;
     requestStatus: 'NONE' | 'PENDING' | 'APPROVED';
   };
+  categoryName?: string;
+  createdAt?: string;
 }
+
+export type Topic = ITopic;

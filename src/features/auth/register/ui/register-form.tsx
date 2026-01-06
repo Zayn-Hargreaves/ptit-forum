@@ -1,23 +1,11 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { isAxiosError } from "axios";
-import { Mail, Loader2 } from "lucide-react";
-import Link from "next/link";
-
-import { Button } from "@shared/ui/button/button";
-import { Input } from "@shared/ui/input/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@shared/ui/form/form";
+import { authApi } from '@features/auth/api/auth-api';
+import { SocialLogin } from '@features/auth/social-login/social-login';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { BACKEND_ERROR_CODES } from '@shared/constants/error-codes';
+import { ERROR_MESSAGES } from '@shared/constants/error-messages';
+import { Button } from '@shared/ui/button/button';
 import {
   Card,
   CardContent,
@@ -25,21 +13,32 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@shared/ui/card/card";
-import { RegisterInput, registerSchema } from "@shared/validators/auth";
-import { PasswordInput } from "@shared/ui/input/password-input";
-import { BACKEND_ERROR_CODES } from "@shared/constants/error-codes";
-import { ERROR_MESSAGES } from "@shared/constants/error-messages";
-import { authApi } from "@features/auth/api/auth-api";
-import { SocialLogin } from "@features/auth/social-login/social-login";
+} from '@shared/ui/card/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@shared/ui/form/form';
+import { Input } from '@shared/ui/input/input';
+import { PasswordInput } from '@shared/ui/input/password-input';
+import { RegisterInput, registerSchema } from '@shared/validators/auth';
+import { isAxiosError } from 'axios';
+import { Loader2, Mail } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 export function RegisterForm() {
   const router = useRouter();
 
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: "", password: "", confirmPassword: "" },
-    mode: "onBlur",
+    defaultValues: { email: '', password: '', confirmPassword: '' },
+    mode: 'onBlur',
   });
 
   const { isSubmitting } = form.formState;
@@ -47,8 +46,8 @@ export function RegisterForm() {
   const onSubmit = async (values: RegisterInput) => {
     try {
       await authApi.register(values);
-      toast.success("Đăng ký thành công!", {
-        description: "Vui lòng kiểm tra mã OTP trong email.",
+      toast.success('Đăng ký thành công!', {
+        description: 'Vui lòng kiểm tra mã OTP trong email.',
       });
       router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
     } catch (error: unknown) {
@@ -57,33 +56,27 @@ export function RegisterForm() {
         : {};
       const code = data.code as number | undefined;
       if (code === BACKEND_ERROR_CODES.ACCOUNT_NOT_VERIFIED) {
-        toast.info("Tài khoản này đang chờ xác thực.");
+        toast.info('Tài khoản này đang chờ xác thực.');
         router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
         return;
       }
       if (code === BACKEND_ERROR_CODES.USER_EXISTED) {
-        form.setError("email", {
-          type: "manual",
-          message: "Email này đã được đăng ký.",
+        form.setError('email', {
+          type: 'manual',
+          message: 'Email này đã được đăng ký.',
         });
-        form.setFocus("email");
+        form.setFocus('email');
         return;
       }
-      toast.error(
-        code && ERROR_MESSAGES[code] ? ERROR_MESSAGES[code] : "Đăng ký thất bại"
-      );
+      toast.error(code && ERROR_MESSAGES[code] ? ERROR_MESSAGES[code] : 'Đăng ký thất bại');
     }
   };
 
   return (
-    <Card className="border-2 shadow-md w-full max-w-md">
+    <Card className="w-full max-w-md border-2 shadow-md">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">
-          Đăng ký tài khoản
-        </CardTitle>
-        <CardDescription className="text-center">
-          Gia nhập cộng đồng sinh viên PTIT
-        </CardDescription>
+        <CardTitle className="text-center text-2xl font-bold">Đăng ký tài khoản</CardTitle>
+        <CardDescription className="text-center">Gia nhập cộng đồng sinh viên PTIT</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -95,7 +88,7 @@ export function RegisterForm() {
                 <FormItem>
                   <FormLabel>Email sinh viên</FormLabel>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                     <FormControl>
                       <Input
                         placeholder="sinhvien@student.ptit.edu.vn"
@@ -115,11 +108,7 @@ export function RegisterForm() {
                 <FormItem>
                   <FormLabel>Mật khẩu</FormLabel>
                   <FormControl>
-                    <PasswordInput
-                      placeholder="mật khẩu"
-                      autoComplete="new-password"
-                      {...field}
-                    />
+                    <PasswordInput placeholder="mật khẩu" autoComplete="new-password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -144,17 +133,8 @@ export function RegisterForm() {
               )}
             />
 
-            <Button
-              type="submit"
-              className="w-full font-bold"
-              size="lg"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Đăng ký ngay"
-              )}
+            <Button type="submit" className="w-full font-bold" size="lg" disabled={isSubmitting}>
+              {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Đăng ký ngay'}
             </Button>
           </form>
         </Form>
@@ -163,12 +143,9 @@ export function RegisterForm() {
         </div>
       </CardContent>
       <CardFooter className="flex justify-center">
-        <div className="text-center text-sm text-muted-foreground">
-          Đã có tài khoản?{" "}
-          <Link
-            href="/login"
-            className="font-bold text-primary hover:underline"
-          >
+        <div className="text-muted-foreground text-center text-sm">
+          Đã có tài khoản?{' '}
+          <Link href="/login" className="text-primary font-bold hover:underline">
             Đăng nhập
           </Link>
         </div>

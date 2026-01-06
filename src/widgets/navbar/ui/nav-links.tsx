@@ -1,8 +1,7 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import type { NAV_LINKS as _NAV } from "../model/nav-links";
-import { cn } from "@shared/lib/utils";
+import { cn } from '@shared/lib/utils';
+import Link from 'next/link';
 
 export function NavbarNavLinks({
   links,
@@ -21,10 +20,10 @@ export function NavbarNavLinks({
           <Link
             key={link.href}
             href={link.href}
-            aria-current={active ? "page" : undefined}
+            aria-current={active ? 'page' : undefined}
             className={cn(
-              "text-sm font-medium transition-colors hover:text-primary",
-              active ? "text-primary" : "text-muted-foreground"
+              'hover:text-primary text-sm font-medium transition-colors',
+              active ? 'text-primary' : 'text-muted-foreground',
             )}
           >
             {link.label}

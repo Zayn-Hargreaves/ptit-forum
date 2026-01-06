@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient, InfiniteData } from '@tanstack/react-query';
 import { commentApi } from '@entities/interaction/api/comment-api';
 import { Comment } from '@entities/interaction/model/types';
 import { PageResponse } from '@shared/api/types';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 interface UseDeleteCommentProps {
@@ -12,9 +12,14 @@ interface UseDeleteCommentProps {
 export function useDeleteComment({ postId, rootCommentId }: UseDeleteCommentProps) {
   const queryClient = useQueryClient();
 
-  const queryKey = rootCommentId ? ['comments', 'replies', rootCommentId] : ['comments', 'roots', postId];
+  const queryKey = rootCommentId
+    ? ['comments', 'replies', rootCommentId]
+    : ['comments', 'roots', postId];
 
-  const updateQueryData = (oldData: InfiniteData<PageResponse<Comment>> | undefined, commentId: string) => {
+  const updateQueryData = (
+    oldData: InfiniteData<PageResponse<Comment>> | undefined,
+    commentId: string,
+  ) => {
     if (!oldData) return oldData;
 
     return {
@@ -42,7 +47,7 @@ export function useDeleteComment({ postId, rootCommentId }: UseDeleteCommentProp
       const previousData = queryClient.getQueryData<InfiniteData<PageResponse<Comment>>>(queryKey);
 
       queryClient.setQueryData<InfiniteData<PageResponse<Comment>>>(queryKey, (oldData) =>
-        updateQueryData(oldData, commentIdToDelete)
+        updateQueryData(oldData, commentIdToDelete),
       );
 
       return { previousData };

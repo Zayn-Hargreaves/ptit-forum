@@ -1,31 +1,32 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import React, { useState } from "react";
-import { Pagination } from "./pagination";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import React, { useState } from 'react';
+
+import { Pagination } from './pagination';
 
 const meta: Meta<typeof Pagination> = {
-  title: "shared/UI/Pagination",
+  title: 'shared/UI/Pagination',
   component: Pagination,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     currentPage: {
       control: {
-        type: "number",
+        type: 'number',
       },
-      description: "Current active page",
+      description: 'Current active page',
     },
     totalPages: {
       control: {
-        type: "number",
+        type: 'number',
         min: 1,
       },
-      description: "Total number of pages",
+      description: 'Total number of pages',
     },
     onPageChange: {
       control: false,
-      description: "Callback triggered when user changes a page",
+      description: 'Callback triggered when user changes a page',
     },
   },
   args: {
@@ -45,13 +46,7 @@ export const Default: Story = {
   render: (args) => {
     const [page, setPage] = useState(args.currentPage);
 
-    return (
-      <Pagination
-        {...args}
-        currentPage={page}
-        onPageChange={(p) => setPage(p)}
-      />
-    );
+    return <Pagination {...args} currentPage={page} onPageChange={(p) => setPage(p)} />;
   },
 };
 
@@ -66,13 +61,7 @@ export const FewPages: Story = {
   render: (args) => {
     const [page, setPage] = useState(args.currentPage);
 
-    return (
-      <Pagination
-        {...args}
-        currentPage={page}
-        onPageChange={(p) => setPage(p)}
-      />
-    );
+    return <Pagination {...args} currentPage={page} onPageChange={(p) => setPage(p)} />;
   },
 };
 
@@ -87,13 +76,7 @@ export const ManyPages: Story = {
   render: (args) => {
     const [page, setPage] = useState(args.currentPage);
 
-    return (
-      <Pagination
-        {...args}
-        currentPage={page}
-        onPageChange={(p) => setPage(p)}
-      />
-    );
+    return <Pagination {...args} currentPage={page} onPageChange={(p) => setPage(p)} />;
   },
 };
 
@@ -108,12 +91,6 @@ export const EndPage: Story = {
   render: (args) => {
     const [page, setPage] = useState(args.currentPage);
 
-    return (
-      <Pagination
-        {...args}
-        currentPage={page}
-        onPageChange={(p) => setPage(p)}
-      />
-    );
+    return <Pagination {...args} currentPage={page} onPageChange={(p) => setPage(p)} />;
   },
 };

@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from "react";
-import { toast } from "sonner";
-import { apiClient } from "@shared/api/axios-client";
-import { ApiResponse } from "@shared/api/types";
+import { apiClient } from '@shared/api/axios-client';
+import { ApiResponse } from '@shared/api/types';
+import { AxiosError } from 'axios';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 export interface FileMetadata {
   id: string;
@@ -10,16 +11,18 @@ export interface FileMetadata {
   type: string;
 }
 
-interface UseFileUploadOptions {
-  onSuccess?: (data: any) => void;
-  onError?: (error: any) => void;
+interface UseFileUploadOptions<T = FileMetadata | FileMetadata[]> {
+  onSuccess?: (data: T) => void;
+  onError?: (error: unknown) => void;
   validate?: {
     maxSizeMB?: number;
     acceptedTypes?: string[];
   };
 }
 
-export function useFileUpload(options: UseFileUploadOptions = {}) {
+export function useFileUpload<T = FileMetadata | FileMetadata[]>(
+  options: UseFileUploadOptions<T> = {},
+) {
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<FileMetadata[]>([]);
@@ -38,10 +41,10 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
 
   const upload = async (
     file: File,
-    endpoint: string = "/files/upload",
-    method: "POST" | "PUT" = "POST",
-    formDataKey: string = "file",
-    additionalData?: Record<string, string>
+    endpoint: string = '/files/upload',
+    method: 'POST' | 'PUT' = 'POST',
+    formDataKey: string = 'file',
+    additionalData?: Record<string, string>,
   ) => {
     if (options.validate?.maxSizeMB) {
       if (file.size / 1024 / 1024 > options.validate.maxSizeMB) {
@@ -52,7 +55,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
 
     if (options.validate?.acceptedTypes) {
       if (!options.validate.acceptedTypes.includes(file.type)) {
-        toast.error("Định dạng file không hỗ trợ");
+        toast.error('Định dạng file không hỗ trợ');
         return null;
       }
     }
@@ -69,12 +72,12 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
       });
     }
     try {
-      const response = await apiClient.request<ApiResponse<any>>({
+      const response = await apiClient.request<ApiResponse<T>>({
         method,
         url: endpoint,
         data: formData,
         headers: {
-          "Content-Type": null,
+          'Content-Type': null,
         },
         onUploadProgress: (progressEvent) => {
           const total = progressEvent.total || file.size;
@@ -91,9 +94,10 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
 
       options.onSuccess?.(result);
       return result;
-    } catch (error: any) {
-      console.error("Upload failed:", error);
-      const msg = error.response?.data?.message || "Lỗi khi tải file";
+    } catch (error: unknown) {
+      console.error('Upload failed:', error);
+      const axiosError = error as AxiosError<{ message?: string }>;
+      const msg = axiosError.response?.data?.message || 'Lỗi khi tải file';
       toast.error(msg);
       options.onError?.(error);
       return null;

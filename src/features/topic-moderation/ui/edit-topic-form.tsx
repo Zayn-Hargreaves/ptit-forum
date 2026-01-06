@@ -1,18 +1,25 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Button } from '@shared/ui/button/button';
-import { Input } from '@shared/ui/input/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@shared/ui/form/form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { topicApi } from '@entities/topic/api/topic-api';
-import { toast } from 'sonner';
-import { Switch } from '@shared/ui/switch/switch';
-import { Globe, Lock, Save } from 'lucide-react';
 import { ITopic } from '@entities/topic/model/types';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@shared/ui/button/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@shared/ui/form/form';
+import { Input } from '@shared/ui/input/input';
+import { Switch } from '@shared/ui/switch/switch';
 import { Textarea } from '@shared/ui/textarea/textarea';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Globe, Lock, Save } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 const topicSchema = z.object({
   name: z.string().min(3, 'Tên chủ đề phải có ít nhất 3 ký tự'),
@@ -41,11 +48,11 @@ export function EditTopicForm({ topic, onCancel, onSuccess }: EditTopicFormProps
   });
 
   const mutation = useMutation({
-    mutationFn: (values: TopicFormValues) => 
+    mutationFn: (values: TopicFormValues) =>
       topicApi.updateTopic(topic.id, {
-          name: values.name,
-          description: values.description || '',
-          isPublic: values.isPublic
+        name: values.name,
+        description: values.description || '',
+        isPublic: values.isPublic,
       }),
     onSuccess: (updatedTopic) => {
       toast.success('Đã cập nhật chủ đề');
@@ -83,23 +90,24 @@ export function EditTopicForm({ topic, onCancel, onSuccess }: EditTopicFormProps
           control={form.control}
           name="isPublic"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm bg-white">
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border bg-white p-4 shadow-sm">
               <div className="space-y-0.5">
-                <FormLabel className="text-base flex items-center gap-2">
-                    {field.value ? <Globe className="w-4 h-4 text-primary" /> : <Lock className="w-4 h-4" />}
-                    Trạng thái: {field.value ? 'Công khai' : 'Riêng tư'}
+                <FormLabel className="flex items-center gap-2 text-base">
+                  {field.value ? (
+                    <Globe className="text-primary h-4 w-4" />
+                  ) : (
+                    <Lock className="h-4 w-4" />
+                  )}
+                  Trạng thái: {field.value ? 'Công khai' : 'Riêng tư'}
                 </FormLabel>
-                <div className="text-sm text-muted-foreground">
-                  {field.value 
-                    ? 'Mọi người đều có thể xem và tham gia chủ đề này.' 
+                <div className="text-muted-foreground text-sm">
+                  {field.value
+                    ? 'Mọi người đều có thể xem và tham gia chủ đề này.'
                     : 'Chỉ các thành viên được duyệt mới có thể xem nội dung.'}
                 </div>
               </div>
               <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
             </FormItem>
           )}
@@ -112,7 +120,7 @@ export function EditTopicForm({ topic, onCancel, onSuccess }: EditTopicFormProps
             <FormItem>
               <FormLabel>Mô tả / Thông tin chi tiết</FormLabel>
               <FormControl>
-                <Textarea 
+                <Textarea
                   placeholder="Nhập thông tin chi tiết về chủ đề..."
                   className="min-h-[200px]"
                   {...field}
@@ -123,18 +131,20 @@ export function EditTopicForm({ topic, onCancel, onSuccess }: EditTopicFormProps
           )}
         />
 
-        <div className="flex gap-2 justify-end pt-4 border-t">
+        <div className="flex justify-end gap-2 border-t pt-4">
           {onCancel && (
             <Button type="button" variant="outline" onClick={onCancel}>
               Hủy bỏ
             </Button>
           )}
           <Button type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? 'Đang lưu...' : (
-                <>
-                    <Save className="w-4 h-4 mr-2" />
-                    Lưu thay đổi
-                </>
+            {mutation.isPending ? (
+              'Đang lưu...'
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Lưu thay đổi
+              </>
             )}
           </Button>
         </div>

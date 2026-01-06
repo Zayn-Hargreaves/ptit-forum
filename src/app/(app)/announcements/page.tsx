@@ -1,10 +1,10 @@
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getQueryClient } from '@shared/lib/query/get-query-client';
 import { fetchAnnouncements } from '@entities/announcement/api';
 import { announcementKeys } from '@entities/announcement/lib/query-keys';
-import { AnnouncementsList } from '@widgets/announcement-list/ui/announcement-list';
-import { AnnouncementsFilter } from '@features/announcements/annoucements-filter';
 import { AnnouncementType } from '@entities/announcement/model/types';
+import { AnnouncementsFilter } from '@features/announcements/annoucements-filter';
+import { getQueryClient } from '@shared/lib/query/get-query-client';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { AnnouncementsList } from '@widgets/announcement-list/ui/announcement-list';
 import { cookies } from 'next/headers';
 
 type PageProps = {
@@ -26,7 +26,7 @@ export default async function AnnouncementsPage(props: PageProps) {
     }
   } else if (Array.isArray(typeParam)) {
     types = typeParam.filter((t) =>
-      Object.values(AnnouncementType).includes(t as AnnouncementType)
+      Object.values(AnnouncementType).includes(t as AnnouncementType),
     ) as AnnouncementType[];
   }
 
@@ -55,7 +55,9 @@ export default async function AnnouncementsPage(props: PageProps) {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="mb-2 text-3xl font-bold">Thông báo</h1>
-        <p className="text-muted-foreground">Cập nhật thông tin học vụ, học bổng và hoạt động của trường</p>
+        <p className="text-muted-foreground">
+          Cập nhật thông tin học vụ, học bổng và hoạt động của trường
+        </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-4">

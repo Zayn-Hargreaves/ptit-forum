@@ -1,7 +1,11 @@
 import { z } from 'zod';
 
 export const createPostSchema = z.object({
-  title: z.string().min(10, 'Tiêu đề phải có ít nhất 10 ký tự').max(200, 'Tiêu đề không được quá 200 ký tự').trim(),
+  title: z
+    .string()
+    .min(10, 'Tiêu đề phải có ít nhất 10 ký tự')
+    .max(200, 'Tiêu đề không được quá 200 ký tự')
+    .trim(),
 
   content: z
     .string()

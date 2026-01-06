@@ -1,24 +1,25 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import React from "react";
-import { Skeleton } from "./skeleton";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import React from 'react';
+
+import { Skeleton } from './skeleton';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Skeleton> = {
-  title: "shared/UI/Skeleton",
+  title: 'shared/UI/Skeleton',
   component: Skeleton,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     className: {
-      control: "text",
-      description: "Custom className applied to the skeleton wrapper.",
+      control: 'text',
+      description: 'Custom className applied to the skeleton wrapper.',
     },
   },
   args: {
-    className: "h-4 w-24",
+    className: 'h-4 w-24',
   },
 };
 
@@ -54,7 +55,7 @@ export const TextLines: Story = {
  */
 export const Card: Story = {
   render: () => (
-    <div className="w-80 rounded-md border bg-background p-4 space-y-3">
+    <div className="bg-background w-80 space-y-3 rounded-md border p-4">
       <div className="flex items-center gap-3">
         <Skeleton className="h-10 w-10 rounded-full" />
         <div className="flex-1 space-y-2">
@@ -98,7 +99,7 @@ export const AvatarRow: Story = {
  */
 export const Table: Story = {
   render: () => (
-    <div className="w-[480px] rounded-md border bg-background p-3 space-y-3 text-xs">
+    <div className="bg-background w-[480px] space-y-3 rounded-md border p-3 text-xs">
       <div className="flex gap-2">
         <Skeleton className="h-4 w-20" />
         <Skeleton className="h-4 w-16" />

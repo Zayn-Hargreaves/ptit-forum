@@ -8,12 +8,9 @@ export interface TopicMemberResponse {
   topicRole: 'MEMBER' | 'MANAGER' | 'OWNER';
   userId: string;
   topicId: string;
-  user?: {
-    id: string;
-    fullName: string;
-    avatarUrl?: string;
-    email: string;
-  };
+  fullName: string;
+  avatarUrl?: string;
+  email: string;
 }
 
 export interface MemberListParams {
@@ -28,7 +25,7 @@ export const topicMemberApi = {
    */
   joinTopic: async (topicId: string): Promise<TopicMemberResponse> => {
     const { data } = await apiClient.post<ApiResponse<TopicMemberResponse>>(
-      `/topic-members/join/${topicId}`
+      `/topic-members/join/${topicId}`,
     );
     return data.result;
   },
@@ -43,10 +40,13 @@ export const topicMemberApi = {
   /**
    * Get members list for a topic with pagination support
    */
-  getMembers: async (topicId: string, params?: MemberListParams): Promise<{ content: TopicMemberResponse[] }> => {
+  getMembers: async (
+    topicId: string,
+    params?: MemberListParams,
+  ): Promise<{ content: TopicMemberResponse[] }> => {
     const { data } = await apiClient.get<ApiResponse<{ content: TopicMemberResponse[] }>>(
       `/topic-members/topic/${topicId}`,
-      { params }
+      { params },
     );
     return data.result;
   },
@@ -56,7 +56,7 @@ export const topicMemberApi = {
    */
   approveMember: async (memberId: string): Promise<TopicMemberResponse> => {
     const { data } = await apiClient.post<ApiResponse<TopicMemberResponse>>(
-      `/topic-members/approve/${memberId}`
+      `/topic-members/approve/${memberId}`,
     );
     return data.result;
   },

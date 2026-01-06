@@ -1,38 +1,33 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import React from "react";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "./tooltip";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import React from 'react';
+
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 
 // --- META DEFINITION ---
 
 const meta = {
-  title: "shared/UI/Tooltip",
+  title: 'shared/UI/Tooltip',
   component: Tooltip,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     open: {
-      control: "boolean",
+      control: 'boolean',
       description:
-        "Controlled open state of the tooltip. When provided, the tooltip behaves as a controlled component.",
+        'Controlled open state of the tooltip. When provided, the tooltip behaves as a controlled component.',
     },
     defaultOpen: {
-      control: "boolean",
-      description: "Initial open state of the tooltip in uncontrolled mode.",
+      control: 'boolean',
+      description: 'Initial open state of the tooltip in uncontrolled mode.',
     },
     onOpenChange: {
       table: {
-        category: "Events",
+        category: 'Events',
       },
       control: false,
-      description:
-        "Callback fired when the open state changes. Receives the next boolean value.",
+      description: 'Callback fired when the open state changes. Receives the next boolean value.',
     },
     // Props from Tooltip.Root (Radix) that are commonly used
     delayDuration: {
@@ -54,7 +49,7 @@ export const Default: Story = {
   render: (args) => (
     <Tooltip {...args}>
       <TooltipTrigger asChild>
-        <button className="rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent">
+        <button className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm font-medium">
           Hover me
         </button>
       </TooltipTrigger>
@@ -71,9 +66,7 @@ export const Placements: Story = {
     <div className="flex flex-wrap items-center gap-6">
       <Tooltip {...args}>
         <TooltipTrigger asChild>
-          <button className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent">
-            Top
-          </button>
+          <button className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm">Top</button>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={4}>
           Placed above the trigger
@@ -82,9 +75,7 @@ export const Placements: Story = {
 
       <Tooltip {...args}>
         <TooltipTrigger asChild>
-          <button className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent">
-            Right
-          </button>
+          <button className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm">Right</button>
         </TooltipTrigger>
         <TooltipContent side="right" sideOffset={4}>
           Placed to the right
@@ -93,9 +84,7 @@ export const Placements: Story = {
 
       <Tooltip {...args}>
         <TooltipTrigger asChild>
-          <button className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent">
-            Bottom
-          </button>
+          <button className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm">Bottom</button>
         </TooltipTrigger>
         <TooltipContent side="bottom" sideOffset={4}>
           Placed below the trigger
@@ -104,9 +93,7 @@ export const Placements: Story = {
 
       <Tooltip {...args}>
         <TooltipTrigger asChild>
-          <button className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent">
-            Left
-          </button>
+          <button className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm">Left</button>
         </TooltipTrigger>
         <TooltipContent side="left" sideOffset={4}>
           Placed to the left
@@ -123,15 +110,14 @@ export const RichContent: Story = {
   render: (args) => (
     <Tooltip {...args}>
       <TooltipTrigger asChild>
-        <button className="rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent">
+        <button className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm font-medium">
           What is this?
         </button>
       </TooltipTrigger>
       <TooltipContent className="max-w-xs space-y-1">
         <p className="text-xs font-semibold">Advanced analytics</p>
         <p className="text-[11px] opacity-90">
-          Get insights about visitors, top pages, and conversion funnels in
-          real-time.
+          Get insights about visitors, top pages, and conversion funnels in real-time.
         </p>
       </TooltipContent>
     </Tooltip>
@@ -148,7 +134,7 @@ export const WithProvider: Story = {
       <div className="flex gap-4">
         <Tooltip>
           <TooltipTrigger asChild>
-            <button className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent">
+            <button className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm">
               Profile
             </button>
           </TooltipTrigger>
@@ -157,7 +143,7 @@ export const WithProvider: Story = {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <button className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent">
+            <button className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm">
               Settings
             </button>
           </TooltipTrigger>
@@ -166,9 +152,7 @@ export const WithProvider: Story = {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <button className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent">
-              Help
-            </button>
+            <button className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm">Help</button>
           </TooltipTrigger>
           <TooltipContent>Open the documentation center.</TooltipContent>
         </Tooltip>
@@ -188,7 +172,7 @@ function ControlledExample(props: React.ComponentProps<typeof Tooltip>) {
     <div className="space-y-3">
       <Tooltip {...props} open={open} onOpenChange={setOpen}>
         <TooltipTrigger asChild>
-          <button className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent">
+          <button className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm">
             Hover or focus me
           </button>
         </TooltipTrigger>
@@ -197,10 +181,10 @@ function ControlledExample(props: React.ComponentProps<typeof Tooltip>) {
 
       <button
         type="button"
-        className="rounded-md border px-2 py-1 text-xs hover:bg-accent"
+        className="hover:bg-accent rounded-md border px-2 py-1 text-xs"
         onClick={() => setOpen((prev) => !prev)}
       >
-        Toggle tooltip programmatically (current: {open ? "open" : "closed"})
+        Toggle tooltip programmatically (current: {open ? 'open' : 'closed'})
       </button>
     </div>
   );
@@ -214,7 +198,7 @@ export const Controlled: Story = {
   parameters: {
     controls: {
       // Avoid conflicting with internal controlled state
-      exclude: ["open", "defaultOpen", "onOpenChange"],
+      exclude: ['open', 'defaultOpen', 'onOpenChange'],
     },
   },
 };

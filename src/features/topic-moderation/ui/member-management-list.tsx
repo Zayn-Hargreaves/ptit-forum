@@ -1,19 +1,25 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { topicMemberApi, TopicMemberResponse } from '@entities/topic/api/topic-member-api';
 import { useTopicRole } from '@entities/topic/model/use-topic-role';
+import { Badge } from '@shared/ui/badge/badge';
 import { Button } from '@shared/ui/button/button';
 import { Skeleton } from '@shared/ui/skeleton/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/ui/tabs/tabs';
-import { Check, X, Crown, Shield } from 'lucide-react';
-import { toast } from 'sonner';
+import { UserAvatar } from '@shared/ui/user-avatar/user-avatar';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { Badge } from '@shared/ui/badge/badge';
+import { Check, Crown, Shield, X } from 'lucide-react';
+import { toast } from 'sonner';
+
+import {
+  getRoleBadgeVariant,
+  getRoleLabel,
+  isLeadershipRole,
+  type TopicRole,
+} from '../lib/permission-utils';
 import { MemberActionMenu } from './member-action-menu';
-import { getRoleLabel, getRoleBadgeVariant, isLeadershipRole, type TopicRole } from '../lib/permission-utils';
 
 interface MemberManagementListProps {
   topicId: string;
@@ -52,23 +58,23 @@ const MemberCard = ({
   isPending: boolean;
   showActions?: boolean;
 }) => {
-  const roleIcon = member.topicRole === 'OWNER' ? '👑' : member.topicRole === 'MANAGER' ? '🛡️' : '👤';
+  const roleIcon =
+    member.topicRole === 'OWNER' ? '👑' : member.topicRole === 'MANAGER' ? '🛡️' : '👤';
 
   return (
-    <div className="flex items-start justify-between p-4 border rounded-lg bg-background shadow-sm hover:shadow-md transition-all">
-      <div className="flex items-center gap-3 flex-1">
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={member.user?.avatarUrl || (member as any).avatarUrl} />
-          <AvatarFallback>{(member.user?.fullName || (member as any).fullName)?.[0] || 'U'}</AvatarFallback>
-        </Avatar>
-        <div className="grid gap-1 flex-1">
+    <div className="bg-background flex items-start justify-between rounded-lg border p-4 shadow-sm transition-all hover:shadow-md">
+      <div className="flex flex-1 items-center gap-3">
+        <UserAvatar name={member.fullName} avatarUrl={member.avatarUrl} className="h-10 w-10" />
+        <div className="grid flex-1 gap-1">
           <div className="flex items-center gap-2">
-            <span className="text-lg" aria-hidden="true">{roleIcon}</span>
-            <h4 className="font-semibold">{member.user?.fullName || (member as any).fullName}</h4>
+            <span className="text-lg" aria-hidden="true">
+              {roleIcon}
+            </span>
+            <h4 className="font-semibold">{member.fullName || 'User'}</h4>
             {member.approved && <RoleBadge role={member.topicRole} />}
           </div>
-          <div className="text-sm text-muted-foreground">{member.user?.email || (member as any).email}</div>
-          <div className="text-xs text-muted-foreground">
+          <div className="text-muted-foreground text-sm">{member.email}</div>
+          <div className="text-muted-foreground text-xs">
             {formatDistanceToNow(new Date(member.joinedAt), { addSuffix: true, locale: vi })}
           </div>
         </div>
@@ -80,7 +86,7 @@ const MemberCard = ({
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+                className="h-8 w-8 text-green-600 hover:bg-green-50 hover:text-green-700"
                 title="Duyệt"
                 disabled={isPending}
                 onClick={() => onApprove?.(member.id)}
@@ -90,7 +96,7 @@ const MemberCard = ({
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700"
                 title="Từ chối"
                 disabled={isPending}
                 onClick={() => onReject?.(member.id)}
@@ -103,7 +109,7 @@ const MemberCard = ({
               viewerRole={viewerRole}
               targetRole={member.topicRole as TopicRole}
               targetMemberId={member.id}
-              targetMemberName={member.user?.fullName || (member as any).fullName}
+              targetMemberName={member.fullName || 'User'}
               onRemove={onRemove!}
               onChangeRole={onChangeRole}
               disabled={isPending}
@@ -136,11 +142,11 @@ const GroupedMemberList = ({
       {/* Leadership Section */}
       {leadership.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b-2 border-amber-200">
+          <div className="mb-3 flex items-center gap-2 border-b-2 border-amber-200 pb-2">
             <Crown className="h-5 w-5 text-amber-600" />
             <h3 className="font-semibold text-amber-700">Ban Quản Trị</h3>
           </div>
-          <div className="space-y-3 p-3 bg-amber-50/30 rounded-lg border border-amber-100">
+          <div className="space-y-3 rounded-lg border border-amber-100 bg-amber-50/30 p-3">
             {leadership.map((member) => (
               <MemberCard
                 key={member.id}
@@ -158,7 +164,7 @@ const GroupedMemberList = ({
       {/* Regular Members Section */}
       {regularMembers.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b-2 border-gray-200">
+          <div className="mb-3 flex items-center gap-2 border-b-2 border-gray-200 pb-2">
             <span className="text-lg">👥</span>
             <h3 className="font-semibold text-gray-700">Thành viên ({regularMembers.length})</h3>
           </div>
@@ -178,7 +184,7 @@ const GroupedMemberList = ({
       )}
 
       {leadership.length === 0 && regularMembers.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground italic">Chưa có thành viên</div>
+        <div className="text-muted-foreground py-8 text-center italic">Chưa có thành viên</div>
       )}
     </div>
   );
@@ -222,7 +228,7 @@ export function MemberManagementList({ topicId }: MemberManagementListProps) {
 
   return (
     <Tabs defaultValue="pending" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-4">
+      <TabsList className="mb-4 grid w-full grid-cols-2">
         <TabsTrigger value="pending">
           Chờ duyệt
           {pendingMembers && pendingMembers.content.length > 0 && (
@@ -234,7 +240,9 @@ export function MemberManagementList({ topicId }: MemberManagementListProps) {
         <TabsTrigger value="approved">
           Đã duyệt
           {approvedMembers && approvedMembers.content.length > 0 && (
-            <span className="ml-2 text-xs text-muted-foreground">({approvedMembers.content.length})</span>
+            <span className="text-muted-foreground ml-2 text-xs">
+              ({approvedMembers.content.length})
+            </span>
           )}
         </TabsTrigger>
       </TabsList>
@@ -247,7 +255,7 @@ export function MemberManagementList({ topicId }: MemberManagementListProps) {
             ))}
           </div>
         ) : !pendingMembers || pendingMembers.content.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground italic">
+          <div className="text-muted-foreground py-8 text-center italic">
             Không có thành viên nào chờ duyệt
           </div>
         ) : (
@@ -274,7 +282,7 @@ export function MemberManagementList({ topicId }: MemberManagementListProps) {
             ))}
           </div>
         ) : !approvedMembers || approvedMembers.content.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground italic">Chưa có thành viên</div>
+          <div className="text-muted-foreground py-8 text-center italic">Chưa có thành viên</div>
         ) : (
           <GroupedMemberList
             members={approvedMembers.content}

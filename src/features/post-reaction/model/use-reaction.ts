@@ -1,15 +1,14 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { reactionApi } from '@entities/interaction/api/reaction-api';
 import { TargetType } from '@entities/interaction/model/types';
 import { useMe } from '@entities/session/model/queries';
-
+import { QueryKey, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 interface UseReactionProps {
   targetId: string;
   targetType: TargetType;
   currentIsLiked: boolean;
   currentCount: number;
-  queryKey: any[];
+  queryKey: QueryKey;
 }
 
 export const useReaction = ({
@@ -47,26 +46,28 @@ export const useReaction = ({
       const previousData = queryClient.getQueryData(queryKey);
 
       // Optimistically update to the new value
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queryClient.setQueryData(queryKey, (oldData: any) => {
         if (!oldData) return oldData;
 
         // Helper to update a single item (Post/Comment)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updateItem = (item: any) => {
           if (item.id === targetId) {
-            const newCount = currentIsLiked
-                ? Math.max(0, currentCount - 1)
-                : currentCount + 1;
-            
+            const newCount = currentIsLiked ? Math.max(0, currentCount - 1) : currentCount + 1;
+
             return {
               ...item,
               isLiked: !currentIsLiked,
               reactionCount: newCount, // For Comments / General
-              likeCount: newCount,     // For Posts
-              stats: item.stats ? {
-                  ...item.stats,
-                  likes: newCount,
-                  // Keep other stats if they exist
-              } : undefined
+              likeCount: newCount, // For Posts
+              stats: item.stats
+                ? {
+                    ...item.stats,
+                    likes: newCount,
+                    // Keep other stats if they exist
+                  }
+                : undefined,
             };
           }
           return item;
@@ -74,7 +75,7 @@ export const useReaction = ({
 
         // Case 0: Direct Array (e.g. getComments returns IComment[])
         if (Array.isArray(oldData)) {
-            return oldData.map(updateItem);
+          return oldData.map(updateItem);
         }
 
         // Case 1: Single item (DetailPostResponse / DetailCommentResponse)
@@ -91,16 +92,16 @@ export const useReaction = ({
             content: oldData.content.map(updateItem),
           };
         }
-        
+
         // If API returns { result: { content: ... } } (Raw ApiResponse)
         if (oldData.result?.content && Array.isArray(oldData.result.content)) {
-             return {
-                ...oldData,
-                result: {
-                    ...oldData.result,
-                    content: oldData.result.content.map(updateItem)
-                }
-             }
+          return {
+            ...oldData,
+            result: {
+              ...oldData.result,
+              content: oldData.result.content.map(updateItem),
+            },
+          };
         }
 
         return oldData;
@@ -112,8 +113,8 @@ export const useReaction = ({
 
     onError: (err, newTodo, context) => {
       if (err.message === 'UNAUTHORIZED') {
-         // Toast already handled or handle here
-         return;
+        // Toast already handled or handle here
+        return;
       }
       queryClient.setQueryData(queryKey, context?.previousData);
       toast.error('Không thể thả tim, vui lòng thử lại!');

@@ -1,19 +1,17 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-
+import { sessionApi } from '@entities/session/api/session-api';
+import { sessionKeys } from '@entities/session/lib/query-keys';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { getErrorMessage } from '@shared/lib/utils';
+import { Button } from '@shared/ui/button/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@shared/ui/dialog/dialog";
-import { Button } from "@shared/ui/button/button";
+} from '@shared/ui/dialog/dialog';
 import {
   Form,
   FormControl,
@@ -21,16 +19,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@shared/ui/form/form";
-import { Input } from "@shared/ui/input/input";
+} from '@shared/ui/form/form';
+import { Input } from '@shared/ui/input/input';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
-import { sessionApi } from "@entities/session/api/session-api";
-import { sessionKeys } from "@entities/session/lib/query-keys";
-import {
-  profileCompletionSchema,
-  ProfileCompletionValues,
-} from "../model/schema";
-import { getErrorMessage } from "@shared/lib/utils";
+import { profileCompletionSchema, ProfileCompletionValues } from '../model/schema';
 
 interface ProfileCompletionModalProps {
   isOpen: boolean;
@@ -46,12 +42,12 @@ export default function ProfileCompletionModal({
   const form = useForm<ProfileCompletionValues>({
     resolver: zodResolver(profileCompletionSchema),
     defaultValues: {
-      fullName: "",
-      studentCode: "",
-      classCode: "",
-      phone: "",
+      fullName: '',
+      studentCode: '',
+      classCode: '',
+      phone: '',
     },
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   useEffect(() => {
@@ -62,10 +58,10 @@ export default function ProfileCompletionModal({
     mutationFn: (values: ProfileCompletionValues) => sessionApi.updateProfile(values),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: sessionKeys.me() });
-      toast.success("Cập nhật hồ sơ thành công!");
+      toast.success('Cập nhật hồ sơ thành công!');
       onClose();
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const message = getErrorMessage(error);
       toast.error(message);
     },
@@ -77,7 +73,7 @@ export default function ProfileCompletionModal({
 
   const handleSkip = () => {
     onClose();
-    toast.info("Bạn có thể cập nhật sau trong phần Cài đặt.");
+    toast.info('Bạn có thể cập nhật sau trong phần Cài đặt.');
   };
 
   return (
@@ -86,8 +82,7 @@ export default function ProfileCompletionModal({
         <DialogHeader>
           <DialogTitle>Cập nhật thông tin sinh viên 🎓</DialogTitle>
           <DialogDescription>
-            Nhập chính xác Mã SV và Lớp để hệ thống tự động xác định Khoa của
-            bạn.
+            Nhập chính xác Mã SV và Lớp để hệ thống tự động xác định Khoa của bạn.
           </DialogDescription>
         </DialogHeader>
 
@@ -141,9 +136,7 @@ export default function ProfileCompletionModal({
                       <Input
                         placeholder="D21CQCN01-B"
                         {...field}
-                        onChange={(e) =>
-                          field.onChange(e.target.value.toUpperCase())
-                        }
+                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                         className="uppercase placeholder:normal-case"
                         maxLength={12}
                       />
@@ -161,11 +154,7 @@ export default function ProfileCompletionModal({
                 <FormItem>
                   <FormLabel>Số điện thoại (tuỳ chọn)</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="0123456789"
-                      inputMode="numeric"
-                      {...field}
-                    />
+                    <Input placeholder="0123456789" inputMode="numeric" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -174,7 +163,7 @@ export default function ProfileCompletionModal({
 
             <div className="flex gap-3 pt-4">
               <Button type="submit" className="flex-1" disabled={isPending}>
-                {isPending ? "Đang lưu..." : "Hoàn tất"}
+                {isPending ? 'Đang lưu...' : 'Hoàn tất'}
               </Button>
 
               <Button

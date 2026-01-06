@@ -1,12 +1,17 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { topicMemberApi } from "@entities/topic/api/topic-member-api";
-import { Avatar, AvatarFallback, AvatarImage } from "@shared/ui/avatar/avatar";
-import { Skeleton } from "@shared/ui/skeleton/skeleton";
-import { Badge } from "@shared/ui/badge/badge";
-import { Crown, Shield } from "lucide-react";
-import { getRoleLabel, getRoleBadgeVariant, isLeadershipRole, type TopicRole } from "@features/topic-moderation/lib/permission-utils";
+import { topicMemberApi } from '@entities/topic/api/topic-member-api';
+import {
+  getRoleBadgeVariant,
+  getRoleLabel,
+  isLeadershipRole,
+  type TopicRole,
+} from '@features/topic-moderation/lib/permission-utils';
+import { Badge } from '@shared/ui/badge/badge';
+import { Skeleton } from '@shared/ui/skeleton/skeleton';
+import { UserAvatar } from '@shared/ui/user-avatar/user-avatar';
+import { useQuery } from '@tanstack/react-query';
+import { Crown, Shield } from 'lucide-react';
 
 export interface TabProps {
   topicId: string;
@@ -29,13 +34,15 @@ const RoleBadge = ({ role }: { role: string }) => {
 export function MembersTab({ topicId }: TabProps) {
   const { data, isLoading } = useQuery({
     queryKey: ['members', topicId, 'approved'],
-    queryFn: () => topicMemberApi.getMembers(topicId, { approved: true, page: 0, size: 100 })
+    queryFn: () => topicMemberApi.getMembers(topicId, { approved: true, page: 0, size: 100 }),
   });
 
   if (isLoading) {
     return (
       <div className="space-y-4">
-        {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} className="h-16 w-full" />
+        ))}
       </div>
     );
   }
@@ -53,26 +60,38 @@ export function MembersTab({ topicId }: TabProps) {
       {/* Leadership Section */}
       {leadership.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b-2 border-amber-200">
+          <div className="mb-3 flex items-center gap-2 border-b-2 border-amber-200 pb-2">
             <Crown className="h-5 w-5 text-amber-600" />
             <h3 className="font-semibold text-amber-700">Ban Quản Trị</h3>
           </div>
-          <div className="space-y-3 p-3 bg-amber-50/30 rounded-lg border border-amber-100">
-            {leadership.map((member: any) => (
-              <div key={member.id} className="flex items-center gap-4 p-3 bg-white rounded-lg border">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={member.user?.avatarUrl || member.avatarUrl} />
-                  <AvatarFallback>{(member.user?.fullName || member.fullName)?.[0] || 'U'}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <div className="font-semibold">{member.user?.fullName || member.fullName}</div>
-                    <RoleBadge role={member.topicRole} />
+          <div className="space-y-3 rounded-lg border border-amber-100 bg-amber-50/30 p-3">
+            {leadership.map(
+              (member: {
+                id: string;
+                fullName?: string;
+                avatarUrl?: string;
+                topicRole: string;
+                email?: string;
+              }) => (
+                <div
+                  key={member.id}
+                  className="flex items-center gap-4 rounded-lg border bg-white p-3"
+                >
+                  <UserAvatar
+                    name={member.fullName}
+                    avatarUrl={member.avatarUrl}
+                    className="h-10 w-10"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <div className="font-semibold">{member.fullName}</div>
+                      <RoleBadge role={member.topicRole} />
+                    </div>
+                    <div className="text-muted-foreground text-sm">{member.email}</div>
                   </div>
-                  <div className="text-sm text-muted-foreground">{member.user?.email || member.email}</div>
                 </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         </div>
       )}
@@ -80,23 +99,35 @@ export function MembersTab({ topicId }: TabProps) {
       {/* Regular Members Section */}
       {regularMembers.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b-2 border-gray-200">
+          <div className="mb-3 flex items-center gap-2 border-b-2 border-gray-200 pb-2">
             <span className="text-lg">👥</span>
             <h3 className="font-semibold text-gray-700">Thành viên ({regularMembers.length})</h3>
           </div>
           <div className="space-y-3">
-            {regularMembers.map((member: any) => (
-              <div key={member.id} className="flex items-center gap-4 p-3 bg-white rounded-lg border hover:shadow-sm transition-shadow">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={member.user?.avatarUrl || member.avatarUrl} />
-                  <AvatarFallback>{(member.user?.fullName || member.fullName)?.[0] || 'U'}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="font-semibold">{member.user?.fullName || member.fullName}</div>
-                  <div className="text-sm text-muted-foreground">{member.user?.email || member.email}</div>
+            {regularMembers.map(
+              (member: {
+                id: string;
+                fullName?: string;
+                avatarUrl?: string;
+                topicRole: string;
+                email?: string;
+              }) => (
+                <div
+                  key={member.id}
+                  className="flex items-center gap-4 rounded-lg border bg-white p-3 transition-shadow hover:shadow-sm"
+                >
+                  <UserAvatar
+                    name={member.fullName}
+                    avatarUrl={member.avatarUrl}
+                    className="h-10 w-10"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold">{member.fullName}</div>
+                    <div className="text-muted-foreground text-sm">{member.email}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         </div>
       )}

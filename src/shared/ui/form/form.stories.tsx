@@ -1,32 +1,31 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import React from "react";
-import { useForm } from "react-hook-form";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 
 import {
   Form,
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
-} from "./form";
+} from './form';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Form> = {
-  title: "shared/Form/Form",
+  title: 'shared/Form/Form',
   component: Form,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {},
   argTypes: {
     children: {
       control: false,
-      description:
-        "Form content composed with FormField, FormItem, FormLabel, FormControl, etc.",
+      description: 'Form content composed with FormField, FormItem, FormLabel, FormControl, etc.',
     },
   },
 };
@@ -45,29 +44,25 @@ export const Basic: Story = {
   render: () => {
     const form = useForm<{ email: string }>({
       defaultValues: {
-        email: "",
+        email: '',
       },
     });
 
     function onSubmit(values: { email: string }) {
-      // eslint-disable-next-line no-alert
       alert(`Submitted: ${JSON.stringify(values, null, 2)}`);
     }
 
     return (
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-[360px] space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-[360px] space-y-6">
           <FormField
             control={form.control}
             name="email"
             rules={{
-              required: "Email is required.",
+              required: 'Email is required.',
               pattern: {
                 value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Please enter a valid email address.",
+                message: 'Please enter a valid email address.',
               },
             }}
             render={({ field }) => (
@@ -77,7 +72,7 @@ export const Basic: Story = {
                   <input
                     type="email"
                     placeholder="you@example.com"
-                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
                     {...field}
                   />
                 </FormControl>
@@ -91,7 +86,7 @@ export const Basic: Story = {
 
           <button
             type="submit"
-            className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow"
           >
             Submit
           </button>
@@ -109,27 +104,23 @@ export const LoginForm: Story = {
   render: () => {
     const form = useForm<{ email: string; password: string }>({
       defaultValues: {
-        email: "",
-        password: "",
+        email: '',
+        password: '',
       },
     });
 
     function onSubmit(values: { email: string; password: string }) {
-      // eslint-disable-next-line no-alert
       alert(`Login values: ${JSON.stringify(values, null, 2)}`);
     }
 
     return (
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-[380px] space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-[380px] space-y-6">
           <FormField
             control={form.control}
             name="email"
             rules={{
-              required: "Email is required.",
+              required: 'Email is required.',
             }}
             render={({ field }) => (
               <FormItem>
@@ -138,7 +129,7 @@ export const LoginForm: Story = {
                   <input
                     type="email"
                     placeholder="you@example.com"
-                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
                     {...field}
                   />
                 </FormControl>
@@ -151,10 +142,10 @@ export const LoginForm: Story = {
             control={form.control}
             name="password"
             rules={{
-              required: "Password is required.",
+              required: 'Password is required.',
               minLength: {
                 value: 6,
-                message: "Password must be at least 6 characters long.",
+                message: 'Password must be at least 6 characters long.',
               },
             }}
             render={({ field }) => (
@@ -164,7 +155,7 @@ export const LoginForm: Story = {
                   <input
                     type="password"
                     placeholder="••••••••"
-                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
                     {...field}
                   />
                 </FormControl>
@@ -178,7 +169,7 @@ export const LoginForm: Story = {
 
           <button
             type="submit"
-            className="inline-flex h-9 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 w-full items-center justify-center rounded-md px-4 text-sm font-medium shadow"
           >
             Sign in
           </button>
@@ -195,8 +186,8 @@ export const LoginForm: Story = {
 export const LiveValidation: Story = {
   render: () => {
     const form = useForm<{ username: string }>({
-      defaultValues: { username: "" },
-      mode: "onChange",
+      defaultValues: { username: '' },
+      mode: 'onChange',
     });
 
     return (
@@ -206,10 +197,10 @@ export const LiveValidation: Story = {
             control={form.control}
             name="username"
             rules={{
-              required: "Username is required.",
+              required: 'Username is required.',
               minLength: {
                 value: 3,
-                message: "Username must be at least 3 characters.",
+                message: 'Username must be at least 3 characters.',
               },
             }}
             render={({ field }) => (
@@ -218,13 +209,11 @@ export const LiveValidation: Story = {
                 <FormControl>
                   <input
                     placeholder="your-username"
-                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  This will be visible to other users.
-                </FormDescription>
+                <FormDescription>This will be visible to other users.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -242,25 +231,21 @@ export const LiveValidation: Story = {
 export const CustomMessage: Story = {
   render: () => {
     const form = useForm<{ code: string }>({
-      defaultValues: { code: "" },
+      defaultValues: { code: '' },
     });
 
     function onSubmit(values: { code: string }) {
-      // eslint-disable-next-line no-alert
       alert(`Code submitted: ${values.code}`);
     }
 
     return (
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-[360px] space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-[360px] space-y-6">
           <FormField
             control={form.control}
             name="code"
             rules={{
-              required: "Code is required.",
+              required: 'Code is required.',
             }}
             render={({ field }) => (
               <FormItem>
@@ -268,7 +253,7 @@ export const CustomMessage: Story = {
                 <FormControl>
                   <input
                     placeholder="ABC-123"
-                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
                     {...field}
                   />
                 </FormControl>
@@ -285,7 +270,7 @@ export const CustomMessage: Story = {
 
           <button
             type="submit"
-            className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow"
           >
             Join
           </button>

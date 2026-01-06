@@ -8,7 +8,10 @@
  * @param fallback - Custom fallback text (default: "Người dùng ẩn danh")
  * @returns Display name
  */
-export function getUserDisplayName(fullName?: string | null, fallback = 'Người dùng ẩn danh'): string {
+export function getUserDisplayName(
+  fullName?: string | null,
+  fallback = 'Người dùng ẩn danh',
+): string {
   if (!fullName || fullName.trim().length === 0) {
     return fallback;
   }
@@ -24,15 +27,15 @@ export function getUserDisplayName(fullName?: string | null, fallback = 'Ngườ
 export function getUserInitials(fullName?: string | null, fallback = '?'): string {
   const name = getUserDisplayName(fullName, '');
   if (!name) return fallback;
-  
+
   const words = name.split(' ').filter(Boolean);
   if (words.length === 0) return fallback;
-  
+
   // Take first letter of first and last word
   if (words.length === 1) {
     return words[0][0].toUpperCase();
   }
-  
+
   return (words[0][0] + words[words.length - 1][0]).toUpperCase();
 }
 

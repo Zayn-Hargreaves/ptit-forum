@@ -1,42 +1,42 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { useState } from 'react';
+
 import {
   Field,
-  FieldLabel,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldGroup,
+  FieldLabel,
   FieldLegend,
   FieldSeparator,
   FieldSet,
-  FieldContent,
   FieldTitle,
-} from "./field";
-import { useState } from "react";
+} from './field';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof FieldSet> = {
-  title: "shared/Form/Field",
+  title: 'shared/Form/Field',
   component: FieldSet,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
-    className: "max-w-xl",
+    className: 'max-w-xl',
   },
   argTypes: {
     className: {
-      control: "text",
-      description: "Custom className to style the FieldSet container.",
+      control: 'text',
+      description: 'Custom className to style the FieldSet container.',
       table: {
-        defaultValue: { summary: "max-w-xl" },
+        defaultValue: { summary: 'max-w-xl' },
       },
     },
     children: {
       control: false,
-      description:
-        "Field structure inside the FieldSet (Field, FieldLegend, FieldGroup, etc.).",
+      description: 'Field structure inside the FieldSet (Field, FieldLegend, FieldGroup, etc.).',
     },
   },
 };
@@ -62,12 +62,10 @@ export const Vertical: Story = {
           <FieldContent>
             <input
               id="name"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
               placeholder="John Doe"
             />
-            <FieldDescription>
-              This will be displayed on your public profile.
-            </FieldDescription>
+            <FieldDescription>This will be displayed on your public profile.</FieldDescription>
           </FieldContent>
         </Field>
 
@@ -77,7 +75,7 @@ export const Vertical: Story = {
             <input
               id="email"
               type="email"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
               placeholder="you@example.com"
             />
           </FieldContent>
@@ -89,12 +87,11 @@ export const Vertical: Story = {
             <textarea
               id="bio"
               rows={3}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm shadow-sm outline-none focus-visible:ring-1"
               placeholder="Tell us a little bit about yourself…"
             />
             <FieldDescription>
-              Brief description for your profile. You can use up to 160
-              characters.
+              Brief description for your profile. You can use up to 160 characters.
             </FieldDescription>
           </FieldContent>
         </Field>
@@ -118,7 +115,7 @@ export const Horizontal: Story = {
           <FieldContent>
             <input
               id="username"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
               placeholder="@username"
             />
             <FieldDescription>
@@ -132,16 +129,14 @@ export const Horizontal: Story = {
           <FieldContent>
             <select
               id="timezone"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
             >
               <option value="">Select timezone</option>
               <option value="asia-bangkok">Asia/Bangkok</option>
               <option value="europe-london">Europe/London</option>
               <option value="america-new-york">America/New_York</option>
             </select>
-            <FieldDescription>
-              Used for scheduling, notifications, and reports.
-            </FieldDescription>
+            <FieldDescription>Used for scheduling, notifications, and reports.</FieldDescription>
           </FieldContent>
         </Field>
 
@@ -150,7 +145,7 @@ export const Horizontal: Story = {
           <FieldContent>
             <select
               id="language"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
             >
               <option value="en">English</option>
               <option value="vi">Tiếng Việt</option>
@@ -177,15 +172,13 @@ export const Responsive: Story = {
           <FieldContent>
             <select
               id="notif-email"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
             >
               <option value="all">All activity</option>
               <option value="important">Only important</option>
               <option value="none">None</option>
             </select>
-            <FieldDescription>
-              Choose how often we should send you email updates.
-            </FieldDescription>
+            <FieldDescription>Choose how often we should send you email updates.</FieldDescription>
           </FieldContent>
         </Field>
 
@@ -194,7 +187,7 @@ export const Responsive: Story = {
           <FieldContent>
             <select
               id="notif-push"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
             >
               <option value="all">All activity</option>
               <option value="mentions">Mentions only</option>
@@ -223,7 +216,7 @@ export const WithSeparator: Story = {
             <input
               id="email-2"
               type="email"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
               placeholder="you@example.com"
             />
           </FieldContent>
@@ -235,12 +228,10 @@ export const WithSeparator: Story = {
             <input
               id="password"
               type="password"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
               placeholder="••••••••"
             />
-            <FieldDescription>
-              Use at least 8 characters, including one number.
-            </FieldDescription>
+            <FieldDescription>Use at least 8 characters, including one number.</FieldDescription>
           </FieldContent>
         </Field>
 
@@ -249,10 +240,8 @@ export const WithSeparator: Story = {
         <Field>
           <FieldLabel>Two-factor authentication</FieldLabel>
           <FieldContent>
-            <p className="text-sm">
-              Add an extra layer of security to your account.
-            </p>
-            <button className="mt-2 inline-flex h-8 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
+            <p className="text-sm">Add an extra layer of security to your account.</p>
+            <button className="border-input bg-background hover:bg-accent hover:text-accent-foreground mt-2 inline-flex h-8 items-center justify-center rounded-md border px-3 text-xs font-medium shadow-sm">
               Set up 2FA
             </button>
           </FieldContent>
@@ -271,10 +260,7 @@ export const WithErrors: Story = {
     const [submitted, setSubmitted] = useState(false);
 
     const errors = submitted
-      ? [
-          { message: "Name is required." },
-          { message: "Email must be a valid address." },
-        ]
+      ? [{ message: 'Name is required.' }, { message: 'Email must be a valid address.' }]
       : [];
 
     return (
@@ -287,7 +273,7 @@ export const WithErrors: Story = {
             <FieldContent>
               <input
                 id="error-name"
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                className="border-input bg-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-1"
                 aria-invalid={submitted}
               />
               <FieldDescription>
@@ -302,7 +288,7 @@ export const WithErrors: Story = {
           <button
             type="button"
             onClick={() => setSubmitted(true)}
-            className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow"
           >
             Validate
           </button>
@@ -325,9 +311,7 @@ export const CheckboxRadioGroup: Story = {
         {/* Simulated checkbox group using data-slot */}
         <div data-slot="checkbox-group" className="flex flex-col gap-3">
           <FieldTitle>Notifications</FieldTitle>
-          <FieldDescription>
-            Choose which updates you want to receive.
-          </FieldDescription>
+          <FieldDescription>Choose which updates you want to receive.</FieldDescription>
 
           <div className="flex flex-col gap-2 text-sm">
             <label className="inline-flex items-center gap-2">
@@ -350,9 +334,7 @@ export const CheckboxRadioGroup: Story = {
         {/* Simulated radio group using data-slot */}
         <div data-slot="radio-group" className="flex flex-col gap-3">
           <FieldTitle>Theme</FieldTitle>
-          <FieldDescription>
-            You can change this later in your profile settings.
-          </FieldDescription>
+          <FieldDescription>You can change this later in your profile settings.</FieldDescription>
 
           <div className="flex flex-col gap-2 text-sm">
             <label className="inline-flex items-center gap-2">

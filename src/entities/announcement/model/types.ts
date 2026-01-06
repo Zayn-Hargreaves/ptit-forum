@@ -1,13 +1,13 @@
 export enum AnnouncementType {
-  GENERAL = "GENERAL",
-  CLASS_MEETING = "CLASS_MEETING",
-  PAY_FEE = "PAY_FEE",
+  GENERAL = 'GENERAL',
+  CLASS_MEETING = 'CLASS_MEETING',
+  PAY_FEE = 'PAY_FEE',
 }
 
 export const ANNOUNCEMENT_TYPE_LABEL: Record<AnnouncementType, string> = {
-  [AnnouncementType.GENERAL]: "Thông báo chung",
-  [AnnouncementType.CLASS_MEETING]: "Họp lớp",
-  [AnnouncementType.PAY_FEE]: "Học phí",
+  [AnnouncementType.GENERAL]: 'Thông báo chung',
+  [AnnouncementType.CLASS_MEETING]: 'Họp lớp',
+  [AnnouncementType.PAY_FEE]: 'Học phí',
 };
 
 export interface BackendAnnouncement {
@@ -66,7 +66,7 @@ export interface BackendAnnouncementDetail {
   createdDate: string;
   modifiedDate: string | null;
 
-  announcementTargetResponses: any[];
+  announcementTargetResponses: unknown[];
   attachments: {
     id: string;
     fileName: string;

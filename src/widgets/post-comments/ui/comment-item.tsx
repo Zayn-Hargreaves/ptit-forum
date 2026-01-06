@@ -1,19 +1,18 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { formatDistanceToNow } from 'date-fns';
-import { vi } from 'date-fns/locale';
-import { toast } from 'sonner';
-import { Flag } from 'lucide-react';
-import DOMPurify from 'isomorphic-dompurify';
-
 import { Comment, TargetType } from '@entities/interaction/model/types';
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar/avatar';
-import { Button } from '@shared/ui/button/button';
-import { LiteEditor } from '@shared/ui/editor/lite-editor';
 import { useMe } from '@entities/session/model/queries';
 import { useUpdateComment } from '@features/comment/hooks/use-update-comment';
 import { ReportDialog } from '@features/report/ui/report-dialog';
+import { Button } from '@shared/ui/button/button';
+import { LiteEditor } from '@shared/ui/editor/lite-editor';
+import { UserAvatar } from '@shared/ui/user-avatar/user-avatar';
+import { formatDistanceToNow } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import DOMPurify from 'isomorphic-dompurify';
+import { Flag } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import { CommentForm } from './comment-form';
 import { ReplyList } from './reply-list';
@@ -25,6 +24,60 @@ interface CommentItemProps {
   onDelete: (id: string) => void;
   onReplySuccess: () => void;
 }
+
+const stripHtml = (html: string) => {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    return doc.body.textContent || '';
+  } catch {
+    return '';
+  }
+};
+
+const truncateHtml = (html: string, maxLength: number) => {
+  const text = stripHtml(html);
+  if (text.length <= maxLength) return html;
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const body = doc.body;
+
+  let accumulatedLength = 0;
+  let truncated = false;
+
+  function walkNodes(node: Node, parent: Element): void {
+    if (truncated) return;
+    if (node.nodeType === Node.TEXT_NODE) {
+      const textContent = node.textContent || '';
+      const remainingLength = maxLength - accumulatedLength;
+      if (accumulatedLength + textContent.length <= maxLength) {
+        parent.appendChild(document.createTextNode(textContent));
+        accumulatedLength += textContent.length;
+      } else {
+        const truncatedText = textContent.slice(0, remainingLength) + '...';
+        parent.appendChild(document.createTextNode(truncatedText));
+        accumulatedLength = maxLength;
+        truncated = true;
+      }
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const element = node as Element;
+      const clonedElement = element.cloneNode(false) as Element;
+      parent.appendChild(clonedElement);
+      for (const child of Array.from(element.childNodes)) {
+        walkNodes(child, clonedElement);
+        if (truncated) break;
+      }
+    }
+  }
+
+  const resultContainer = document.createElement('div');
+  for (const child of Array.from(body.childNodes)) {
+    walkNodes(child, resultContainer);
+    if (truncated) break;
+  }
+  return resultContainer.innerHTML;
+};
 
 export function CommentItem({
   comment,
@@ -53,11 +106,11 @@ export function CommentItem({
     if (isEditing && !editContent) {
       setEditContent(comment.content || '');
     }
-  }, [isEditing, comment.content]);
+  }, [isEditing, comment.content, editContent]);
 
   const replyCount = comment.stats?.replyCount || 0;
   const hasChildren = !!comment.children?.length;
-  const authorName = comment.author?.fullName ?? 'Ẩn danh';
+  const authorName = comment.author?.fullName || 'Ẩn danh';
   const avatarUrl = comment.author?.avatarUrl ?? '';
   const isOwner = !!me?.id && me.id === comment.author?.id;
 
@@ -66,67 +119,15 @@ export function CommentItem({
   const canReport = comment.permissions?.canReport ?? !isOwner;
 
   // --- HTML HANDLING LOGIC ---
-  const stripHtml = (html: string) => {
-    try {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      return doc.body.textContent || '';
-    } catch {
-      return '';
-    }
-  };
-
-  const truncateHtml = (html: string, maxLength: number) => {
-    const text = stripHtml(html);
-    if (text.length <= maxLength) return html;
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const body = doc.body;
-
-    let accumulatedLength = 0;
-    let truncated = false;
-
-    function walkNodes(node: Node, parent: Element): void {
-      if (truncated) return;
-      if (node.nodeType === Node.TEXT_NODE) {
-        const textContent = node.textContent || '';
-        const remainingLength = maxLength - accumulatedLength;
-        if (accumulatedLength + textContent.length <= maxLength) {
-          parent.appendChild(document.createTextNode(textContent));
-          accumulatedLength += textContent.length;
-        } else {
-          const truncatedText = textContent.slice(0, remainingLength) + '...';
-          parent.appendChild(document.createTextNode(truncatedText));
-          accumulatedLength = maxLength;
-          truncated = true;
-        }
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        const element = node as Element;
-        const clonedElement = element.cloneNode(false) as Element;
-        parent.appendChild(clonedElement);
-        for (const child of Array.from(element.childNodes)) {
-          walkNodes(child, clonedElement);
-          if (truncated) break;
-        }
-      }
-    }
-
-    const resultContainer = document.createElement('div');
-    for (const child of Array.from(body.childNodes)) {
-      walkNodes(child, resultContainer);
-      if (truncated) break;
-    }
-    return resultContainer.innerHTML;
-  };
-
   const displayContent = useMemo(() => {
     const MAX_COMMENT_LENGTH = 300;
     const plainTextContent = stripHtml(comment.content || '');
     const isLong = plainTextContent.length > MAX_COMMENT_LENGTH;
 
     const rawContent =
-      isLong && !isExpanded ? truncateHtml(comment.content || '', MAX_COMMENT_LENGTH) : comment.content || '';
+      isLong && !isExpanded
+        ? truncateHtml(comment.content || '', MAX_COMMENT_LENGTH)
+        : comment.content || '';
 
     return DOMPurify.sanitize(rawContent);
   }, [comment.content, isExpanded]);
@@ -138,7 +139,7 @@ export function CommentItem({
   if (comment.deleted) {
     return (
       <div className={isReply ? 'mt-2' : 'mt-4'}>
-        <div className="text-sm text-muted-foreground italic bg-muted/20 p-3 rounded">
+        <div className="text-muted-foreground bg-muted/20 rounded p-3 text-sm italic">
           Bình luận này đã bị xóa bởi tác giả.
         </div>
         {hasChildren && (
@@ -161,29 +162,30 @@ export function CommentItem({
 
   return (
     <div className={isReply ? 'mt-2' : 'mt-4'}>
-      <div className="flex gap-3 items-start">
-        <Avatar className="h-8 w-8 mt-1">
-          <AvatarImage src={avatarUrl} />
-          <AvatarFallback>{authorName[0] ?? '?'}</AvatarFallback>
-        </Avatar>
+      <div className="flex items-start gap-3">
+        <UserAvatar
+          name={comment.author?.fullName}
+          avatarUrl={avatarUrl}
+          className="mt-1 h-8 w-8"
+        />
 
         <div className="flex-1 space-y-1">
           {/* Content Block */}
-          <div className="bg-muted/50 p-3 rounded-lg rounded-tl-none group">
-            <div className="flex justify-between mb-1">
-              <span className="font-semibold text-sm">{authorName}</span>
-              <span className="text-xs text-muted-foreground">
+          <div className="bg-muted/50 group rounded-lg rounded-tl-none p-3">
+            <div className="mb-1 flex justify-between">
+              <span className="text-sm font-semibold">{authorName}</span>
+              <span className="text-muted-foreground text-xs">
                 {comment.createdDateTime &&
                   formatDistanceToNow(
                     new Date(
                       comment.createdDateTime.endsWith('Z')
                         ? comment.createdDateTime
-                        : `${comment.createdDateTime}Z`
+                        : `${comment.createdDateTime}Z`,
                     ),
                     {
                       addSuffix: true,
                       locale: vi,
-                    }
+                    },
                   )}
               </span>
             </div>
@@ -198,14 +200,14 @@ export function CommentItem({
             ) : (
               <>
                 <div
-                  className="text-sm prose dark:prose-invert max-w-none break-words"
+                  className="prose dark:prose-invert max-w-none text-sm break-words"
                   dangerouslySetInnerHTML={{ __html: displayContent }}
                 />
                 {isLongComment && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-auto p-0 text-xs text-muted-foreground mt-1"
+                    className="text-muted-foreground mt-1 h-auto p-0 text-xs"
                     onClick={() => setIsExpanded((v) => !v)}
                   >
                     {isExpanded ? 'Thu gọn' : 'Xem thêm'}
@@ -229,7 +231,7 @@ export function CommentItem({
                         setIsEditing(false);
                         toast.success('Đã cập nhật bình luận');
                       },
-                    }
+                    },
                   )
                 }
               >
@@ -252,14 +254,14 @@ export function CommentItem({
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsReplying((v) => !v)}
-                className="h-6 px-2 text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground h-6 px-2"
               >
                 Trả lời
               </Button>
 
               {!isReply && replyCount > 0 && (
                 <button
-                  className="font-semibold text-muted-foreground hover:underline ml-1"
+                  className="text-muted-foreground ml-1 font-semibold hover:underline"
                   onClick={() => setShowReplies((v) => !v)}
                 >
                   {showReplies ? 'Ẩn phản hồi' : `Xem ${replyCount} phản hồi`}
@@ -270,7 +272,7 @@ export function CommentItem({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 px-2 text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground h-6 px-2"
                   onClick={() => {
                     setEditContent('');
                     setIsEditing(true);
@@ -284,7 +286,7 @@ export function CommentItem({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 px-2 text-muted-foreground hover:text-destructive"
+                  className="text-muted-foreground hover:text-destructive h-6 px-2"
                   onClick={() => onDelete(comment.id)}
                 >
                   Xóa
@@ -295,10 +297,10 @@ export function CommentItem({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 px-2 text-muted-foreground hover:text-orange-600 ml-auto"
+                  className="text-muted-foreground ml-auto h-6 px-2 hover:text-orange-600"
                   onClick={() => setIsReportOpen(true)}
                 >
-                  <Flag className="h-3 w-3 mr-1" />
+                  <Flag className="mr-1 h-3 w-3" />
                   Báo cáo
                 </Button>
               )}

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Search } from "lucide-react";
-import { Input } from "@shared/ui";
-import { useEffect, useRef, useState } from "react";
+import { Input } from '@shared/ui';
+import { Search } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 export function NavbarSearchForm({
   pathname,
@@ -13,11 +13,11 @@ export function NavbarSearchForm({
   onSubmitQuery: (q: string) => void;
   className?: string;
 }) {
-  const [value, setValue] = useState("");
-  const lastSubmitted = useRef("");
+  const [value, setValue] = useState('');
+  const lastSubmitted = useRef('');
 
   useEffect(() => {
-    setValue("");
+    setValue('');
   }, [pathname]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,22 +26,22 @@ export function NavbarSearchForm({
     if (!q) return;
 
     if (
-      (pathname === "/search" ||
-        pathname.startsWith("/search?") ||
-        pathname.startsWith("/search/")) &&
+      (pathname === '/search' ||
+        pathname.startsWith('/search?') ||
+        pathname.startsWith('/search/')) &&
       lastSubmitted.current === q
     )
       return;
 
     lastSubmitted.current = q;
     onSubmitQuery(q);
-    setValue("");
+    setValue('');
   };
 
   return (
     <form onSubmit={onSubmit} className={className}>
       <div className="relative w-full max-w-md">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         <Input
           name="q"
           type="search"

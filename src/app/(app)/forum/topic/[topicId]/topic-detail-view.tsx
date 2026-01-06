@@ -1,55 +1,49 @@
 'use client';
 
-import { TopicDetail } from '@entities/topic/model/types';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/ui/tabs/tabs';
+import { Topic } from '@entities/topic/model/types';
 import { TopicHeader } from '@entities/topic/ui/topic-header';
-import { PostList } from '@shared/components/forum/post-list';
 import { TopicMembers } from '@entities/topic/ui/topic-members';
 import { CreatePostDialog } from '@features/post/create-post/ui/create-post-dialog';
+import { PostList } from '@shared/components/forum/post-list';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/ui/tabs/tabs';
 
 interface TopicDetailViewProps {
-  topic: TopicDetail;
+  topic: Topic;
   topicId: string; // Needed for keying
 }
 
 export function TopicDetailView({ topic, topicId }: Readonly<TopicDetailViewProps>) {
-  const { isTopicManager } = topic.currentUserContext || {};
+  const topicManager = topic.currentUserContext?.topicManager || false;
 
   return (
-    <div className="container mx-auto py-8 px-4 space-y-6">
+    <div className="container mx-auto space-y-6 px-4 py-8">
       <TopicHeader topic={topic} />
 
       <Tabs defaultValue="discussion" className="w-full">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <TabsList>
             <TabsTrigger value="discussion">Thảo luận</TabsTrigger>
             <TabsTrigger value="members">Thành viên</TabsTrigger>
-            {isTopicManager && <TabsTrigger value="pending">Chờ duyệt</TabsTrigger>}
+            {topicManager && <TabsTrigger value="pending">Chờ duyệt</TabsTrigger>}
           </TabsList>
-          
-           {/* Pass topicId to CreatePostDialog if possible, or context */}
-           {/* Current CreatePostDialog might need props to pre-select topic */}
-           <CreatePostDialog defaultTopicId={topicId} /> 
+
+          {/* Pass topicId to CreatePostDialog if possible, or context */}
+          {/* Current CreatePostDialog might need props to pre-select topic */}
+          <CreatePostDialog defaultTopicId={topicId} />
         </div>
 
         <TabsContent value="discussion" className="space-y-4">
-           {/* PostList for this topic (Approved) */}
-           <PostList 
-              topicId={topicId} 
-              fetchMode="topic"
-           />
+          {/* PostList for this topic (Approved) */}
+          <PostList topicId={topicId} fetchMode="topic" />
         </TabsContent>
 
         <TabsContent value="members">
-           <TopicMembers topicId={topicId} isTopicManager={isTopicManager} />
+          <TopicMembers topicId={topicId} topicManager={topicManager} />
         </TabsContent>
 
-        {isTopicManager && (
+        {topicManager && (
           <TabsContent value="pending">
-             <PostList 
-                topicId={topicId} 
-                fetchMode="pending"
-             />
+            <PostList topicId={topicId} fetchMode="pending" />
           </TabsContent>
         )}
       </Tabs>
