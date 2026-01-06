@@ -17,8 +17,11 @@ export async function POST() {
   }
 
   try {
+    const url = `${process.env.INTERNAL_BACKEND_URL}/auth/refresh`;
+    console.log("🔄 Refresh Proxy calling:", url);
+    
     const res = await fetch(
-      `${process.env.INTERNAL_BACKEND_URL}/auth/refresh`,
+      url,
       {
         method: "POST",
         headers: {
@@ -43,8 +46,8 @@ export async function POST() {
 
       // Only delete if explicitly unauthorized or session broken (e.g. specific error code)
       // For now, we return 401 and let the frontend handle the redirect if needed.
-      // cookieStore.delete("accessToken");
-      // cookieStore.delete("refreshToken");
+      cookieStore.delete("accessToken");
+      cookieStore.delete("refreshToken");
 
       return NextResponse.json(
         { message: data.message || "Refresh failed" },

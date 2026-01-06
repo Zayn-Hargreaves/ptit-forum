@@ -1,7 +1,6 @@
 'use client';
 
-import { topicApi } from '@entities/topic/api/topic-api';
-import { TopicMember } from '@entities/topic/model/types';
+import { topicMemberApi } from '@entities/topic/api/topic-member-api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar/avatar';
 import { Card, CardHeader, CardTitle, CardContent } from '@shared/ui/card/card';
@@ -21,14 +20,14 @@ export function TopicMembers({ topicId, isTopicManager }: TopicMembersProps) {
 
   const { data, isLoading } = useQuery({
     queryKey: ['topic-members', topicId, activeTab],
-    queryFn: () => topicApi.getMembers(topicId, { approved: activeTab === 'approved' }),
+    queryFn: () => topicMemberApi.getMembers(topicId, { approved: activeTab === 'approved' }),
   });
 
   const members = (data as any)?.content || [];
 
   const handleApprove = async (memberId: string) => {
     try {
-        await topicApi.approveMember(memberId);
+        await topicMemberApi.approveMember(memberId);
         toast.success("Đã duyệt thành viên");
         queryClient.invalidateQueries({ queryKey: ['topic-members', topicId] });
     } catch (e) {
@@ -36,10 +35,10 @@ export function TopicMembers({ topicId, isTopicManager }: TopicMembersProps) {
     }
   }
 
-  const handleKick = async (userId: string) => {
+  const handleKick = async (memberId: string) => {
       if(!confirm("Bạn có chắc muốn mời thành viên này ra khỏi nhóm?")) return;
       try {
-          await topicApi.rejectMember(topicId, userId);
+          await topicMemberApi.removeMember(memberId);
           toast.success("Đã mời thành viên ra khỏi nhóm");
           queryClient.invalidateQueries({ queryKey: ['topic-members', topicId] });
       } catch (e) {
@@ -82,12 +81,12 @@ export function TopicMembers({ topicId, isTopicManager }: TopicMembersProps) {
             {members.map((member: any) => (
                 <div key={member.id} className="flex items-center gap-3">
                 <Avatar>
-                    <AvatarImage src={member.avatarUrl} />
-                    <AvatarFallback>{member.fullName?.charAt(0)}</AvatarFallback>
+                    <AvatarImage src={member.user?.avatarUrl || member.avatarUrl} />
+                    <AvatarFallback>{(member.user?.fullName || member.fullName)?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                    <p className="font-medium text-sm">{member.fullName}</p>
-                    <p className="text-xs text-muted-foreground">{member.email}</p>
+                    <p className="font-medium text-sm">{member.user?.fullName || member.fullName}</p>
+                    <p className="text-xs text-muted-foreground">{member.user?.email || member.email}</p>
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -100,7 +99,7 @@ export function TopicMembers({ topicId, isTopicManager }: TopicMembersProps) {
                     )}
                     
                     {isTopicManager && activeTab === 'approved' && member.topicRole !== 'ADMIN' && (
-                         <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => handleKick(member.userId)}>
+                         <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => handleKick(member.id)}>
                             <Trash2 className="h-4 w-4" />
                          </Button>
                     )}

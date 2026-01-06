@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent } from '@shared/ui/card/card';
-import { Category } from '@entities/category/api/category-api';
+import { ICategory } from '../model/types';
 
 interface CategoryListProps {
-  categories: Category[];
+  categories: ICategory[];
 }
 
-export function CategoryList({ categories }: CategoryListProps) {
+export function CategoryGrid({ categories }: CategoryListProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {categories.map((category) => (

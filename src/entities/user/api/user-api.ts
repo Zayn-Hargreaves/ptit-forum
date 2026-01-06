@@ -7,7 +7,7 @@ import {
 import { ApiResponse } from '@entities/announcement/model/types'; // Temporary import location
 
 export const getUserProfile = async (userId: string): Promise<UserProfile> => {
-  const response = await apiClient.get<ApiResponse<UserProfileResponseDto>>(`/users/${userId}/profile`);
+  const response = await apiClient.get<ApiResponse<UserProfileResponseDto>>(`/users/${userId}`);
   return mapUserProfileResponseDtoToUserProfile(response.data.result);
 };
 

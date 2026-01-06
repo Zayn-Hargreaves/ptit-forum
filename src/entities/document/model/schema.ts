@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const DocumentStatusSchema = z.enum(['PROCESSING', 'PENDING', 'PUBLISHED', 'REJECTED', 'FAILED', 'processing', 'pending', 'published', 'rejected', 'failed']).transform(val => val.toUpperCase() as 'PROCESSING' | 'PENDING' | 'PUBLISHED' | 'REJECTED' | 'FAILED');
+export const DocumentStatusSchema = z.enum(['PROCESSING', 'PENDING', 'PUBLISHED', 'REJECTED', 'FAILED', 'APPROVED', 'processing', 'pending', 'published', 'rejected', 'failed', 'approved']).transform(val => val.toUpperCase() as 'PROCESSING' | 'PENDING' | 'PUBLISHED' | 'REJECTED' | 'FAILED' | 'APPROVED');
 
 export enum DocumentType {
   COURSE_BOOK = 'COURSE_BOOK',

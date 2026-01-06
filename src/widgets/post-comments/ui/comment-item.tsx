@@ -174,10 +174,17 @@ export function CommentItem({
               <span className="font-semibold text-sm">{authorName}</span>
               <span className="text-xs text-muted-foreground">
                 {comment.createdDateTime &&
-                  formatDistanceToNow(new Date(comment.createdDateTime), {
-                    addSuffix: true,
-                    locale: vi,
-                  })}
+                  formatDistanceToNow(
+                    new Date(
+                      comment.createdDateTime.endsWith('Z')
+                        ? comment.createdDateTime
+                        : `${comment.createdDateTime}Z`
+                    ),
+                    {
+                      addSuffix: true,
+                      locale: vi,
+                    }
+                  )}
               </span>
             </div>
 

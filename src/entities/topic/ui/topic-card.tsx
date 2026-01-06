@@ -1,47 +1,49 @@
 'use client';
 
 import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@shared/ui/card/card';
+import { Card, CardHeader, CardContent, CardFooter } from '@shared/ui/card/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@shared/ui/avatar/avatar';
 import { Badge } from '@shared/ui/badge/badge';
 import { Users, FileText, Lock } from 'lucide-react';
-import { Topic } from '@entities/topic/model/types';
+import { ITopic } from '../model/types';
 
 interface TopicCardProps {
-  topic: Topic;
+  topic: ITopic;
 }
 
 export function TopicCard({ topic }: TopicCardProps) {
   return (
     <Link href={`/forum/topic/${topic.id}`}>
-      <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
-        <CardHeader className="pb-2">
-          <div className="flex justify-between items-start">
-            <CardTitle className="text-lg hover:text-primary transition-colors line-clamp-1">
-              {topic.title}
-            </CardTitle>
-            {topic.topicVisibility === 'PRIVATE' && (
-              <Lock className="w-4 h-4 text-muted-foreground" />
-            )}
+      <Card className="h-full hover:shadow-lg transition-all cursor-pointer group">
+        <CardHeader className="flex flex-row items-center gap-4 pb-2">
+          <Avatar className="h-12 w-12 border-2 border-transparent group-hover:border-primary transition-colors">
+            <AvatarImage src={topic.avatar} alt={topic.name} />
+            <AvatarFallback>{topic.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 overflow-hidden">
+            <h3 className="font-semibold text-lg truncate group-hover:text-primary transition-colors">
+              {topic.name}
+            </h3>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+               {!topic.isPublic && <Lock className="w-3 h-3" />}
+               <span>{topic.isPublic ? 'Public' : 'Private'}</span>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
-            {topic.content || 'Chưa có mô tả'}
-          </p>
         </CardHeader>
-        <CardContent className="pb-2">
-             {/* Stats can go here if available in list API */}
+        <CardContent>
+          <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
+            {topic.description || 'Chưa có mô tả'}
+          </p>
         </CardContent>
-        <CardFooter className="text-xs text-muted-foreground gap-4 border-t pt-3">
-            <div className="flex items-center gap-1">
-                 <Users className="w-3 h-3" />
-                 <span>Thành viên</span>
-            </div>
-             <div className="flex items-center gap-1">
-                 <FileText className="w-3 h-3" />
-                 <span>Bài viết</span>
-            </div>
-             <Badge variant="secondary" className="ml-auto font-normal">
-                {topic.categoryName}
-             </Badge>
+        <CardFooter className="flex justify-between text-xs text-muted-foreground border-t pt-4">
+          <div className="flex items-center gap-1">
+            <Users className="w-3 h-3" />
+            <span>{topic.memberCount || 0} thành viên</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <FileText className="w-3 h-3" />
+            <span>{topic.postCount || 0} bài viết</span>
+          </div>
         </CardFooter>
       </Card>
     </Link>

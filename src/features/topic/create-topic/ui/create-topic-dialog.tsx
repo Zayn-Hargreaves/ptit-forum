@@ -62,7 +62,11 @@ export function CreateTopicDialog({ categoryId }: CreateTopicDialogProps) {
 
   async function onSubmit(data: CreateTopicFormValues) {
     try {
-      await topicApi.create(categoryId, data);
+      await topicApi.create(categoryId, {
+        name: data.title,
+        description: data.content,
+        isPublic: data.topicVisibility === 'PUBLIC',
+      });
       toast.success('Tạo chủ đề thành công');
       setOpen(false);
       form.reset();

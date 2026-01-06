@@ -1,7 +1,8 @@
 export type ApiResponse<T> = {
+  code: number; // Senior requested 'code'
   result: T;
   message?: string;
-  statusCode?: number;
+  statusCode?: number; // Kept for backward compatibility if needed
 };
 
 export type PaginatedResponse<T> = {

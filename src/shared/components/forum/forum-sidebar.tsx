@@ -1,60 +1,58 @@
-import { Badge } from "@shared/ui/badge/badge";
-import { Button } from "@shared/ui/button/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card/card";
-import { PlusCircle, TrendingUp, Award } from "lucide-react";
-import Link from "next/link";
+"use client";
 
-const popularTags = [
-  { name: "lập-trình", count: 234 },
-  { name: "học-vụ", count: 189 },
-  { name: "thực-tập", count: 156 },
-  { name: "đề-thi", count: 145 },
-  { name: "học-bổng", count: 123 },
-  { name: "javascript", count: 98 },
-  { name: "python", count: 87 },
-  { name: "database", count: 76 },
-];
+import { Badge } from "@shared/ui/badge/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card/card";
+import { TrendingUp, Award } from "lucide-react";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { topicApi } from "@/entities/topic/api/topic-api";
 
 export function ForumSidebar() {
+  const { data: topics = [], isLoading } = useQuery({
+    queryKey: ['topics', 'popular'],
+    queryFn: () => topicApi.getTopics(),
+    select: (data) => {
+      // Sort by approvedPostCount (descending) and take top 8
+      // Show all topics, even those with 0 posts
+      return data
+        .sort((a, b) => (b.postCount || 0) - (a.postCount || 0))
+        .slice(0, 8);
+    },
+  });
+
   return (
     <div className="space-y-6">
-      {/* Create Post Button */}
-      <Card className="border-2 border-primary/20 bg-linear-to-br from-primary/5 to-accent/5">
-        <CardContent className="p-6">
-          <h3 className="mb-2 font-semibold">Có câu hỏi hoặc chia sẻ?</h3>
-          <p className="mb-4 text-sm text-muted-foreground">
-            Tạo bài viết mới để thảo luận với cộng đồng
-          </p>
-          <Button className="w-full" asChild>
-            <Link href="/forum/create">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Tạo bài viết
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Popular Tags */}
+      {/* Popular Topics */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <TrendingUp className="h-5 w-5 text-primary" />
-            Tag phổ biến
+            Topic phổ biến
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {popularTags.map((tag) => (
-              <Link key={tag.name} href={`/forum/tag/${tag.name}`}>
-                <Badge
-                  variant="secondary"
-                  className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                >
-                  {tag.name} ({tag.count})
-                </Badge>
-              </Link>
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex flex-wrap gap-2">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-7 w-24 animate-pulse rounded-full bg-muted" />
+              ))}
+            </div>
+          ) : topics.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Chưa có topic nào</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {topics.map((topic) => (
+                <Link key={topic.id} href={`/forum/topic/${topic.id}`}>
+                  <Badge
+                    variant="secondary"
+                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                  >
+                    {topic.name} ({topic.postCount})
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -69,7 +67,7 @@ export function ForumSidebar() {
         <CardContent className="space-y-2 text-sm text-muted-foreground">
           <p>• Tôn trọng và lịch sự với mọi người</p>
           <p>• Không spam hoặc quảng cáo</p>
-          <p>• Đăng đúng box và sử dụng tag phù hợp</p>
+          <p>• Đăng đúng topic và sử dụng ngôn ngữ phù hợp</p>
           <p>• Không chia sẻ thông tin cá nhân</p>
           <Link
             href="/rules"

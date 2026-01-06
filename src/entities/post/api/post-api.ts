@@ -1,123 +1,118 @@
-// src/entities/post/api/post-api.ts
 import { apiClient } from '@shared/api/axios-client';
-import { ApiResponse, PageResponse } from '@shared/api/types';
-import { Post, CreatePostPayload } from '../model/types'; // giữ CreatePostPayload
+import { ApiResponse } from '@shared/api/types';
+import { IPost } from '../model/types';
 
-// Params mapping theo Backend Spec (mode + range)
-// Params mapping theo Backend Spec (mode + range)
-export interface GetPostsParams {
-  pageParam?: number;
-  size?: number;
-  topicId?: string | null;
-  authorId?: string | null;
 
-  // New
-  mode?: 'latest' | 'trending';
-  range?: 'DAY' | 'WEEK' | 'MONTH' | 'ALL'; // Enum uppercase chuẩn BE
-}
+
+// Helper to map BE response to Frontend IPost
+const mapToIPost = (data: any): IPost => {
+    // FIX: Handle date parsing robustly. BE sends LocalDateTime (no 'Z'), treat as UTC.
+    const rawDate = data.createdDateTime || data.createdAt;
+    let createdAt = new Date().toISOString();
+    
+    if (rawDate) {
+        // If string doesn't specify timezone and looks like ISO (without Z), append Z
+        if (typeof rawDate === 'string' && !rawDate.endsWith('Z') && !rawDate.includes('+')) {
+            createdAt = `${rawDate}Z`;
+        } else {
+            createdAt = new Date(rawDate).toISOString();
+        }
+    }
+
+    return {
+        id: data.id,
+        title: data.title,
+        content: data.content,
+        author: {
+            id: data.author?.id || 'unknown',
+            fullName: data.author?.fullName || 'Người dùng ẩn danh',
+            avatar: data.author?.avatarUrl || '' 
+        },
+        createdAt: createdAt,
+        postStatus: data.postStatus, // PENDING, APPROVED, REJECTED
+        images: data.attachments?.filter((f: any) => f.contentType?.startsWith('image/') || f.fileName?.match(/\.(jpg|jpeg|png|gif|webp)$/i))
+            .map((file: any) => file.url) || [], 
+        documents: data.attachments?.filter((f: any) => !f.contentType?.startsWith('image/') && !f.fileName?.match(/\.(jpg|jpeg|png|gif|webp)$/i))
+            .map((file: any) => ({
+                name: file.fileName,
+                url: file.url,
+                type: file.contentType || 'application/octet-stream'
+            })) || [],
+        likeCount: data.reactionCount || 0,
+        commentCount: 0, // Not provided by BE yet
+        viewCount: 0, // Not provided by BE yet
+        isLiked: data.isLiked || false,
+        stats: {
+            likes: data.reactionCount || 0,
+            comments: 0,
+            views: 0
+        }
+    };
+};
 
 export const postApi = {
-  // 1. Get Newsfeed (Latest / Trending)
-  getNewsfeed: async (params: GetPostsParams) => {
-    const { mode = 'latest', range = 'WEEK', topicId, authorId, pageParam = 0, size = 10 } = params;
+  getPostsByTopic: async (topicId: string, page = 0, size = 10): Promise<IPost[]> => {
+    const { data } = await apiClient.get<ApiResponse<{
+        content: any[] // Use any for raw response to avoid strict type checks on mismatch
+    }>>(`/posts/topic/${topicId}`, {
+        params: { page, size }
+    });
+    
+    return data.result.content.map(mapToIPost);
+  },
+  
+  // For searching Pending posts (Manager)
+  getPendingPostsByTopic: async (topicId: string, page = 0, size = 10): Promise<IPost[]> => {
+     const { data } = await apiClient.get<ApiResponse<{ content: any[] }>>(`/posts/topic/${topicId}/search`, {
+         params: { page, size, postStatus: 'PENDING' }
+     });
+     return data.result.content.map(mapToIPost);
+  },
 
-    // Trending -> /posts/featured
-    if (mode === 'trending') {
-      const { data } = await apiClient.get<ApiResponse<PageResponse<Post>>>('/posts/featured', {
-        params: {
-          page: pageParam,
-          size,
-          range,
-          topicId: topicId || undefined,
-        },
+  createPost: async (topicId: string, data: { title: string; content: string; images?: string[] }): Promise<IPost> => {
+      const payload = {
+          title: data.title,
+          content: data.content,
+          fileMetadataIds: data.images || [] 
+      };
+
+      const { data: res } = await apiClient.post<ApiResponse<any>>(`/posts/topic/${topicId}`, payload);
+      return mapToIPost(res.result);
+  },
+  
+  approvePost: async (postId: string): Promise<IPost> => {
+      const { data } = await apiClient.put<ApiResponse<any>>(`/posts/upgrade-post/${postId}`, null, {
+          params: { postStatus: 'APPROVED' }
       });
-      return data.result;
-    }
-
-    const { data } = await apiClient.get<ApiResponse<PageResponse<Post>>>('/posts', {
-      params: {
-        page: pageParam,
-        size,
-        sort: 'createdDateTime,desc',
-        topicId: topicId || undefined,
-        authorId: authorId || undefined,
-      },
-    });
-    return data.result;
+      return mapToIPost(data.result);
   },
 
-  getDetail: async (id: string) => {
-    const { data } = await apiClient.get<ApiResponse<Post>>(`/posts/${id}`);
-    return data.result;
-  },
-
-  create: async (payload: CreatePostPayload) => {
-    const { topicId, ...body } = payload;
-    const { data } = await apiClient.post<ApiResponse<Post>>(`/posts/topic/${topicId}`, body);
-    return data.result;
-  },
-
-  getByTopic: async (topicId: string, params: GetPostsParams) => {
-    const { pageParam = 0, size = 10 } = params;
-
-    const { data } = await apiClient.get<ApiResponse<PageResponse<Post>>>(`/posts/topic/${topicId}`, {
-      params: {
-        page: pageParam,
-        size,
-        sort: 'createdDateTime,desc',
-      },
-    });
-
-    return data.result;
-  },
-
-  increaseView: async (postId: string) => {
-    const { data } = await apiClient.post<{ code: number; result: { viewCount: number } }>(`/posts/${postId}/view`);
-    return data.result;
-  },
-
-  update: async (id: string, payload: CreatePostPayload) => {
-    const { topicId, ...body } = payload;
-    const { data } = await apiClient.put<ApiResponse<Post>>(`/posts/${id}`, body);
-    return data.result;
-  },
-
-  delete: async (id: string) => {
-    const { data } = await apiClient.patch<ApiResponse<any>>(`/posts/${id}/archive`);
-    return data.result;
-  },
-
-  getMyPosts: async (page = 0, size = 10) => {
-    // Assuming /users/me/posts exists or we filter by authorId='me' if backend handles it
-    // Trying /users/me/posts first
-    try {
-      const { data } = await apiClient.get<ApiResponse<PageResponse<Post>>>('/users/me/posts', {
-        params: { page, size, sort: 'createdDateTime,desc' }
+  rejectPost: async (postId: string): Promise<IPost> => {
+      const { data } = await apiClient.put<ApiResponse<any>>(`/posts/upgrade-post/${postId}`, null, {
+          params: { postStatus: 'REJECTED' }
       });
-      return data.result;
-    } catch (e) {
-      // Fallback to getNewsfeed? But 'me' authorId might not work if backend expects UUID.
-      // Let's assume the backend has this endpoint for "My Posts" or similar.
-      throw e;
-    }
+      return mapToIPost(data.result);
   },
 
-  getPendingByTopic: async (topicId: string, page = 0, size = 10) => {
-    const { data } = await apiClient.get<ApiResponse<PageResponse<Post>>>(`/posts/topic/${topicId}/search`, {
-      params: {
-        postStatus: 'PENDING',
-        page,
-        size,
-        sort: 'createdDateTime,desc',
-      },
-    });
-    return data.result;
+  getPostDetail: async (postId: string): Promise<IPost> => {
+      const { data } = await apiClient.get<ApiResponse<any>>(`/posts/${postId}`);
+      return mapToIPost(data.result);
   },
 
-  upgradeStatus: async (postId: string, status: 'APPROVED' | 'REJECTED' | 'PENDING') => {
-    const { data } = await apiClient.put<ApiResponse<Post>>(`/posts/upgrade-post/${postId}`, null, {
-      params: { postStatus: status }
-    });
-    return data.result;
+  updatePost: async (postId: string, data: { title: string; content: string; images?: string[] }): Promise<IPost> => {
+      const payload = {
+          title: data.title,
+          content: data.content,
+          fileMetadataIds: data.images || []
+      };
+      const { data: res } = await apiClient.put<ApiResponse<any>>(`/posts/${postId}`, payload);
+      return mapToIPost(res.result);
   },
+
+  getMyPosts: async (page = 0, size = 10): Promise<IPost[]> => {
+      const { data } = await apiClient.get<ApiResponse<{ content: any[] }>>('/posts/my-posts', {
+          params: { page, size }
+      });
+      return data.result.content.map(mapToIPost);
+  }
 };

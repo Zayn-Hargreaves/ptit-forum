@@ -102,6 +102,7 @@ apiClient.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         })
           .then(() => {
+            // Retry the original request after refresh completes
             return apiClient(originalRequest);
           })
           .catch((err) => {
@@ -113,6 +114,10 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        if (isClient) {
+          console.log('🔄 Token expired, attempting refresh...');
+        }
+
         // Create a dedicated instance for auth calls to avoid circular deps and ensure credentials
         const authClient = axios.create({
           baseURL: API_URL,
@@ -126,17 +131,27 @@ apiClient.interceptors.response.use(
         const refreshResponse = await authClient.post('/auth/refresh');
 
         if (refreshResponse.status === 200) {
+          if (isClient) {
+            console.log('✅ Token refresh successful, retrying requests...');
+          }
           processQueue(null); // Resolve all queued requests
-          return apiClient(originalRequest); // Retry original
+          // Retry the original request with the new token
+          return apiClient(originalRequest);
         }
-      } catch (refreshError) {
+      } catch (refreshError: any) {
+        if (isClient) {
+          console.error('❌ Token refresh failed:', refreshError.response?.status);
+        }
         processQueue(refreshError, null);
         // If refresh fails, we let the 401 error propagate.
         // The UI (AuthProvider) should listen to strict 401s or we can simply toast here.
         if (isClient) {
           toast.error('Session expired. Please login again.');
           // Optional: Redirect to login or let auth-provider handle it
-          // window.location.href = '/auth/login';
+          const path = window.location.pathname;
+          if (!path.startsWith('/login') && !path.startsWith('/register') && !path.startsWith('/auth/login')) {
+             window.location.href = '/login';
+          }
         }
         return Promise.reject(refreshError);
       } finally {
@@ -170,3 +185,5 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+

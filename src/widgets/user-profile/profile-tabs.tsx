@@ -4,23 +4,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@shared/ui/tabs/tabs";
 import { MessageSquare, FileText, Calendar, Award } from "lucide-react";
 import Link from "next/link";
 import { PostList } from "@shared/components/forum/post-list";
+import { useMyDocuments } from "@entities/document/queries";
 
-const userDocuments = [
-  {
-    id: 1,
-    title: "Slide bài giảng OOP - Chương 1",
-    subject: "OOP",
-    downloads: 234,
-    date: "1 tuần trước",
-  },
-  {
-    id: 2,
-    title: "Đề thi giữa kỳ Database 2023",
-    subject: "Database",
-    downloads: 189,
-    date: "2 tuần trước",
-  },
-];
+
 
 const userEvents = [
   {
@@ -63,9 +49,18 @@ const achievements = [
 
 interface ProfileTabsProps {
   userId: string;
+  isOwnProfile?: boolean;
 }
 
-export function ProfileTabs({ userId }: ProfileTabsProps) {
+export function ProfileTabs({ userId, isOwnProfile }: ProfileTabsProps) {
+  const { data: myDocumentsData } = useMyDocuments(
+    isOwnProfile ? { page: 1, limit: 100 } : undefined // Only fetch if own profile
+  );
+
+  // If not own profile, we might want to fetch public docs of this user, but for now handle "My Docs" request first.
+  // The user specifically asked for "của cá nhân đăng tải" in "giao diện profile".
+  // Assuming this refers to managing OWN documents.
+  const documents = isOwnProfile ? myDocumentsData?.data || [] : [];
   return (
     <Tabs defaultValue="posts" className="space-y-6">
       <TabsList className="w-full justify-start border-b bg-transparent p-0 h-auto rounded-none">
@@ -115,31 +110,47 @@ export function ProfileTabs({ userId }: ProfileTabsProps) {
       </TabsContent>
 
       <TabsContent value="documents" className="space-y-4">
-        {userDocuments.map((doc) => (
-          <Card key={doc.id}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <FileText className="h-5 w-5 text-primary" />
-                  <div className="flex-1">
-                    <Link href={`/documents/${doc.id}`}>
-                      <h3 className="mb-2 font-semibold hover:text-primary">
-                        {doc.title}
-                      </h3>
-                    </Link>
-                    <div className="mb-2">
-                      <Badge variant="secondary">{doc.subject}</Badge>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{doc.downloads} lượt tải</span>
-                      <span>{doc.date}</span>
+        {documents.length === 0 ? (
+           <Card>
+             <CardContent className="p-6 text-center text-muted-foreground">
+               <FileText className="mx-auto mb-2 h-12 w-12 opacity-50" />
+               <p>{isOwnProfile ? "Bạn chưa tải lên tài liệu nào" : "Người dùng chưa tải lên tài liệu nào"}</p>
+             </CardContent>
+           </Card>
+        ) : (
+          documents.map((doc) => (
+            <Card key={doc.id}>
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <FileText className="h-5 w-5 text-primary" />
+                    <div className="flex-1">
+                      <Link href={`/documents/${doc.id}`}>
+                        <h3 className="mb-2 font-semibold hover:text-primary">
+                          {doc.title}
+                        </h3>
+                      </Link>
+                      <div className="mb-2">
+                        {/* Subject name might need specific mapping if full object not returned, but Service maps it */}
+                        <Badge variant="secondary">{doc.subject?.name || "Chưa phân loại"}</Badge>
+                         {/* Show Status for Owner */}
+                        {isOwnProfile && (
+                             <Badge variant={doc.status === 'APPROVED' ? 'default' : 'outline'} className="ml-2">
+                               {doc.status}
+                             </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span>{doc.downloadCount} lượt tải</span>
+                        <span>{new Date(doc.uploadDate).toLocaleDateString("vi-VN")}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </TabsContent>
 
       <TabsContent value="events" className="space-y-4">

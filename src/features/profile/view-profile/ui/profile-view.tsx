@@ -122,7 +122,7 @@ export function ProfileView({ userId }: Readonly<ProfileViewProps>) {
   return (
     <div className="container mx-auto px-4 py-8">
       <ProfileHeader user={profile} isOwnProfile={isOwnProfile ?? false} />
-      <ProfileTabs userId={userId} />
+      <ProfileTabs userId={userId} isOwnProfile={isOwnProfile ?? false} />
     </div> // Passed userId to Tabs for future fetching
   );
 }

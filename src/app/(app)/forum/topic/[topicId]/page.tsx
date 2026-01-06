@@ -1,39 +1,32 @@
-import { topicApi } from '@entities/topic/api/topic-api';
-import { TopicDetailView } from './topic-detail-view';
-import { notFound } from 'next/navigation';
-import { cookies } from 'next/headers';
-
-export const dynamic = 'force-dynamic';
+import { TopicHeaderSection } from '@widgets/topic-header-section/ui/topic-header-section';
+import { TopicSidebar } from '@widgets/topic-sidebar/ui/topic-sidebar';
+import { TopicContentTabs } from '@widgets/topic-content-tabs/ui/topic-content-tabs';
 
 interface PageProps {
-  params: Promise<{ topicId: string }>;
+  params: Promise<{
+    topicId: string;
+  }>;
 }
 
 export default async function TopicDetailPage({ params }: PageProps) {
   const { topicId } = await params;
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken')?.value;
-  let topic = null;
 
-  try {
-    console.log("🚀 Start fetching Topic in TopicDetailPage...");
-    topic = await topicApi.getById(topicId, accessToken);
-    console.log(`✅ Fetched topic: ${topic.title}`);
-  } catch (error: any) {
-     console.error('❌ Failed to fetch topic in TopicDetailPage:', {
-      message: error.message,
-      code: error.code,
-      url: error.config?.baseURL + error.config?.url
-    });
-  }
+  return (
+    <div className="container mx-auto py-8 px-4 space-y-8">
+      {/* 1. Header Widget */}
+      <TopicHeaderSection topicId={topicId} />
 
-  if (!topic) {
-    notFound();
-  }
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* 2. Main Content (Tabs: Feed / Members / Management) - Chiếm 8 cột */}
+        <div className="lg:col-span-8">
+           <TopicContentTabs topicId={topicId} />
+        </div>
 
-  // Inject ID manually if it's missing in TopicDetail but available from params
-  // Although we expect getById to return it or we use params
-  // But for the View, we pass topicId explicitly
-  
-  return <TopicDetailView topic={topic} topicId={topicId} />;
+        {/* 3. Sidebar - Chiếm 4 cột */}
+        <div className="hidden lg:block lg:col-span-4 space-y-6">
+           <TopicSidebar topicId={topicId} />
+        </div>
+      </div>
+    </div>
+  );
 }

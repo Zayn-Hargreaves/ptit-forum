@@ -1,84 +1,163 @@
-// src/entities/topic/api/topic-api.ts
 import { apiClient } from '@shared/api/axios-client';
-import { ApiResponse, PageResponse } from '@shared/api/types';
-import { Topic, TopicDetail, TopicMember, CreateTopicRequest } from '../model/types';
+import { ApiResponse } from '@shared/api/types';
+import { ITopic } from '../model/types';
 
 export const topicApi = {
-  getAll: async (accessToken?: string) => {
-    let headers = {};
-    if (accessToken) {
-      headers = { Authorization: `Bearer ${accessToken}` };
+  getTopics: async (params?: { search?: string }): Promise<ITopic[]> => {
+    const { data } = await apiClient.get<ApiResponse<{
+        content: Array<{
+            id: string;
+            title: string;
+            content: string;
+            topicVisibility: 'PUBLIC' | 'PRIVATE';
+            approvedPostCount: number;
+            memberCount: number;
+        }>
+    }>>('/topics', {
+      params: {
+        keyword: params?.search,
+      },
+    });
+
+    return data.result.content.map(topic => ({
+        id: topic.id,
+        name: topic.title,
+        description: topic.content,
+        avatar: '', 
+        isPublic: topic.topicVisibility === 'PUBLIC',
+        memberCount: topic.memberCount,
+        postCount: topic.approvedPostCount,
+    }));
+  },
+  
+  // Placeholder for detail
+  getTopicDetail: async (id: string, accessToken?: string): Promise<ITopic> => {
+    const config = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
+    
+    try {
+        // Case 1: Try direct GET by ID (Optimal)
+        const { data } = await apiClient.get<ApiResponse<{
+            id: string;
+            title: string;
+            content: string;
+            topicVisibility: 'PUBLIC' | 'PRIVATE';
+            approvedPostCount: number;
+            memberCount: number;
+            currentUserContext?: {
+              topicMember: boolean;
+              topicManager: boolean;
+              topicCreator: boolean;
+              requestStatus: 'NONE' | 'PENDING' | 'APPROVED';
+            };
+        }>>(`/topics/${id}`, config);
+        
+        const res = data.result;
+        return {
+            id: res.id,
+            name: res.title,
+            description: res.content,
+            avatar: '',
+            isPublic: res.topicVisibility === 'PUBLIC',
+            topicVisibility: res.topicVisibility,
+            currentUserContext: res.currentUserContext,
+            memberCount: res.memberCount,
+            postCount: res.approvedPostCount
+        };
+    } catch (error: any) {
+        // Case 2: Fallback to searching if Detail API is not implemented or 404 handled differently
+        // Only fallback if error is 404 or backend specific issue
+        console.warn('API getDetail failed, trying fallback search...', error.response?.status);
+        
+        const { data } = await apiClient.get<ApiResponse<ITopic[]>>('/topics', {
+            ...config,
+            params: { keyword: id } 
+        });
+        
+        const topic = data.result.find(t => t.id === id);
+        if (!topic) throw new Error('Topic not found');
+        return topic;
     }
-
-    const { data } = await apiClient.get<ApiResponse<PageResponse<Topic>>>('/topics', {
-      params: {
-        page: 0,
-        size: 100,
-      },
-      headers: { ...headers },
-    });
-    return data.result;
   },
 
-  getPostableTopic: async () => {
-    const { data } = await apiClient.get<ApiResponse<PageResponse<Topic>>>('/topics', {
-      params: {
-        page: 0,
-        size: 100,
-      },
-    });
-    return data.result.content;
+  getOne: async (id: string): Promise<ITopic> => {
+    return topicApi.getTopicDetail(id);
   },
 
-  getByCategory: async (categoryId: string, accessToken?: string, page: number = 0, size: number = 100) => {
-    const config = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
-    const { data } = await apiClient.get<ApiResponse<PageResponse<Topic>>>(`/topics/category/${categoryId}`, {
-      ...config,
-      params: {
-        page,
-        size,
-      },
-    });
-    return data.result.content;
+  getByCategory: async (categoryId: string): Promise<ITopic[]> => {
+      const { data } = await apiClient.get<ApiResponse<{
+          content: Array<{
+              id: string;
+              title: string;
+              content: string;
+              topicVisibility: 'PUBLIC' | 'PRIVATE';
+              approvedPostCount: number;
+              memberCount: number;
+          }>
+      }>>(`/topics/category/${categoryId}`);
+
+      return data.result.content.map(topic => ({
+          id: topic.id,
+          name: topic.title,
+          description: topic.content,
+          avatar: '', 
+          isPublic: topic.topicVisibility === 'PUBLIC',
+          memberCount: topic.memberCount, 
+          postCount: topic.approvedPostCount,
+      }));
   },
 
-  getById: async (id: string, accessToken?: string) => {
-    const config = accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : {};
-    const { data } = await apiClient.get<ApiResponse<TopicDetail>>(`/topics/${id}`, config);
-    return data.result;
+  create: async (categoryId: string, data: { name: string; description: string; isPublic: boolean }): Promise<ITopic> => {
+      const payload = {
+          title: data.name,
+          content: data.description,
+          topicVisibility: data.isPublic ? 'PUBLIC' : 'PRIVATE'
+      };
+
+      const { data: res } = await apiClient.post<ApiResponse<{
+          id: string;
+          title: string;
+          content: string;
+          topicVisibility: 'PUBLIC' | 'PRIVATE';
+      }>>(`/topics/category/${categoryId}`, payload);
+      
+      const topic = res.result;
+
+      return {
+          id: topic.id,
+          name: topic.title,
+          description: topic.content,
+          avatar: '',
+          isPublic: topic.topicVisibility === 'PUBLIC',
+          memberCount: 0,
+          postCount: 0
+      };
   },
 
+  updateTopic: async (id: string, data: { name: string; description: string; isPublic: boolean }): Promise<ITopic> => {
+    const payload = {
+        title: data.name,
+        content: data.description,
+        topicVisibility: data.isPublic ? 'PUBLIC' : 'PRIVATE'
+    };
 
-  getMembers: async (topicId: string, params?: { approved?: boolean; page?: number; size?: number }) => {
-    const { approved, page = 0, size = 10 } = params || {};
-    const { data } = await apiClient.get<ApiResponse<PageResponse<TopicMember>>>(`/topic-members/topic/${topicId}`, {
-      params: {
-        approved,
-        page,
-        size,
-      },
-    });
-    return data.result;
-  },
+    const { data: res } = await apiClient.put<ApiResponse<{
+        id: string;
+        title: string;
+        content: string;
+        topicVisibility: 'PUBLIC' | 'PRIVATE';
+    }>>(`/topics/${id}`, payload);
+    
+    const topic = res.result;
 
-  approveMember: async (memberId: string) => {
-    const { data } = await apiClient.post<ApiResponse<any>>(`/topic-members/approve/${memberId}`);
-    return data.result;
-  },
-
-  rejectMember: async (topicId: string, userId: string) => {
-    const { data } = await apiClient.delete<ApiResponse<any>>(`/topic-members/${topicId}/kick/${userId}`);
-    return data.result;
-  },
-
-  join: async (topicId: string) => {
-    const { data } = await apiClient.post<ApiResponse<any>>(`/topic-members/join/${topicId}`);
-    return data.result;
-  },
-
-  create: async (categoryId: string, request: CreateTopicRequest) => {
-    const { data } = await apiClient.post<ApiResponse<Topic>>(`/topics/category/${categoryId}`, request);
-    return data.result;
-  },
-};
-
+    return {
+        id: topic.id,
+        name: topic.title,
+        description: topic.content,
+        avatar: '',
+        isPublic: topic.topicVisibility === 'PUBLIC',
+        topicVisibility: topic.topicVisibility,
+        memberCount: 0,
+        postCount: 0
+    };
+  }
+}

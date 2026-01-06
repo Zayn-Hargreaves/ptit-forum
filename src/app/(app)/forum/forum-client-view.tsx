@@ -1,29 +1,30 @@
-'use client';
-
-import { Category } from '@entities/category/api/category-api';
-import { CategoryList } from '@entities/category/ui/category-list';
+import { ICategory } from '@entities/category/model/types';
+import { CategoryGrid } from '@entities/category/ui/category-grid';
 import { ForumSidebar } from '@shared/components/forum/forum-sidebar';
+import { TopicDiscovery } from '@widgets/topic-discovery/ui/topic-discovery';
+import { HomeHero } from '@widgets/home-hero/ui/home-hero';
 
 interface ForumClientViewProps {
-    initialCategories: Category[];
+    initialCategories: ICategory[];
 }
 
 export function ForumClientView({ initialCategories }: Readonly<ForumClientViewProps>) {
     return (
         <div className="container mx-auto py-8 px-4 space-y-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Diễn đàn</h1>
-                    <p className="text-muted-foreground mt-1">Chọn chủ đề bạn quan tâm</p>
-                </div>
-            </div>
+            <HomeHero />
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 <div className="lg:col-span-3">
-                   <div className="mb-6">
-                      <h2 className="text-2xl font-semibold mb-4">Danh mục</h2>
-                      <CategoryList categories={initialCategories} />
-                   </div>
+                      <div className="space-y-10">
+                        {/* Categories Section (Secondary -> Moved to Primary) */}
+                        <div className="pb-8 border-b">
+                            <h2 className="text-xl font-semibold mb-4">Danh mục chủ đề</h2>
+                            <CategoryGrid categories={initialCategories} />
+                        </div>
+
+                        {/* Topic Feed Section (Main Content) */}
+                        <TopicDiscovery />
+                      </div>
                 </div>
                 
                 <div className="hidden lg:block lg:col-span-1">
@@ -33,3 +34,4 @@ export function ForumClientView({ initialCategories }: Readonly<ForumClientViewP
         </div>
     );
 }
+

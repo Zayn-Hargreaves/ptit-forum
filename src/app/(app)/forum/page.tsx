@@ -1,11 +1,12 @@
 import { cookies } from 'next/headers';
-import { categoryApi, Category } from '@entities/category/api/category-api';
+import { categoryApi } from '@entities/category/api/category-api';
+import { ICategory } from '@entities/category/model/types';
 import { ForumClientView } from './forum-client-view';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ForumPage() {
-  let categories: Category[] = [];
+  let categories: ICategory[] = [];
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
