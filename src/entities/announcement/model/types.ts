@@ -1,13 +1,11 @@
 import { CohortCode } from '@shared/api/classroom.service';
 
+// Backend Enum: CLASS_MEETING, PAY_FEE, ACADEMIC, GENERAL
 export enum AnnouncementType {
   GENERAL = 'GENERAL',
   CLASS_MEETING = 'CLASS_MEETING',
   PAY_FEE = 'PAY_FEE',
   ACADEMIC = 'ACADEMIC',
-  ACTIVITY = 'ACTIVITY',
-  TUITION = 'TUITION',
-  OTHER = 'OTHER',
 }
 
 export const ANNOUNCEMENT_TYPE_LABEL: Record<AnnouncementType, string> = {
@@ -15,9 +13,6 @@ export const ANNOUNCEMENT_TYPE_LABEL: Record<AnnouncementType, string> = {
   [AnnouncementType.CLASS_MEETING]: 'Họp lớp',
   [AnnouncementType.PAY_FEE]: 'Thu phí',
   [AnnouncementType.ACADEMIC]: 'Học tập',
-  [AnnouncementType.ACTIVITY]: 'Hoạt động',
-  [AnnouncementType.TUITION]: 'Học phí',
-  [AnnouncementType.OTHER]: 'Khác',
 };
 
 export interface BackendAnnouncement {
@@ -128,11 +123,16 @@ export interface DetailedAnnouncement extends Announcement {
 // --- REQUEST DTOs (Dữ liệu gửi lên BE) ---
 
 // Tương ứng: CreatedAnnouncementRequest
+// Tương ứng: CreateAnnouncementRequest (Updated with Targeting)
 export interface CreateAnnouncementPayload {
   title: string;
   content: string;
   announcementType: AnnouncementType;
-  fileMetadataIds: string[]; // List<UUID>
+  isGlobal?: boolean;
+  targetFaculties?: string[];
+  targetCohorts?: string[]; // CohortCode[] but passed as string keys
+  specificClassCodes?: string[];
+  fileMetadataIds?: string[];
 }
 
 // Tương ứng: ReleaseAnnouncementRequest

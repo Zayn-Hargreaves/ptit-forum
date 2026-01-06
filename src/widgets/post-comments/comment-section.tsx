@@ -43,13 +43,15 @@ export function CommentSection({ postId, postAuthorId }: CommentSectionProps) {
   const allRootComments = React.useMemo(() => data?.pages.flatMap((p) => p.content) ?? [], [data]);
 
   // 🔍 DEBUG: Trace Props
-  console.log('🔍 [CommentSection] Render', {
-    postId,
-    postAuthorId,
-    currentUserId: currentUser?.id,
-    currentUserRole: currentUser?.role,
-    totalComments: allRootComments.length,
-  });
+  React.useEffect(() => {
+    console.log('🔍 [CommentSection] Render', {
+      postId,
+      postAuthorId,
+      currentUserId: currentUser?.id,
+      currentUserRole: currentUser?.role,
+      totalComments: allRootComments.length,
+    });
+  }, [postId, postAuthorId, currentUser, allRootComments.length]);
 
   const { mutate: deleteRootComment, isPending: isDeleting } = useDeleteComment({ postId });
 

@@ -74,8 +74,10 @@ const mapToIPost = (data: PostDto): IPost => {
     stats: {
       likeCount: data.reactionCount || 0,
       commentCount: 0,
+      commentCount: 0,
       viewCount: 0,
     },
+    _debugRaw: data.createdDateTime,
   };
 };
 

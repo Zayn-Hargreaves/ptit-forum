@@ -59,7 +59,7 @@ export const useReaction = ({
             return {
               ...item,
               isLiked: !currentIsLiked,
-              reactionCount: newCount, // For Comments / General
+              reactionCount: newCount, // For Comments (flattened)
               likeCount: newCount, // For Posts
               stats: item.stats
                 ? {
@@ -101,6 +101,28 @@ export const useReaction = ({
               ...oldData.result,
               content: oldData.result.content.map(updateItem),
             },
+          };
+        }
+
+        // Case 3: Infinite Data (InfiniteData<Page<T>>)
+        // This structure is { pages: [...], pageParams: [...] }
+        if (oldData.pages && Array.isArray(oldData.pages)) {
+          return {
+            ...oldData,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            pages: oldData.pages.map((page: any) => {
+              // Each page could be a direct array or a Page object
+              if (Array.isArray(page)) {
+                return page.map(updateItem);
+              }
+              if (page.content && Array.isArray(page.content)) {
+                return {
+                  ...page,
+                  content: page.content.map(updateItem),
+                };
+              }
+              return page;
+            }),
           };
         }
 

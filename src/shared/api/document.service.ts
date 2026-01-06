@@ -12,31 +12,24 @@ interface UserSummaryDto {
   avatarUrl?: string; // Backend might send null
 }
 
-interface SubjectSummaryDto {
-  id: string;
-  subjectName: string;
-  subjectCode: string;
-}
-
 interface DocumentDto {
   id: string;
   title: string;
   description: string;
-  documentType: string; // Enum string from backend
-  documentStatus: string; // Enum string from backend
-  urlDoc: string; // Backend sends urlDoc
-  thumbnailUrl: string;
-  previewImages: string[];
+  documentType: string;
+  documentStatus: 'APPROVED' | 'PENDING' | 'REJECTED';
+  urlDoc: string;
+  urlImage: string; // Backend sends urlImage, not thumbnailUrl directly? mapped in service
+  thumbnailUrl?: string; // service maps this, but BE sends urlImage
+  subjectId: string;
+  subjectName: string;
+  subjectCode: string; // New field
   pageCount: number;
   isPremium: boolean;
-  fileSize: number;
   viewCount: number;
   downloadCount: number;
-  originalFilename: string;
-  rejectionReason?: string;
-  createdAt: string; // Backend sends createdAt
+  createdAt: string;
   uploadedBy: UserSummaryDto;
-  subject: SubjectSummaryDto;
 }
 
 export interface GetDocumentsParams {
@@ -55,24 +48,24 @@ const mapDtoToDocument = (dto: DocumentDto): Document => {
     id: dto.id,
     title: dto.title,
     description: dto.description,
-    fileUrl: getPublicImageUrl(dto.urlDoc), // Map urlDoc -> fileUrl
-    thumbnailUrl: getPublicImageUrl(dto.thumbnailUrl),
+    fileUrl: getPublicImageUrl(dto.urlDoc),
+    thumbnailUrl: getPublicImageUrl(dto.urlImage || dto.thumbnailUrl), // Backend now sends urlImage
     pageCount: dto.pageCount || 0,
     viewCount: dto.viewCount || 0,
     downloadCount: dto.downloadCount || 0,
-    uploadDate: dto.createdAt, // Map createdAt -> uploadDate
+    uploadDate: dto.createdAt,
     isPremium: dto.isPremium || false,
-    status: (dto.documentStatus || 'PENDING').toUpperCase() as Document['status'],
-    previewImages: dto.previewImages?.map((url: string) => getPublicImageUrl(url)) || [],
+    status: dto.documentStatus || 'PENDING', // Typed correctly now
+    previewImages: [], // Backend response doesn't seem to have previewImages yet in the DTO I saw, keeping empty
     author: {
       id: dto.uploadedBy?.id || 'unknown',
       name: dto.uploadedBy?.fullName || 'Unknown',
       avatar: getPublicImageUrl(dto.uploadedBy?.avatarUrl) || '',
     },
     subject: {
-      id: dto.subject?.id || 'unknown',
-      name: dto.subject?.subjectName || 'Unknown',
-      code: dto.subject?.subjectCode || 'UNK',
+      id: dto.subjectId || 'unknown',
+      name: dto.subjectName || 'Unknown',
+      code: dto.subjectCode || 'UNK',
     },
   };
 };

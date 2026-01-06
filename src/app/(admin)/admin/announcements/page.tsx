@@ -65,7 +65,7 @@ export default function AdminAnnouncementsPage() {
     ],
     queryFn: () =>
       announcementApi.search({
-        page: pagination.pageIndex + 1, // Backend Spring Boot thường nhận page từ 1 (tuỳ config)
+        page: pagination.pageIndex, // Spring Boot (0-based)
         size: pagination.pageSize,
         title: debouncedSearch || undefined,
         type: typeFilter === 'ALL' ? undefined : typeFilter,

@@ -9,23 +9,25 @@ import { Heart } from 'lucide-react';
 import { useReaction } from '../model/use-reaction';
 
 interface ReactionButtonProps {
-  topicId?: string; // Optional if queryKey is provided
-  postId: string;
+  topicId?: string;
+  targetId: string; // Renamed from postId to be generic
+  targetType?: TargetType; // Default to POST if not provided
   initialLikeCount: number;
   initialIsLiked?: boolean;
-  queryKey?: QueryKey; // Allow overriding queryKey
+  queryKey?: QueryKey;
 }
 
 export function ReactionButton({
   topicId,
-  postId,
+  targetId,
+  targetType = TargetType.POST,
   initialLikeCount,
   initialIsLiked,
   queryKey,
 }: ReactionButtonProps) {
   const { mutate } = useReaction({
-    targetId: postId,
-    targetType: TargetType.POST,
+    targetId,
+    targetType,
     currentIsLiked: initialIsLiked || false,
     currentCount: initialLikeCount,
     queryKey: queryKey || ['posts', topicId],

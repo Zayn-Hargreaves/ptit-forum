@@ -149,10 +149,11 @@ export function DataTable<TData, TValue>({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">Tất cả hệ</SelectItem>
-              <SelectItem value="D">Đại học (D)</SelectItem>
-              <SelectItem value="M">Cao học (M)</SelectItem>
-              <SelectItem value="P">Tiến sĩ (P)</SelectItem>
-              <SelectItem value="OTHER">Khác</SelectItem>
+              {Object.values(CohortCode).map((code) => (
+                <SelectItem key={code} value={code}>
+                  {code}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 

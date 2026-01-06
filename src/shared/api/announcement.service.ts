@@ -3,6 +3,7 @@
 import {
   AnnouncementResponse,
   AnnouncementSearchParams,
+  BackendAnnouncementDetail,
   CreateAnnouncementPayload,
   DetailedAnnouncement,
   ReleaseAnnouncementPayload,
@@ -30,7 +31,7 @@ export const announcementApi = {
 
   // GET /api/admin/announcements/{id}
   getDetail: async (id: string) => {
-    const res = await apiClient.get<ApiResponse<DetailedAnnouncement>>(`${BASE_URL}/${id}`);
+    const res = await apiClient.get<ApiResponse<BackendAnnouncementDetail>>(`${BASE_URL}/${id}`);
     return res.data.result;
   },
 

@@ -1,8 +1,9 @@
 'use client';
 
-import { Comment, TargetType } from '@entities/interaction/model/types';
+import { Comment as CommentEntity, TargetType } from '@entities/interaction/model/types';
 import { User } from '@entities/session/model/types';
 import { useUpdateComment } from '@features/comment/hooks/use-update-comment';
+import { ReactionButton } from '@features/post-reaction/ui/reaction-button';
 import { ReportDialog } from '@features/report/ui/report-dialog';
 import { Button } from '@shared/ui/button/button';
 import { LiteEditor } from '@shared/ui/editor/lite-editor';
@@ -18,7 +19,7 @@ import { CommentForm } from './comment-form';
 import { ReplyList } from './reply-list';
 
 interface CommentItemProps {
-  comment: Comment;
+  comment: CommentEntity;
   postId: string;
   postAuthorId?: string;
   currentUser?: User | null;
@@ -110,7 +111,7 @@ export function CommentItem({
     }
   }, [isEditing, comment.content, editContent]);
 
-  const replyCount = comment.stats?.replyCount || 0;
+  const replyCount = comment.repliesCount || 0;
   const hasChildren = !!comment.children?.length;
   const authorName = comment.author?.fullName || 'Ẩn danh';
   const avatarUrl = comment.author?.avatarUrl ?? '';
@@ -198,7 +199,7 @@ export function CommentItem({
         </div>
         {hasChildren && (
           <div className="mt-2 ml-12">
-            {comment.children!.map((child) => (
+            {comment.children?.map((child: CommentEntity) => (
               <CommentItem
                 key={child.id}
                 comment={child}
@@ -243,6 +244,12 @@ export function CommentItem({
                       locale: vi,
                     },
                   )}
+              </span>
+              <span
+                className="debug-comment-date hidden"
+                data-raw={JSON.stringify(comment.createdDateTime)}
+              >
+                {JSON.stringify(comment.createdDateTime)}
               </span>
             </div>
 
@@ -306,6 +313,18 @@ export function CommentItem({
             </div>
           ) : (
             <div className="flex items-center gap-2 px-1 text-xs select-none">
+              <ReactionButton
+                targetId={comment.id}
+                targetType={TargetType.COMMENT}
+                initialLikeCount={comment.reactionCount || 0}
+                initialIsLiked={comment.isLiked || false}
+                queryKey={
+                  isReply
+                    ? ['comments', 'replies', comment.rootCommentId]
+                    : ['comments', 'roots', postId]
+                }
+              />
+
               <Button
                 variant="ghost"
                 size="sm"

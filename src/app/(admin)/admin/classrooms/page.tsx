@@ -55,7 +55,7 @@ export default function AdminClassroomsPage() {
     ],
     queryFn: () =>
       searchAllClassrooms({
-        page: pagination.pageIndex + 1, // API spring boot page start from 1? Nếu 0 thì bỏ +1
+        page: pagination.pageIndex, // API spring boot page start from 0
         size: pagination.pageSize,
         classCode: debouncedSearchCode || undefined,
         facultyId: selectedFaculty,

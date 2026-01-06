@@ -4,13 +4,14 @@ import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 
 import { ActionCell } from './action-cell';
+import Link from 'next/link';
 
 // Map Enum Backend sang Tiếng Việt
 const TYPE_MAP: Record<string, string> = {
+  GENERAL: 'Thông báo chung',
+  CLASS_MEETING: 'Họp lớp',
+  PAY_FEE: 'Thu phí',
   ACADEMIC: 'Học tập',
-  ACTIVITY: 'Hoạt động',
-  TUITION: 'Học phí',
-  OTHER: 'Khác',
 };
 
 export const columns: ColumnDef<AnnouncementResponse>[] = [
@@ -19,9 +20,13 @@ export const columns: ColumnDef<AnnouncementResponse>[] = [
     header: 'Tiêu đề',
     cell: ({ row }) => (
       <div className="flex max-w-[300px] flex-col">
-        <span className="truncate font-medium" title={row.original.title}>
+        <Link 
+          href={`/admin/announcements/${row.original.id}`}
+          className="truncate font-medium hover:underline hover:text-primary transition-colors"
+          title={row.original.title}
+        >
           {row.original.title}
-        </span>
+        </Link>
         <span className="text-muted-foreground truncate text-xs">
           Tạo bởi: {row.original.createdBy}
         </span>

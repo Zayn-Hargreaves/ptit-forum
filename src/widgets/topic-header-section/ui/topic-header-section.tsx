@@ -1,12 +1,15 @@
 'use client';
 
+import { TargetType } from '@entities/interaction/model/types';
 import { topicApi } from '@entities/topic/api/topic-api';
 import { topicMemberApi } from '@entities/topic/api/topic-member-api';
 import { TopicCover } from '@entities/topic/ui/topic-cover';
+import { ReportDialog } from '@features/report/ui/report-dialog';
 import { Button } from '@shared/ui/button/button';
 import { Skeleton } from '@shared/ui/skeleton/skeleton';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Check, Clock, Lock, UserPlus } from 'lucide-react';
+import { AlertTriangle, Check, Clock, Lock, UserPlus } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 interface TopicHeaderSectionProps {
@@ -15,6 +18,7 @@ interface TopicHeaderSectionProps {
 
 export function TopicHeaderSection({ topicId }: TopicHeaderSectionProps) {
   const queryClient = useQueryClient();
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   const {
     data: topic,
@@ -148,9 +152,28 @@ export function TopicHeaderSection({ topicId }: TopicHeaderSectionProps) {
   };
 
   return (
-    <div className="bg-card overflow-hidden rounded-xl border pb-4 shadow-sm">
+    <div className="bg-card relative overflow-hidden rounded-xl border pb-4 shadow-sm">
       <TopicCover topic={topic} />
       {renderJoinSection()}
+
+      <div className="absolute top-6 right-6">
+        <Button
+          variant="secondary"
+          size="sm"
+          className="opacity-80 hover:opacity-100"
+          onClick={() => setIsReportOpen(true)}
+        >
+          <AlertTriangle className="mr-2 h-4 w-4" />
+          Báo cáo
+        </Button>
+      </div>
+
+      <ReportDialog
+        open={isReportOpen}
+        onOpenChange={setIsReportOpen}
+        targetId={topicId}
+        targetType={TargetType.TOPIC}
+      />
     </div>
   );
 }

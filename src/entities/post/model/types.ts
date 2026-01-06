@@ -35,6 +35,7 @@ export interface IPost {
     size?: number;
   }[];
   isLiked?: boolean;
+  _debugRaw?: unknown;
 }
 
 export type Post = IPost;

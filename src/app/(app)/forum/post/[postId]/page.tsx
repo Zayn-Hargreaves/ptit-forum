@@ -1,15 +1,16 @@
 'use client';
 
+import { TargetType } from '@entities/interaction/model/types';
 import { postApi } from '@entities/post/api/post-api';
 import { PostImageGrid } from '@entities/post/ui/post-image-grid';
 import { PostActionMenu } from '@features/post/update-post/ui/post-action-menu';
-import { CommentSection } from '@features/post-comment/ui/comment-section';
 import { ReactionButton } from '@features/post-reaction/ui/reaction-button';
 import { getAvatarUrl, getUserDisplayName } from '@shared/lib/user-display-utils';
 import { Button } from '@shared/ui/button/button';
 import { FileDownloadButton } from '@shared/ui/file-download-button';
 import { UserAvatar } from '@shared/ui/user-avatar/user-avatar';
 import { useQuery } from '@tanstack/react-query';
+import { CommentSection } from '@widgets/post-comments/comment-section';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { ArrowLeft, Loader2 } from 'lucide-react';
@@ -53,72 +54,93 @@ export default function PostDetailPage() {
   const authorAvatar = getAvatarUrl(post.author?.avatarUrl);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
+    <div className="mx-auto max-w-4xl px-4 py-8">
+      {/* Navigation */}
       <Button
         variant="ghost"
-        className="mb-4 gap-2 pl-0 transition-all hover:pl-2"
+        className="text-muted-foreground hover:text-foreground mb-6 gap-2 pl-0 transition-all hover:pl-2"
         onClick={() => router.back()}
       >
         <ArrowLeft className="h-4 w-4" />
-        Quay lại
+        Quay lại diễn đàn
       </Button>
 
+      {/* Main Content Card */}
       <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
-        {/* Header */}
-        <div className="border-b p-6">
-          <h1 className="mb-4 text-2xl font-bold">{post.title}</h1>
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <UserAvatar name={authorName} avatarUrl={authorAvatar} className="h-10 w-10 border" />
-              <div>
-                <div className="font-semibold">{authorName}</div>
-                <div className="text-muted-foreground text-xs">
+        <div className="border-b p-6 md:p-8">
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <h1 className="text-2xl leading-tight font-bold md:text-3xl">{post.title}</h1>
+            <PostActionMenu post={post} isDetailView={true} />
+          </div>
+
+          <div className="flex items-center gap-4">
+            {post.author?.id ? (
+              <UserAvatar
+                name={authorName}
+                avatarUrl={authorAvatar}
+                className="h-12 w-12 border-2"
+              />
+            ) : (
+              <UserAvatar name={authorName} avatarUrl={authorAvatar} className="h-12 w-12 border" />
+            )}
+            <div className="grid gap-0.5">
+              <span className="text-base font-semibold">{authorName}</span>
+              <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                <span>
                   {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: vi })}
-                </div>
+                </span>
+                <span
+                  id="debug-post-date"
+                  className="hidden"
+                  data-raw={JSON.stringify(post._debugRaw)}
+                >
+                  {JSON.stringify(post._debugRaw)}
+                </span>
+                <span>•</span>
+                <span>{post.stats?.viewCount || 0} lượt xem</span>
               </div>
             </div>
-
-            {/* Action Menu (3 dots) */}
-            <PostActionMenu post={post} isDetailView={true} />
           </div>
         </div>
 
-        {/* Content */}
-        <div className="space-y-6 p-6">
-          {/* Text Content */}
+        {/* Post Body */}
+        <div className="p-6 md:p-8">
           <div
-            className="prose dark:prose-invert text-foreground max-w-none leading-relaxed"
+            className="prose prose-lg dark:prose-invert max-w-none leading-relaxed break-words"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
-          {/* Images */}
+          {/* Images Grid */}
           {post.images && post.images.length > 0 && (
-            <div className="mt-4">
+            <div className="mt-8">
               <PostImageGrid images={post.images} />
             </div>
           )}
 
-          {/* Documents */}
           {post.documents && post.documents.length > 0 && (
-            <div className="mt-6 space-y-3">
-              <h3 className="text-foreground/80 text-sm font-semibold">
+            <div className="bg-muted/30 mt-8 space-y-4 rounded-lg border p-4">
+              <h3 className="text-muted-foreground flex items-center gap-2 text-sm font-semibold tracking-wide uppercase">
+                <span className="bg-primary h-1.5 w-1.5 rounded-full" />
                 Tài liệu đính kèm ({post.documents.length})
               </h3>
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {post.documents.map((doc, idx) => (
                   <div
                     key={idx}
-                    className="bg-muted/30 hover:bg-muted/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
+                    className="bg-background hover:border-primary/50 group flex items-center justify-between rounded-md border p-3 transition-all"
                   >
-                    <div className="flex items-center gap-3 truncate">
-                      <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded text-xs font-bold uppercase">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded text-xs font-bold uppercase">
                         {doc.name.split('.').pop() || 'FILE'}
                       </div>
-                      <span className="truncate text-sm font-medium" title={doc.name}>
-                        {doc.name}
-                      </span>
+                      <div className="grid min-w-0 gap-0.5">
+                        <span className="group-hover:text-primary truncate text-sm font-medium transition-colors">
+                          {doc.name}
+                        </span>
+                        <span className="text-muted-foreground text-xs">Nhấn để tải xuống</span>
+                      </div>
                     </div>
-                    <div className="ml-4 shrink-0">
+                    <div className="ml-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
                       <FileDownloadButton fileName={doc.name} fileUrl={doc.url} />
                     </div>
                   </div>
@@ -128,21 +150,30 @@ export default function PostDetailPage() {
           )}
         </div>
 
-        {/* Footer Actions */}
-        <div className="bg-muted/5 flex items-center justify-between border-t border-b p-4">
+        {/* Reaction Bar */}
+        <div className="bg-muted/5 flex items-center justify-between border-t px-6 py-4 md:px-8">
           <ReactionButton
-            postId={post.id}
+            targetId={post.id}
+            targetType={TargetType.POST}
             initialLikeCount={post.stats?.likeCount || 0}
             initialIsLiked={post.isLiked}
-            queryKey={['post', post.id]} // Direct update to this query
+            queryKey={['post', post.id]}
           />
-          <div className="text-muted-foreground text-sm">{post.stats?.viewCount || 0} lượt xem</div>
+          <div className="text-muted-foreground text-sm">
+            {post.stats?.commentCount || 0} bình luận
+          </div>
         </div>
+      </div>
 
-        {/* Comments Section - Reuse existing component */}
-        <div className="bg-muted/10 p-0">
-          <CommentSection postId={post.id} />
-        </div>
+      {/* Comments Section */}
+      <div className="mt-8">
+        <h3 className="mb-4 flex items-center gap-2 text-xl font-bold">
+          Bình luận
+          <span className="text-muted-foreground text-base font-normal">
+            ({post.stats?.commentCount || 0})
+          </span>
+        </h3>
+        <CommentSection postId={post.id} />
       </div>
     </div>
   );

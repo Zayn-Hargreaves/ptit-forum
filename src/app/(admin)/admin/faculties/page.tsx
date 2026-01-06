@@ -53,8 +53,9 @@ export default function AdminFacultiesPage() {
     ],
     queryFn: () =>
       getAllFaculties({
-        page: pagination.pageIndex + 1,
+        page: pagination.pageIndex, // Spring Boot Default Pageable is 0-indexed
         size: pagination.pageSize,
+        search: debouncedSearch || undefined,
       }),
   });
 

@@ -2,6 +2,7 @@
 
 import { MemberManagementList } from '@features/topic-moderation/ui/member-management-list';
 import { PendingPostList } from '@features/topic-moderation/ui/pending-post-list';
+import { ReportList } from '@features/topic-moderation/ui/report-list';
 import { TopicSettingsPanel } from '@features/topic-moderation/ui/topic-settings-panel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@shared/ui/card/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/ui/tabs/tabs';
@@ -30,23 +31,27 @@ export function TopicManagementWidget({ topicId }: TopicManagementWidgetProps) {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="pending">
-          <TabsList className="mb-4 grid w-full grid-cols-3">
+          <TabsList className="mb-4 grid w-full grid-cols-4">
             <TabsTrigger value="pending">Phê duyệt bài</TabsTrigger>
             <TabsTrigger value="members">Thành viên</TabsTrigger>
+            <TabsTrigger value="reports">Báo cáo</TabsTrigger>
             <TabsTrigger value="settings">Cài đặt</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="pending">
-            <PendingPostList topicId={topicId} />
-          </TabsContent>
-
-          <TabsContent value="members">
-            <MemberManagementList topicId={topicId} />
-          </TabsContent>
-
-          <TabsContent value="settings">
-            <TopicSettingsPanel topicId={topicId} />
-          </TabsContent>
+          <div className="mt-4">
+            <TabsContent value="pending" className="mt-0">
+              <PendingPostList topicId={topicId} />
+            </TabsContent>
+            <TabsContent value="members" className="mt-0">
+              <MemberManagementList topicId={topicId} />
+            </TabsContent>
+            <TabsContent value="reports" className="mt-0">
+              <ReportList topicId={topicId} />
+            </TabsContent>
+            <TabsContent value="settings" className="mt-0">
+              <TopicSettingsPanel topicId={topicId} />
+            </TabsContent>
+          </div>
         </Tabs>
       </CardContent>
     </Card>

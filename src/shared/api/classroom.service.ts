@@ -2,7 +2,16 @@ import { apiClient } from './axios-client';
 import type { ApiResponse, PageResponse } from './types';
 
 // Enum giả lập cho CohortCode, bạn nên update theo backend
-export type CohortCode = 'D' | 'M' | 'P' | 'OTHER';
+export enum CohortCode {
+  D18 = 'D18',
+  D19 = 'D19',
+  D20 = 'D20',
+  D21 = 'D21',
+  D22 = 'D22',
+  D23 = 'D23',
+  D24 = 'D24',
+  D25 = 'D25',
+}
 
 export interface Classroom {
   id: string;

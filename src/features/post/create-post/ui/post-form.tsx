@@ -3,8 +3,8 @@
 import { postApi } from '@entities/post/api/post-api';
 import {
   CreatePostFormValues,
-  EditPostFormValues,
   createPostSchema,
+  EditPostFormValues,
   editPostSchema,
 } from '@entities/post/model/post.schema';
 import type { IPost, PostAttachment } from '@entities/post/model/types';

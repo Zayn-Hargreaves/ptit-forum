@@ -14,11 +14,15 @@ export interface FacultyPayload {
   description?: string;
 }
 
-export const getAllFaculties = async (params: { page?: number; size?: number }) => {
-  const { page = 0, size = 10 } = params;
+export const getAllFaculties = async (params: {
+  page?: number;
+  size?: number;
+  search?: string;
+}) => {
+  const { page = 0, size = 10, search } = params;
 
   const res = await apiClient.get<ApiResponse<PageResponse<Faculty>>>('/admin/faculties', {
-    params: { page, size },
+    params: { page, size, search },
   });
 
   return {

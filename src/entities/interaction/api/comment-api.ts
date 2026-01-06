@@ -16,7 +16,7 @@ export const commentApi = {
 
   getReplies: async (rootCommentId: string, page = 0) => {
     const { data } = await apiClient.get<ApiResponse<PageResponse<Comment>>>(
-      `/comments/replies/${rootCommentId}`,
+      `/comments/${rootCommentId}/replies`,
       {
         params: { page, size: 5, sort: 'createdDateTime,asc' },
       },

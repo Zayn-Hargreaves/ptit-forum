@@ -18,19 +18,27 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
   return (
     <article className="group relative flex flex-col space-y-3 rounded-lg border p-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       {/* Click Overlay */}
-      <Link href={`/documents/${document.id}`} className="absolute inset-0 z-10">
-        <span className="sr-only">View {document.title}</span>
-      </Link>
+      {document.status === 'APPROVED' ? (
+        <Link href={`/documents/${document.id}`} className="absolute inset-0 z-10">
+          <span className="sr-only">View {document.title}</span>
+        </Link>
+      ) : (
+        <div className="absolute inset-0 z-10 cursor-not-allowed" />
+      )}
 
       {/* Thumbnail Section */}
-      <div className="relative overflow-hidden rounded-md">
+      <div
+        className={`relative overflow-hidden rounded-md ${document.status === 'PENDING' ? 'opacity-75' : ''}`}
+      >
         <AspectRatio ratio={3 / 4}>
           <Image
             src={imgSrc}
             alt={document.title}
             width={300}
             height={400}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+              document.status === 'PENDING' ? 'grayscale-[50%]' : ''
+            }`}
             onError={() => {
               if (imgSrc !== 'https://placehold.co/300x400?text=No+Preview') {
                 setImgSrc('https://placehold.co/300x400?text=No+Preview');
@@ -40,7 +48,12 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
         </AspectRatio>
 
         {/* Badges/Overlays */}
-        {document.isPremium && (
+        {document.status === 'PENDING' && (
+          <div className="absolute top-2 right-2 rounded bg-yellow-400 px-2 py-1 text-xs font-bold text-yellow-900 shadow-sm">
+            PENDING
+          </div>
+        )}
+        {document.isPremium && document.status !== 'PENDING' && (
           <div className="absolute top-2 right-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-bold text-white shadow-md">
             PRO
           </div>

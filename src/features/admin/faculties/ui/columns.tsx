@@ -5,6 +5,17 @@ import { toast } from 'sonner';
 
 import { Faculty } from '@/shared/api/faculty.service';
 import { deleteFaculty } from '@/shared/api/faculty.service';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/shared/ui/alert-dialog/alert-dialog';
 import { Badge } from '@/shared/ui/badge/badge';
 import { Button } from '@/shared/ui/button/button';
 
@@ -15,9 +26,6 @@ const FacultyActionsCell = ({ faculty }: { faculty: Faculty }) => {
   const queryClient = useQueryClient();
 
   const handleDelete = async () => {
-    const confirmed = confirm(`Bạn có chắc muốn xóa khoa "${faculty.facultyName}"?`);
-    if (!confirmed) return;
-
     try {
       await deleteFaculty(faculty.id);
       toast.success('Đã xóa khoa');
@@ -36,9 +44,28 @@ const FacultyActionsCell = ({ faculty }: { faculty: Faculty }) => {
         <Edit className="h-4 w-4" />
       </Button>
 
-      <Button size="icon" variant="ghost" onClick={handleDelete} title="Xóa">
-        <Trash className="h-4 w-4 text-red-500" />
-      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button size="icon" variant="ghost" title="Xóa">
+            <Trash className="h-4 w-4 text-red-500" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Hành động này không thể hoàn tác. Khoa "{faculty.facultyName}" sẽ bị xóa vĩnh viễn
+              khỏi hệ thống.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              Xóa ngay
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

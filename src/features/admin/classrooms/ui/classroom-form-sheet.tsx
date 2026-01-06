@@ -57,7 +57,7 @@ export function ClassroomFormSheet() {
     facultyId: '',
     startedYear: new Date().getFullYear().toString(),
     endedYear: (new Date().getFullYear() + 4).toString(),
-    schoolYearCode: 'D',
+    schoolYearCode: CohortCode.D21,
   });
 
   const isEdit = !!selectedClassroom;
@@ -80,7 +80,7 @@ export function ClassroomFormSheet() {
         facultyId: '',
         startedYear: new Date().getFullYear().toString(),
         endedYear: (new Date().getFullYear() + 4).toString(),
-        schoolYearCode: 'D',
+        schoolYearCode: CohortCode.D21,
       });
     }
   }, [selectedClassroom, isOpen]);
@@ -131,7 +131,7 @@ export function ClassroomFormSheet() {
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && close()}>
-      <SheetContent className="flex h-full flex-col overflow-y-auto sm:max-w-lg">
+      <SheetContent className="flex h-full flex-col overflow-y-auto p-4 sm:max-w-lg">
         <SheetHeader>
           <SheetTitle>{isEdit ? 'Cập nhật lớp học' : 'Tạo lớp học mới'}</SheetTitle>
           <SheetDescription>
@@ -188,7 +188,7 @@ export function ClassroomFormSheet() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Hệ đào tạo</Label>
+              <Label>Khóa (Cohort)</Label>
               <Select
                 value={form.schoolYearCode}
                 onValueChange={(val) => setForm({ ...form, schoolYearCode: val as CohortCode })}
@@ -198,10 +198,11 @@ export function ClassroomFormSheet() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="D">Đại học (D)</SelectItem>
-                  <SelectItem value="M">Cao học (M)</SelectItem>
-                  <SelectItem value="P">Tiến sĩ (P)</SelectItem>
-                  <SelectItem value="OTHER">Khác</SelectItem>
+                  {Object.values(CohortCode).map((code) => (
+                    <SelectItem key={code} value={code}>
+                      {code}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
