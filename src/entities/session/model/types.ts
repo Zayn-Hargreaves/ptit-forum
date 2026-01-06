@@ -30,12 +30,11 @@ export interface UserStats {
 }
 
 export interface UserProfile extends User {
-  facultyName?: string;
-  dob?: string;
   bio?: string;
   studentCode?: string;
   classCode?: string;
   phone?: string;
+  facultyName?: string;
   stats?: UserStats;
   isOwnProfile?: boolean;
   isFollowing?: boolean;
@@ -43,35 +42,32 @@ export interface UserProfile extends User {
 
 export interface UpdateProfilePayload {
   fullName?: string;
-  dob?: string;
   phone?: string;
   studentCode?: string;
   classCode?: string;
+  facultyName?: string;
 }
 
 export interface UserProfileResponseDto {
   id: string;
   email: string;
-  fullName: string;
-  dob: string;
+  fullName: string | null;
   avatarUrl: string;
   studentCode: string;
   classCode: string;
   phone: string;
-  facultyName: string;
+  facultyName?: string;
 }
 
 export function mapUserProfileResponseDtoToUserProfile(dto: UserProfileResponseDto): UserProfile {
   return {
     id: dto.id,
     email: dto.email,
-    fullName: dto.fullName,
-    dob: dto.dob || undefined,
+    fullName: dto.fullName || 'Unknown User', // Fallback to prevent crash
     avatarUrl: dto.avatarUrl || undefined,
     studentCode: dto.studentCode || undefined,
     classCode: dto.classCode || undefined,
     phone: dto.phone || undefined,
-    facultyName: dto.facultyName || undefined,
     role: 'USER', // Default role for DTO mapping if not present
   };
 }

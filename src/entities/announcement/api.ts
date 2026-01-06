@@ -1,6 +1,7 @@
-import { cache } from "react";
-import { apiClient } from "@shared/api/axios-client";
-import { PageResponse } from "@shared/api/types";
+import { apiClient } from '@shared/api/axios-client';
+import { PageResponse } from '@shared/api/types';
+import { cache } from 'react';
+
 import {
   Announcement,
   ANNOUNCEMENT_TYPE_LABEL,
@@ -9,54 +10,53 @@ import {
   BackendAnnouncement,
   BackendAnnouncementDetail,
   FetchAnnouncementsParams,
-} from "./model/types";
+} from './model/types';
 
-const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function fetchAnnouncements(
   params: FetchAnnouncementsParams,
-  options?: { headers?: Record<string, string> }
+  options?: { headers?: Record<string, string> },
 ) {
   const pageIndex = params.page && params.page > 0 ? params.page - 1 : 0;
 
-  const { data } = await apiClient.get<
-    ApiResponse<PageResponse<BackendAnnouncement>>
-  >("/announcements", {
-    params: {
-      page: pageIndex,
-      size: params.size || 10,
-      sort: "createdDate,desc",
-      keyword: params.keyword,
-      type: params.type,
-      fromDate: params.fromDate,
-      toDate: params.toDate,
+  const { data } = await apiClient.get<ApiResponse<PageResponse<BackendAnnouncement>>>(
+    '/announcements',
+    {
+      params: {
+        page: pageIndex,
+        size: params.size || 10,
+        sort: 'createdDate,desc',
+        keyword: params.keyword,
+        type: params.type,
+        fromDate: params.fromDate,
+        toDate: params.toDate,
+      },
+      paramsSerializer: {
+        indexes: null,
+      },
+      ...options,
     },
-    paramsSerializer: {
-      indexes: null,
-    },
-    ...options,
-  });
+  );
 
   if (data.code !== 1000) {
-    throw new Error(data.message || "Lỗi không xác định từ hệ thống");
+    throw new Error(data.message || 'Lỗi không xác định từ hệ thống');
   }
 
   const { result } = data;
 
   const items: Announcement[] = result.content.map((item) => {
-    const plainText = item.content.replaceAll(/<[^>]+>/g, "");
-    const excerpt =
-      plainText.slice(0, 150) + (plainText.length > 150 ? "..." : "");
+    const plainText = item.content.replaceAll(/<[^>]+>/g, '');
+    const excerpt = plainText.slice(0, 150) + (plainText.length > 150 ? '...' : '');
 
     return {
       id: item.id,
       title: item.title,
       excerpt: excerpt,
-      category: ANNOUNCEMENT_TYPE_LABEL[item.announcementType] || "Khác",
+      category: ANNOUNCEMENT_TYPE_LABEL[item.announcementType] || 'Khác',
       type: item.announcementType,
       date: item.createdDate,
-      author: item.createdBy || "Admin",
+      author: item.createdBy || 'Admin',
     };
   });
 
@@ -71,21 +71,22 @@ export async function fetchAnnouncements(
 
 export const getAnnouncementById = cache(async function getAnnouncementById(
   id: string,
-  options?: { headers?: Record<string, string> }
+  options?: { headers?: Record<string, string> },
 ): Promise<AnnouncementDetail> {
   if (!UUID_REGEX.test(id)) {
-    throw new Error("NOT_FOUND");
+    throw new Error('NOT_FOUND');
   }
 
   try {
-    const { data } = await apiClient.get<
-      ApiResponse<BackendAnnouncementDetail>
-    >(`/announcements/${id}`, {
-      ...options,
-    });
+    const { data } = await apiClient.get<ApiResponse<BackendAnnouncementDetail>>(
+      `/announcements/${id}`,
+      {
+        ...options,
+      },
+    );
 
     if (data.code !== 1000) {
-      throw new Error(data.message || "Failed to fetch detail");
+      throw new Error(data.message || 'Failed to fetch detail');
     }
 
     const item = data.result;
@@ -93,10 +94,10 @@ export const getAnnouncementById = cache(async function getAnnouncementById(
       id: item.id,
       title: item.title,
       content: item.content,
-      category: ANNOUNCEMENT_TYPE_LABEL[item.announcementType] ?? "Thông báo",
+      category: ANNOUNCEMENT_TYPE_LABEL[item.announcementType] ?? 'Thông báo',
       type: item.announcementType,
 
-      author: item.createdByFullName || "Admin",
+      author: item.createdByFullName || 'Admin',
 
       avatarUrl: undefined,
 
@@ -105,9 +106,10 @@ export const getAnnouncementById = cache(async function getAnnouncementById(
       views: 0,
       attachments: item.attachments || [],
     };
-  } catch (error: any) {
-    if (error.response?.status === 404) {
-      throw new Error("NOT_FOUND");
+  } catch (error: unknown) {
+    const err = error as { response?: { status?: number } };
+    if (err.response?.status === 404) {
+      throw new Error('NOT_FOUND');
     }
     throw error;
   }

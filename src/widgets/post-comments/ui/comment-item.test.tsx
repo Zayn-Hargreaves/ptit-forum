@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { Comment } from '@entities/interaction/model/types';
 import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { CommentItem } from './comment-item';
-import { Comment, TargetType } from '@entities/interaction/model/types';
 
 // Mock the required hooks and components
 vi.mock('@entities/session/model/queries', () => ({
@@ -82,7 +83,7 @@ describe('CommentItem XSS Prevention', () => {
       'Potentially dangerous HTML detected in comment content. Server-side sanitization may be insufficient.',
       expect.objectContaining({
         commentId: 'test-comment-id',
-      })
+      }),
     );
   });
 
@@ -114,7 +115,7 @@ describe('CommentItem XSS Prevention', () => {
     expect(screen.getByText('Normal text')).toBeInTheDocument();
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       'Potentially dangerous HTML detected in comment content. Server-side sanitization may be insufficient.',
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
@@ -129,7 +130,7 @@ describe('CommentItem XSS Prevention', () => {
     expect(screen.getByText('Safe')).toBeInTheDocument();
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       'Potentially dangerous HTML detected in comment content. Server-side sanitization may be insufficient.',
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
@@ -144,7 +145,7 @@ describe('CommentItem XSS Prevention', () => {
     expect(screen.getByText('Safe')).toBeInTheDocument();
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       'Potentially dangerous HTML detected in comment content. Server-side sanitization may be insufficient.',
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
@@ -178,6 +179,7 @@ describe('CommentItem XSS Prevention', () => {
   it('should handle null content gracefully', () => {
     const nullComment = {
       ...mockComment,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       content: null as any,
     };
 

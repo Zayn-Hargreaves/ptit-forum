@@ -1,35 +1,36 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { Bell, Check, MoreHorizontal, X } from 'lucide-react';
+
+import { Button } from '../button/button';
 import {
   Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-  CardContent,
   CardAction,
-} from "./card";
-import { Bell, Check, MoreHorizontal, X } from "lucide-react";
-import { Button } from "../button/button";
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from './card';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Card> = {
-  title: "shared/UI/Card",
+  title: 'shared/UI/Card',
   component: Card,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
-    className: "w-[350px]", 
+    className: 'w-[350px]',
   },
   argTypes: {
     className: {
-      description: "Class tùy chỉnh cho thẻ Card (thường dùng để chỉnh width).",
+      description: 'Class tùy chỉnh cho thẻ Card (thường dùng để chỉnh width).',
     },
     children: {
       control: false,
-      description: "Các thành phần con (Header, Content, Footer).",
+      description: 'Các thành phần con (Header, Content, Footer).',
     },
   },
 };
@@ -50,12 +51,10 @@ export const Default: Story = {
     <Card {...args}>
       <CardHeader>
         <CardTitle>Tạo dự án</CardTitle>
-        <CardDescription>
-          Triển khai dự án mới chỉ với một cú nhấp chuột.
-        </CardDescription>
+        <CardDescription>Triển khai dự án mới chỉ với một cú nhấp chuột.</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Chọn template phù hợp để bắt đầu cấu trúc dự án của bạn.
         </p>
       </CardContent>
@@ -90,12 +89,8 @@ export const WithHeaderAction: Story = {
         <div className="flex items-center space-x-4 rounded-md border p-4">
           <Bell className="h-5 w-5" />
           <div className="flex-1 space-y-1">
-            <p className="text-sm font-medium leading-none">
-              Push Notifications
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Gửi thông báo đến thiết bị.
-            </p>
+            <p className="text-sm leading-none font-medium">Push Notifications</p>
+            <p className="text-muted-foreground text-sm">Gửi thông báo đến thiết bị.</p>
           </div>
         </div>
       </CardContent>
@@ -128,7 +123,7 @@ export const LoginForm: Story = {
             id="email"
             type="email"
             placeholder="m@example.com"
-            className="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
           />
         </div>
         <div className="grid gap-2">
@@ -138,7 +133,7 @@ export const LoginForm: Story = {
           <input
             id="password"
             type="password"
-            className="flex h-10 w-full rounded-md border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="border-input ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
           />
         </div>
       </CardContent>
@@ -154,21 +149,21 @@ export const LoginForm: Story = {
  */
 export const NotificationsList: Story = {
   args: {
-    className: "w-[380px]",
+    className: 'w-[380px]',
   },
   render: (args) => {
     const notifications = [
       {
-        title: "Cuộc họp lúc 9:00 AM",
-        description: "Team Standup hàng ngày",
+        title: 'Cuộc họp lúc 9:00 AM',
+        description: 'Team Standup hàng ngày',
       },
       {
-        title: "Bạn có tin nhắn mới",
-        description: "Từ bộ phận nhân sự",
+        title: 'Bạn có tin nhắn mới',
+        description: 'Từ bộ phận nhân sự',
       },
       {
-        title: "Thanh toán thành công",
-        description: "Gói Premium đã được kích hoạt",
+        title: 'Thanh toán thành công',
+        description: 'Gói Premium đã được kích hoạt',
       },
     ];
 
@@ -192,12 +187,8 @@ export const NotificationsList: Story = {
               >
                 <span className="flex h-2 w-2 translate-y-1 rounded-full bg-sky-500" />
                 <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    {notification.title}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {notification.description}
-                  </p>
+                  <p className="text-sm leading-none font-medium">{notification.title}</p>
+                  <p className="text-muted-foreground text-sm">{notification.description}</p>
                 </div>
               </div>
             ))}
@@ -221,17 +212,15 @@ export const SimpleContent: Story = {
   render: (args) => (
     <Card {...args}>
       <CardContent className="pt-6">
-        {" "}
+        {' '}
         {/* Add padding top because there is no header */}
         <div className="flex items-center gap-4">
-          <div className="p-2 bg-muted rounded-full">
+          <div className="bg-muted rounded-full p-2">
             <Bell className="h-6 w-6" />
           </div>
           <div>
             <p className="font-semibold">Thông báo đơn giản</p>
-            <p className="text-sm text-muted-foreground">
-              Chỉ có nội dung, không tiêu đề.
-            </p>
+            <p className="text-muted-foreground text-sm">Chỉ có nội dung, không tiêu đề.</p>
           </div>
         </div>
       </CardContent>

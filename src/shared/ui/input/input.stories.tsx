@@ -1,56 +1,48 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Input } from "./input";
-import { useState } from "react";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { useState } from 'react';
+
+import { Input } from './input';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Input> = {
-  title: "shared/UI/Input",
+  title: 'shared/UI/Input',
   component: Input,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
-    placeholder: "Type something...",
+    placeholder: 'Type something...',
   },
   argTypes: {
     type: {
-      control: "select",
-      options: [
-        "text",
-        "email",
-        "password",
-        "search",
-        "number",
-        "url",
-        "tel",
-        "file",
-      ],
-      description: "Native input type.",
+      control: 'select',
+      options: ['text', 'email', 'password', 'search', 'number', 'url', 'tel', 'file'],
+      description: 'Native input type.',
       table: {
-        defaultValue: { summary: "text" },
+        defaultValue: { summary: 'text' },
       },
     },
     disabled: {
-      control: "boolean",
-      description: "Disable input interaction.",
+      control: 'boolean',
+      description: 'Disable input interaction.',
     },
     placeholder: {
-      control: "text",
-      description: "Hint text when empty.",
+      control: 'text',
+      description: 'Hint text when empty.',
     },
     value: {
       control: false,
-      description: "Controlled value (use React state).",
+      description: 'Controlled value (use React state).',
     },
     onChange: {
-      action: "changed",
-      description: "Called when the input value changes.",
+      action: 'changed',
+      description: 'Called when the input value changes.',
     },
     className: {
-      control: "text",
-      description: "Custom styles applied to the input element.",
+      control: 'text',
+      description: 'Custom styles applied to the input element.',
     },
   },
 };
@@ -75,8 +67,8 @@ export const Default: Story = {
  */
 export const Email: Story = {
   args: {
-    type: "email",
-    placeholder: "email@example.com",
+    type: 'email',
+    placeholder: 'email@example.com',
   },
 };
 
@@ -86,8 +78,8 @@ export const Email: Story = {
  */
 export const Password: Story = {
   args: {
-    type: "password",
-    placeholder: "••••••••",
+    type: 'password',
+    placeholder: '••••••••',
   },
 };
 
@@ -98,7 +90,7 @@ export const Password: Story = {
 export const Disabled: Story = {
   args: {
     disabled: true,
-    placeholder: "Disabled",
+    placeholder: 'Disabled',
   },
 };
 
@@ -108,8 +100,8 @@ export const Disabled: Story = {
  */
 export const ErrorState: Story = {
   args: {
-    "aria-invalid": true,
-    placeholder: "Invalid value",
+    'aria-invalid': true,
+    placeholder: 'Invalid value',
   },
 };
 
@@ -119,7 +111,7 @@ export const ErrorState: Story = {
  */
 export const Controlled: Story = {
   render: () => {
-    const [value, setValue] = useState("");
+    const [value, setValue] = useState('');
 
     return (
       <div className="flex flex-col items-center gap-2">
@@ -128,8 +120,8 @@ export const Controlled: Story = {
           onChange={(e) => setValue(e.target.value)}
           placeholder="Controlled..."
         />
-        <p className="text-sm text-muted-foreground">
-          Value: <span className="font-medium">{value || "(empty)"}</span>
+        <p className="text-muted-foreground text-sm">
+          Value: <span className="font-medium">{value || '(empty)'}</span>
         </p>
       </div>
     );
@@ -142,8 +134,8 @@ export const Controlled: Story = {
  */
 export const Search: Story = {
   args: {
-    type: "search",
-    placeholder: "Search...",
+    type: 'search',
+    placeholder: 'Search...',
   },
 };
 
@@ -153,6 +145,6 @@ export const Search: Story = {
  */
 export const FileUpload: Story = {
   args: {
-    type: "file",
+    type: 'file',
   },
 };

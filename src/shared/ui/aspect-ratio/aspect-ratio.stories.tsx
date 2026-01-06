@@ -1,29 +1,30 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { AspectRatio } from "./aspect-ratio";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+
+import { AspectRatio } from './aspect-ratio';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof AspectRatio> = {
-  title: "shared/UI/AspectRatio",
+  title: 'shared/UI/AspectRatio',
   component: AspectRatio,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "padded",
+    layout: 'padded',
   },
   args: {
     ratio: 16 / 9,
   },
   argTypes: {
     ratio: {
-      description: "The desired aspect ratio (width / height).",
+      description: 'The desired aspect ratio (width / height).',
       control: {
-        type: "select",
+        type: 'select',
         labels: {
-          [16 / 9]: "16:9 (Landscape)",
-          [1 / 1]: "1:1 (Square)",
-          [4 / 3]: "4:3 (Traditional)",
-          [3 / 2]: "3:2 (Photography)",
-          [4 / 5]: "4:5 (Portrait)",
+          [16 / 9]: '16:9 (Landscape)',
+          [1 / 1]: '1:1 (Square)',
+          [4 / 3]: '4:3 (Traditional)',
+          [3 / 2]: '3:2 (Photography)',
+          [4 / 5]: '4:5 (Portrait)',
         },
       },
     },
@@ -33,7 +34,7 @@ const meta: Meta<typeof AspectRatio> = {
   },
   decorators: [
     (Story) => (
-      <div style={{ maxWidth: 500, width: "100%" }}>
+      <div style={{ maxWidth: 500, width: '100%' }}>
         <Story />
       </div>
     ),
@@ -59,7 +60,7 @@ export const Default: Story = {
       <img
         src="https://images.unsplash.com/photo-1536782376847-5c9d14d97c0b"
         alt="Ảnh phong cảnh"
-        className="object-cover w-full h-full rounded-md"
+        className="h-full w-full rounded-md object-cover"
       />
     </AspectRatio>
   ),
@@ -77,7 +78,7 @@ export const Square: Story = {
       <img
         src="https://images.unsplash.com/photo-1588392382834-a89115b1ca9f"
         alt="Ảnh vuông"
-        className="object-cover w-full h-full rounded-md"
+        className="h-full w-full rounded-md object-cover"
       />
     </AspectRatio>
   ),
@@ -95,7 +96,7 @@ export const Portrait: Story = {
       <img
         src="https://images.unsplash.com/photo-1502602898657-3e91760c0341"
         alt="Ảnh chân dung (Tháp Eiffel)"
-        className="object-cover w-full h-full rounded-md"
+        className="h-full w-full rounded-md object-cover"
       />
     </AspectRatio>
   ),
@@ -109,11 +110,8 @@ export const WithText: Story = {
     ratio: 3 / 2,
   },
   render: (args) => (
-    <AspectRatio
-      {...args}
-      className="bg-primary text-primary-foreground rounded-md"
-    >
-      <div className="flex items-center justify-center h-full">
+    <AspectRatio {...args} className="bg-primary text-primary-foreground rounded-md">
+      <div className="flex h-full items-center justify-center">
         <h2 className="text-xl font-bold">Đây là tỷ lệ 3:2</h2>
       </div>
     </AspectRatio>

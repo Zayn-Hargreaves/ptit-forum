@@ -1,50 +1,47 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import {
-  ButtonGroup,
-  ButtonGroupSeparator,
-  ButtonGroupText,
-} from "./button-group";
-import {
-  Bold,
-  Italic,
-  Underline,
-  AlignLeft,
   AlignCenter,
+  AlignLeft,
   AlignRight,
+  Bold,
   ChevronDown,
+  Italic,
   Plus,
-} from "lucide-react";
-import { Button } from "../button/button";
+  Underline,
+} from 'lucide-react';
+
+import { Button } from '../button/button';
+import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from './button-group';
 
 type ButtonGroupProps = React.ComponentProps<typeof ButtonGroup>;
-type OrientationProps = NonNullable<ButtonGroupProps["orientation"]>;
+type OrientationProps = NonNullable<ButtonGroupProps['orientation']>;
 
-const orientationOptions: OrientationProps[] = ["horizontal", "vertical"];
+const orientationOptions: OrientationProps[] = ['horizontal', 'vertical'];
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof ButtonGroup> = {
-  title: "shared/UI/ButtonGroup",
+  title: 'shared/UI/ButtonGroup',
   component: ButtonGroup,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
-    orientation: "horizontal",
+    orientation: 'horizontal',
   },
   argTypes: {
     orientation: {
-      control: "select",
+      control: 'select',
       options: orientationOptions,
-      description: "Hướng sắp xếp của nhóm nút (ngang hoặc dọc).",
+      description: 'Hướng sắp xếp của nhóm nút (ngang hoặc dọc).',
     },
     className: {
-      description: "Lớp CSS tùy chỉnh cho container.",
+      description: 'Lớp CSS tùy chỉnh cho container.',
     },
     children: {
       control: false,
-      description: "Các thành phần con (Button, Input, ButtonGroupText...).",
+      description: 'Các thành phần con (Button, Input, ButtonGroupText...).',
     },
   },
 };
@@ -74,15 +71,13 @@ export const Default: Story = {
 export const AllOrientations: Story = {
   args: {},
   parameters: {
-    layout: "padded",
+    layout: 'padded',
   },
   render: () => (
     <div className="flex flex-col items-start gap-8">
       {orientationOptions.map((orientation) => (
         <div key={orientation} className="flex flex-col gap-2">
-          <p className="text-sm text-muted-foreground capitalize">
-            {orientation}:
-          </p>
+          <p className="text-muted-foreground text-sm capitalize">{orientation}:</p>
           <ButtonGroup orientation={orientation}>
             <Button variant="outline">Một</Button>
             <Button variant="outline">Hai</Button>
@@ -100,7 +95,7 @@ export const AllOrientations: Story = {
  */
 export const IconToolbar: Story = {
   args: {
-    orientation: "horizontal",
+    orientation: 'horizontal',
   },
   render: (args) => (
     <ButtonGroup {...args}>
@@ -159,10 +154,7 @@ export const WithTextLabel: Story = {
       {/* Example 2: Prefix for value (simulating Input group) */}
       <ButtonGroup {...args}>
         <ButtonGroupText>$</ButtonGroupText>
-        <Button
-          variant="outline"
-          className="min-w-[100px] justify-start cursor-text"
-        >
+        <Button variant="outline" className="min-w-[100px] cursor-text justify-start">
           100.00
         </Button>
         <ButtonGroupText>.00</ButtonGroupText>
@@ -176,7 +168,7 @@ export const WithTextLabel: Story = {
  */
 export const VerticalToolbar: Story = {
   args: {
-    orientation: "vertical",
+    orientation: 'vertical',
   },
   render: (args) => (
     <ButtonGroup {...args}>

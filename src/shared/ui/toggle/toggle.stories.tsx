@@ -1,68 +1,66 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import React from "react";
-import { Toggle } from "./toggle";
-import { Bold, Italic, Underline } from "lucide-react";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { Bold, Italic, Underline } from 'lucide-react';
+import React from 'react';
+
+import { Toggle } from './toggle';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Toggle> = {
-  title: "shared/UI/Toggle",
+  title: 'shared/UI/Toggle',
   component: Toggle,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     variant: {
-      control: "inline-radio",
-      options: ["default", "outline"],
-      description:
-        "Visual style of the toggle. `outline` adds a border and subtle shadow.",
+      control: 'inline-radio',
+      options: ['default', 'outline'],
+      description: 'Visual style of the toggle. `outline` adds a border and subtle shadow.',
     },
     size: {
-      control: "inline-radio",
-      options: ["default", "sm", "lg"],
-      description: "Controls the height and horizontal padding of the toggle.",
+      control: 'inline-radio',
+      options: ['default', 'sm', 'lg'],
+      description: 'Controls the height and horizontal padding of the toggle.',
     },
     pressed: {
-      control: "boolean",
+      control: 'boolean',
       description:
-        "Controlled pressed state of the toggle. When set, the component behaves as a controlled toggle.",
+        'Controlled pressed state of the toggle. When set, the component behaves as a controlled toggle.',
     },
     defaultPressed: {
-      control: "boolean",
-      description:
-        "Initial pressed state in uncontrolled mode. Does not update after mount.",
+      control: 'boolean',
+      description: 'Initial pressed state in uncontrolled mode. Does not update after mount.',
     },
     disabled: {
-      control: "boolean",
-      description: "Disables interaction when true.",
+      control: 'boolean',
+      description: 'Disables interaction when true.',
     },
-    "aria-invalid": {
-      control: "boolean",
-      description: "Marks the toggle as invalid, enabling error ring styles.",
+    'aria-invalid': {
+      control: 'boolean',
+      description: 'Marks the toggle as invalid, enabling error ring styles.',
     },
     asChild: {
-      control: "boolean",
-      description:
-        "When true, changes the rendered element to the passed child component.",
+      control: 'boolean',
+      description: 'When true, changes the rendered element to the passed child component.',
     },
     className: {
-      control: "text",
-      description: "Custom className applied to the toggle root element.",
+      control: 'text',
+      description: 'Custom className applied to the toggle root element.',
     },
     onPressedChange: {
       table: {
-        category: "Events",
+        category: 'Events',
       },
       control: false,
       description:
-        "Callback fired when the pressed state changes. Receives the next boolean value.",
+        'Callback fired when the pressed state changes. Receives the next boolean value.',
     },
   },
   args: {
-    variant: "default",
-    size: "default",
+    variant: 'default',
+    size: 'default',
     defaultPressed: false,
     disabled: false,
   },
@@ -90,7 +88,7 @@ export const Default: Story = {
  */
 export const Outline: Story = {
   args: {
-    variant: "outline",
+    variant: 'outline',
   },
   render: (args) => (
     <Toggle {...args} aria-label="Toggle notifications">
@@ -123,7 +121,7 @@ export const Sizes: Story = {
  */
 export const WithIcons: Story = {
   args: {
-    variant: "outline",
+    variant: 'outline',
   },
   render: (args) => (
     <div className="flex items-center gap-2">
@@ -160,9 +158,8 @@ export const Controlled: Story = {
           Bold
         </Toggle>
 
-        <p className="text-xs text-muted-foreground">
-          Current state:{" "}
-          <span className="font-medium">{pressed ? "On" : "Off"}</span>
+        <p className="text-muted-foreground text-xs">
+          Current state: <span className="font-medium">{pressed ? 'On' : 'Off'}</span>
         </p>
       </div>
     );
@@ -170,7 +167,7 @@ export const Controlled: Story = {
   parameters: {
     controls: {
       // Avoid conflicting with internal controlled state
-      exclude: ["pressed", "defaultPressed", "onPressedChange"],
+      exclude: ['pressed', 'defaultPressed', 'onPressedChange'],
     },
   },
 };
@@ -182,7 +179,7 @@ export const Disabled: Story = {
   args: {
     disabled: true,
     defaultPressed: true,
-    variant: "outline",
+    variant: 'outline',
   },
   render: (args) => (
     <Toggle {...args} aria-label="Disabled toggle">

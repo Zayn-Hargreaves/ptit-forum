@@ -1,9 +1,9 @@
-import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
 import { getUserProfile } from '@entities/user/api/user-api';
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import { ClientProfileRedirect } from '@features/profile/view-profile/ui/client-profile-redirect';
 import { ProfileView } from '@features/profile/view-profile/ui/profile-view';
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'User Profile | Ptit Forum',

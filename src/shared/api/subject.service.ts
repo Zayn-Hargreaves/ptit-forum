@@ -1,6 +1,5 @@
 import { apiClient } from './axios-client';
-import type { ApiResponse, PaginatedResponse, PageResponse } from './types';
-import type { DocumentSubject } from '@/entities/document/model/schema';
+import type { ApiResponse, PageResponse } from './types';
 
 // Based on backend CommonSubjectController search method
 // returns ApiResponse<Page<SubjectResponse>>
@@ -9,25 +8,28 @@ import type { DocumentSubject } from '@/entities/document/model/schema';
 // So result is PageResponse<SubjectResponse>
 
 export interface SubjectResponse {
-    id: string;
-    subjectName: string;
-    subjectCode: string;
-    credit?: number;
-    description?: string;
+  id: string;
+  subjectName: string;
+  subjectCode: string;
+  credit?: number;
+  description?: string;
 }
 
 export const subjectService = {
-    search: async (params?: { subjectName?: string; page?: number; limit?: number }) => {
-        const { subjectName, page = 0, limit = 20 } = params || {};
+  search: async (params?: { subjectName?: string; page?: number; limit?: number }) => {
+    const { subjectName, page = 0, limit = 20 } = params || {};
 
-        const response = await apiClient.get<ApiResponse<PageResponse<SubjectResponse>>>('/subjects/search', {
-            params: {
-                subjectName,
-                page, // Spring Page is 0-indexed
-                size: limit,
-            },
-        });
+    const response = await apiClient.get<ApiResponse<PageResponse<SubjectResponse>>>(
+      '/subjects/search',
+      {
+        params: {
+          subjectName,
+          page, // Spring Page is 0-indexed
+          size: limit,
+        },
+      },
+    );
 
-        return response.data;
-    },
+    return response.data;
+  },
 };

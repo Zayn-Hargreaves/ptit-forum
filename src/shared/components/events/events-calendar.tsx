@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@shared/ui/button/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card/card";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from '@shared/ui/button/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@shared/ui/card/card';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function EventsCalendar() {
   const daysInMonth = 30;
@@ -10,10 +10,10 @@ export function EventsCalendar() {
   const today = 15;
 
   const events = [
-    { day: 20, title: "Hội thảo AI", color: "bg-blue-500" },
-    { day: 22, title: "Workshop React", color: "bg-green-500" },
-    { day: 25, title: "Ngày hội việc làm", color: "bg-purple-500" },
-    { day: 28, title: "Hackathon", color: "bg-orange-500" },
+    { day: 20, title: 'Hội thảo AI', color: 'bg-blue-500' },
+    { day: 22, title: 'Workshop React', color: 'bg-green-500' },
+    { day: 25, title: 'Ngày hội việc làm', color: 'bg-purple-500' },
+    { day: 28, title: 'Hackathon', color: 'bg-orange-500' },
   ];
 
   const getEventsForDay = (day: number) => {
@@ -38,10 +38,10 @@ export function EventsCalendar() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-7 gap-2">
-            {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((day) => (
+            {['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'].map((day) => (
               <div
                 key={day}
-                className="p-2 text-center text-sm font-semibold text-muted-foreground"
+                className="text-muted-foreground p-2 text-center text-sm font-semibold"
               >
                 {day}
               </div>
@@ -60,18 +60,10 @@ export function EventsCalendar() {
                 <div
                   key={day}
                   className={`min-h-20 rounded-lg border p-2 ${
-                    isToday ? "border-primary bg-primary/5" : "border-border"
-                  } ${
-                    dayEvents.length > 0
-                      ? "cursor-pointer hover:border-primary/50"
-                      : ""
-                  }`}
+                    isToday ? 'border-primary bg-primary/5' : 'border-border'
+                  } ${dayEvents.length > 0 ? 'hover:border-primary/50 cursor-pointer' : ''}`}
                 >
-                  <div
-                    className={`mb-1 text-sm font-semibold ${
-                      isToday ? "text-primary" : ""
-                    }`}
-                  >
+                  <div className={`mb-1 text-sm font-semibold ${isToday ? 'text-primary' : ''}`}>
                     {day}
                   </div>
                   <div className="space-y-1">

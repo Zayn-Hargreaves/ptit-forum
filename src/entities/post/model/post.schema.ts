@@ -1,7 +1,11 @@
 import { z } from 'zod';
 
 export const createPostSchema = z.object({
-  title: z.string().min(10, 'Tiêu đề phải có ít nhất 10 ký tự').max(200, 'Tiêu đề không được quá 200 ký tự').trim(),
+  title: z
+    .string()
+    .min(10, 'Tiêu đề phải có ít nhất 10 ký tự')
+    .max(200, 'Tiêu đề không được quá 200 ký tự')
+    .trim(),
 
   content: z
     .string()
@@ -16,4 +20,9 @@ export const createPostSchema = z.object({
   fileMetadataIds: z.array(z.string().uuid()),
 });
 
+export const editPostSchema = createPostSchema.extend({
+  topicId: z.string().optional(),
+});
+
 export type CreatePostFormValues = z.infer<typeof createPostSchema>;
+export type EditPostFormValues = z.infer<typeof editPostSchema>;

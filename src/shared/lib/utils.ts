@@ -1,7 +1,7 @@
-import { BACKEND_ERROR_CODES } from "@shared/constants/error-codes";
-import { ERROR_MESSAGES } from "@shared/constants/error-messages";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { BACKEND_ERROR_CODES } from '@shared/constants/error-codes';
+import { ERROR_MESSAGES } from '@shared/constants/error-messages';
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -16,31 +16,27 @@ export function cn(...inputs: ClassValue[]) {
 export function validateRedirectUrl(url: string | null): string {
   const trimmedUrl = url?.trim();
   if (!trimmedUrl) {
-    return "/forum";
+    return '/forum';
   }
 
   // Reject URLs containing percent-encoded slashes or backslashes
-  if (
-    trimmedUrl.includes("%2F") ||
-    trimmedUrl.includes("%2f") ||
-    trimmedUrl.includes("\\")
-  ) {
-    return "/forum";
+  if (trimmedUrl.includes('%2F') || trimmedUrl.includes('%2f') || trimmedUrl.includes('\\')) {
+    return '/forum';
   }
 
   try {
-    const constructed = new URL(trimmedUrl, "https://example.com");
+    const constructed = new URL(trimmedUrl, 'https://example.com');
     if (
-      constructed.origin !== "https://example.com" ||
-      constructed.protocol !== "https:" ||
-      constructed.href.startsWith("//")
+      constructed.origin !== 'https://example.com' ||
+      constructed.protocol !== 'https:' ||
+      constructed.href.startsWith('//')
     ) {
-      return "/forum";
+      return '/forum';
     }
     // Return the sanitized relative path
     return constructed.pathname + constructed.search + constructed.hash;
   } catch {
-    return "/forum";
+    return '/forum';
   }
 }
 
@@ -52,19 +48,21 @@ export function validateRedirectUrl(url: string | null): string {
 export function formatDate(date: string | Date): string {
   const d = new Date(date);
   if (Number.isNaN(d.getTime())) {
-    return "Invalid Date";
+    return 'Invalid Date';
   }
-  const day = String(d.getDate()).padStart(2, "0");
-  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
   const year = d.getFullYear();
   return `${day}/${month}/${year}`;
 }
 
-export const getErrorMessage = (error: any) => {
-  if (error?.message) return error.message;
+export const getErrorMessage = (error: unknown) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const err = error as any;
+  if (err?.message) return err.message;
 
-  const backendCode = error?.response?.data?.code;
-  const backendMessage = error?.response?.data?.message;
+  const backendCode = err?.response?.data?.code;
+  const backendMessage = err?.response?.data?.message;
 
   if (backendCode === BACKEND_ERROR_CODES.TOKEN_EXPIRED) {
     return ERROR_MESSAGES[BACKEND_ERROR_CODES.TOKEN_EXPIRED];
@@ -78,5 +76,5 @@ export const getErrorMessage = (error: any) => {
     return ERROR_MESSAGES[backendCode];
   }
 
-  return "Đã có lỗi xảy ra. Vui lòng thử lại.";
+  return 'Đã có lỗi xảy ra. Vui lòng thử lại.';
 };
