@@ -1,23 +1,24 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { AlertCircle, TriangleAlert } from "lucide-react";
-import { Alert, AlertTitle, AlertDescription } from "./alert";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { AlertCircle, TriangleAlert } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from './alert';
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Alert> = {
-  title: "shared/UI/Alert",
+  title: 'shared/UI/Alert',
   component: Alert,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "padded",
+    layout: 'padded',
   },
   args: {
-    variant: "default",
+    variant: 'default',
   },
   argTypes: {
     variant: {
-      control: "radio",
-      options: ["default", "destructive"],
-      description: "The variant style of the alert.",
+      control: 'radio',
+      options: ['default', 'destructive'],
+      description: 'The variant style of the alert.',
     },
     children: {
       table: { disable: true },
@@ -25,7 +26,7 @@ const meta: Meta<typeof Alert> = {
   },
   decorators: [
     (Story) => (
-      <div style={{ maxWidth: 550, width: "100%" }}>
+      <div style={{ maxWidth: 550, width: '100%' }}>
         <Story />
       </div>
     ),
@@ -45,14 +46,12 @@ type Story = StoryObj<typeof Alert>;
  */
 export const Default: Story = {
   args: {
-    variant: "default",
+    variant: 'default',
   },
   render: (args) => (
     <Alert {...args}>
       <AlertTitle>Tiêu đề Thông báo</AlertTitle>
-      <AlertDescription>
-        Đây là nội dung mô tả cho thông báo mặc định.
-      </AlertDescription>
+      <AlertDescription>Đây là nội dung mô tả cho thông báo mặc định.</AlertDescription>
     </Alert>
   ),
 };
@@ -63,15 +62,13 @@ export const Default: Story = {
  */
 export const DefaultWithIcon: Story = {
   args: {
-    variant: "default",
+    variant: 'default',
   },
   render: (args) => (
     <Alert {...args}>
       <AlertCircle />
       <AlertTitle>Thông báo có Icon</AlertTitle>
-      <AlertDescription>
-        Nội dung thông báo đi kèm với một icon ở bên trái.
-      </AlertDescription>
+      <AlertDescription>Nội dung thông báo đi kèm với một icon ở bên trái.</AlertDescription>
     </Alert>
   ),
 };
@@ -82,15 +79,13 @@ export const DefaultWithIcon: Story = {
  */
 export const Destructive: Story = {
   args: {
-    variant: "destructive",
+    variant: 'destructive',
   },
   render: (args) => (
     <Alert {...args}>
       <TriangleAlert />
       <AlertTitle>Cảnh báo Nguy hiểm</AlertTitle>
-      <AlertDescription>
-        Đã xảy ra lỗi nghiêm trọng. Vui lòng thử lại sau.
-      </AlertDescription>
+      <AlertDescription>Đã xảy ra lỗi nghiêm trọng. Vui lòng thử lại sau.</AlertDescription>
     </Alert>
   ),
 };
@@ -101,14 +96,12 @@ export const Destructive: Story = {
  */
 export const DestructiveNoIcon: Story = {
   args: {
-    variant: "destructive",
+    variant: 'destructive',
   },
   render: (args) => (
     <Alert {...args}>
       <AlertTitle>Lỗi (Không có Icon)</AlertTitle>
-      <AlertDescription>
-        Đây là mô tả lỗi nhưng không có icon đi kèm.
-      </AlertDescription>
+      <AlertDescription>Đây là mô tả lỗi nhưng không có icon đi kèm.</AlertDescription>
     </Alert>
   ),
 };

@@ -1,50 +1,49 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import React from "react";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import React from 'react';
+
 import {
   Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetHeader,
-  SheetFooter,
-  SheetTitle,
-  SheetDescription,
   SheetClose,
-} from "./sheet";
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from './sheet';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Sheet> = {
-  title: "shared/UI/Sheet",
+  title: 'shared/UI/Sheet',
   component: Sheet,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     open: {
-      control: "boolean",
-      description: "Controlled open state of the sheet.",
+      control: 'boolean',
+      description: 'Controlled open state of the sheet.',
     },
     defaultOpen: {
-      control: "boolean",
-      description: "Initial open state when the sheet mounts.",
+      control: 'boolean',
+      description: 'Initial open state when the sheet mounts.',
       table: {
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: 'false' },
       },
     },
     modal: {
-      control: "boolean",
-      description:
-        "When true, user interaction outside of the sheet is disabled.",
+      control: 'boolean',
+      description: 'When true, user interaction outside of the sheet is disabled.',
     },
     onOpenChange: {
-      action: "open changed",
-      description: "Callback fired when the open state changes.",
+      action: 'open changed',
+      description: 'Callback fired when the open state changes.',
     },
     children: {
       control: false,
-      description:
-        "Composition of SheetTrigger, SheetContent, SheetHeader, etc.",
+      description: 'Composition of SheetTrigger, SheetContent, SheetHeader, etc.',
     },
   },
 };
@@ -55,9 +54,9 @@ type Story = StoryObj<typeof Sheet>;
 
 // --- HELPERS ---
 
-const TriggerButton: React.FC<React.ComponentProps<"button">> = (props) => (
+const TriggerButton: React.FC<React.ComponentProps<'button'>> = (props) => (
   <button
-    className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+    className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow"
     {...props}
   />
 );
@@ -85,14 +84,14 @@ export const Default: Story = {
           <label className="flex flex-col gap-1">
             <span className="text-xs font-medium">Name</span>
             <input
-              className="h-8 rounded-md border border-input bg-background px-2 text-xs shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring h-8 rounded-md border px-2 text-xs shadow-sm outline-none focus-visible:ring-1"
               defaultValue="Untitled project"
             />
           </label>
           <label className="flex flex-col gap-1">
             <span className="text-xs font-medium">Description</span>
             <textarea
-              className="min-h-20 rounded-md border border-input bg-background px-2 py-1 text-xs shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring min-h-20 rounded-md border px-2 py-1 text-xs shadow-sm outline-none focus-visible:ring-1"
               placeholder="Short description..."
             />
           </label>
@@ -100,11 +99,11 @@ export const Default: Story = {
         <SheetFooter>
           <div className="flex items-center justify-end gap-2">
             <SheetClose asChild>
-              <button className="inline-flex h-8 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
+              <button className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-8 items-center justify-center rounded-md border px-3 text-xs font-medium shadow-sm">
                 Cancel
               </button>
             </SheetClose>
-            <button className="inline-flex h-8 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground shadow hover:bg-primary/90">
+            <button className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-8 items-center justify-center rounded-md px-3 text-xs font-medium shadow">
               Save changes
             </button>
           </div>
@@ -127,23 +126,13 @@ export const FromLeft: Story = {
       <SheetContent side="left">
         <SheetHeader>
           <SheetTitle>Navigation</SheetTitle>
-          <SheetDescription>
-            Quick access to the main sections of the app.
-          </SheetDescription>
+          <SheetDescription>Quick access to the main sections of the app.</SheetDescription>
         </SheetHeader>
         <nav className="flex flex-1 flex-col gap-1 px-4 py-2 text-sm">
-          <button className="rounded-md px-2 py-1 text-left hover:bg-accent">
-            Dashboard
-          </button>
-          <button className="rounded-md px-2 py-1 text-left hover:bg-accent">
-            Projects
-          </button>
-          <button className="rounded-md px-2 py-1 text-left hover:bg-accent">
-            Team
-          </button>
-          <button className="rounded-md px-2 py-1 text-left hover:bg-accent">
-            Settings
-          </button>
+          <button className="hover:bg-accent rounded-md px-2 py-1 text-left">Dashboard</button>
+          <button className="hover:bg-accent rounded-md px-2 py-1 text-left">Projects</button>
+          <button className="hover:bg-accent rounded-md px-2 py-1 text-left">Team</button>
+          <button className="hover:bg-accent rounded-md px-2 py-1 text-left">Settings</button>
         </nav>
       </SheetContent>
     </Sheet>
@@ -163,23 +152,13 @@ export const FromTop: Story = {
       <SheetContent side="top">
         <SheetHeader>
           <SheetTitle>Global filter</SheetTitle>
-          <SheetDescription>
-            Adjust filters that affect all visible data.
-          </SheetDescription>
+          <SheetDescription>Adjust filters that affect all visible data.</SheetDescription>
         </SheetHeader>
         <div className="flex flex-wrap gap-3 px-4 pb-4 text-xs">
-          <button className="rounded-full border px-3 py-1 hover:bg-accent">
-            Last 7 days
-          </button>
-          <button className="rounded-full border px-3 py-1 hover:bg-accent">
-            Last 30 days
-          </button>
-          <button className="rounded-full border px-3 py-1 hover:bg-accent">
-            This year
-          </button>
-          <button className="rounded-full border px-3 py-1 hover:bg-accent">
-            Custom range
-          </button>
+          <button className="hover:bg-accent rounded-full border px-3 py-1">Last 7 days</button>
+          <button className="hover:bg-accent rounded-full border px-3 py-1">Last 30 days</button>
+          <button className="hover:bg-accent rounded-full border px-3 py-1">This year</button>
+          <button className="hover:bg-accent rounded-full border px-3 py-1">Custom range</button>
         </div>
       </SheetContent>
     </Sheet>
@@ -199,23 +178,13 @@ export const FromBottom: Story = {
       <SheetContent side="bottom">
         <SheetHeader>
           <SheetTitle>Quick actions</SheetTitle>
-          <SheetDescription>
-            Frequently used actions for the current context.
-          </SheetDescription>
+          <SheetDescription>Frequently used actions for the current context.</SheetDescription>
         </SheetHeader>
         <div className="flex flex-wrap gap-2 px-4 pb-4 text-xs">
-          <button className="rounded-md border px-3 py-1 hover:bg-accent">
-            Duplicate
-          </button>
-          <button className="rounded-md border px-3 py-1 hover:bg-accent">
-            Archive
-          </button>
-          <button className="rounded-md border px-3 py-1 hover:bg-accent">
-            Share
-          </button>
-          <button className="rounded-md border px-3 py-1 hover:bg-accent">
-            Delete
-          </button>
+          <button className="hover:bg-accent rounded-md border px-3 py-1">Duplicate</button>
+          <button className="hover:bg-accent rounded-md border px-3 py-1">Archive</button>
+          <button className="hover:bg-accent rounded-md border px-3 py-1">Share</button>
+          <button className="hover:bg-accent rounded-md border px-3 py-1">Delete</button>
         </div>
       </SheetContent>
     </Sheet>
@@ -232,20 +201,16 @@ const ControlledDemo: React.FC = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <TriggerButton>
-          {open ? "Close sheet" : "Open controlled sheet"}
-        </TriggerButton>
+        <TriggerButton>{open ? 'Close sheet' : 'Open controlled sheet'}</TriggerButton>
       </SheetTrigger>
       <SheetContent side="right">
         <SheetHeader>
           <SheetTitle>Controlled sheet</SheetTitle>
-          <SheetDescription>
-            This sheet is fully controlled by React state.
-          </SheetDescription>
+          <SheetDescription>This sheet is fully controlled by React state.</SheetDescription>
         </SheetHeader>
         <SheetFooter>
           <SheetClose asChild>
-            <button className="inline-flex h-8 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
+            <button className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-8 items-center justify-center rounded-md border px-3 text-xs font-medium shadow-sm">
               Close from inside
             </button>
           </SheetClose>

@@ -1,67 +1,59 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { Bold, ChevronRight, Italic, Settings, Trash2, Underline, User } from 'lucide-react';
+
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuSub,
-  DropdownMenuSubTrigger,
   DropdownMenuSubContent,
-} from "./dropdown-menu";
-import {
-  Bold,
-  Italic,
-  Underline,
-  Trash2,
-  User,
-  Settings,
-  ChevronRight,
-} from "lucide-react";
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from './dropdown-menu';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof DropdownMenu> = {
-  title: "shared/UI/DropdownMenu",
+  title: 'shared/UI/DropdownMenu',
   component: DropdownMenu,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
     modal: true,
   },
   argTypes: {
     modal: {
-      control: "boolean",
-      description:
-        "Whether the dropdown is modal (focus is trapped) or non-modal.",
+      control: 'boolean',
+      description: 'Whether the dropdown is modal (focus is trapped) or non-modal.',
       table: {
-        defaultValue: { summary: "true" }, // ✅ must be string
+        defaultValue: { summary: 'true' }, // ✅ must be string
       },
     },
     open: {
-      control: "boolean",
-      description: "Open/close state (controlled).",
+      control: 'boolean',
+      description: 'Open/close state (controlled).',
     },
     onOpenChange: {
-      action: "open changed",
-      description: "Callback fired when the open state changes.",
+      action: 'open changed',
+      description: 'Callback fired when the open state changes.',
     },
     dir: {
-      control: "radio",
-      options: ["ltr", "rtl"],
-      description: "Text direction for the dropdown (useful for i18n).",
+      control: 'radio',
+      options: ['ltr', 'rtl'],
+      description: 'Text direction for the dropdown (useful for i18n).',
     },
     children: {
       control: false,
-      description: "Content inside DropdownMenu (Trigger + Content).",
+      description: 'Content inside DropdownMenu (Trigger + Content).',
     },
   },
 };
@@ -79,7 +71,7 @@ type Story = StoryObj<typeof DropdownMenu>;
 export const Default: Story = {
   render: (args) => (
     <DropdownMenu {...args}>
-      <DropdownMenuTrigger className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+      <DropdownMenuTrigger className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50">
         Open menu
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
@@ -115,15 +107,13 @@ export const Default: Story = {
 export const WithCheckboxItems: Story = {
   render: (args) => (
     <DropdownMenu {...args}>
-      <DropdownMenuTrigger className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+      <DropdownMenuTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-colors">
         View options
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Display</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuCheckboxItem defaultChecked>
-          Show line numbers
-        </DropdownMenuCheckboxItem>
+        <DropdownMenuCheckboxItem defaultChecked>Show line numbers</DropdownMenuCheckboxItem>
         <DropdownMenuCheckboxItem>Show minimap</DropdownMenuCheckboxItem>
         <DropdownMenuCheckboxItem>Word wrap</DropdownMenuCheckboxItem>
       </DropdownMenuContent>
@@ -138,19 +128,15 @@ export const WithCheckboxItems: Story = {
 export const WithRadioItems: Story = {
   render: (args) => (
     <DropdownMenu {...args}>
-      <DropdownMenuTrigger className="inline-flex h-10 items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80">
+      <DropdownMenuTrigger className="bg-secondary text-secondary-foreground hover:bg-secondary/80 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm">
         Sort by
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Sort by</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup defaultValue="recent">
-          <DropdownMenuRadioItem value="recent">
-            Recently updated
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="created">
-            Date created
-          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="recent">Recently updated</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="created">Date created</DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="name">Name (A-Z)</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
@@ -213,7 +199,7 @@ export const Playground: Story = {
     <div className="grid grid-cols-2 gap-6">
       {/* Basic menu */}
       <DropdownMenu {...args}>
-        <DropdownMenuTrigger className="flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed bg-muted/10 text-sm hover:bg-muted/30">
+        <DropdownMenuTrigger className="bg-muted/10 hover:bg-muted/30 flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed text-sm">
           Basic menu
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-48">
@@ -225,7 +211,7 @@ export const Playground: Story = {
 
       {/* Menu with shortcuts & destructive action */}
       <DropdownMenu {...args}>
-        <DropdownMenuTrigger className="flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed bg-muted/10 text-sm hover:bg-muted/30">
+        <DropdownMenuTrigger className="bg-muted/10 hover:bg-muted/30 flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed text-sm">
           With shortcuts
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">

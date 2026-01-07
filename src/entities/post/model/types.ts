@@ -7,29 +7,49 @@ export interface IPost {
   author: {
     id: string;
     fullName: string;
-    avatar?: string;
+    avatarUrl?: string;
+    badge?: string;
+    faculty?: string;
   };
   createdAt: string;
-  postStatus?: PostStatus; // Post approval status
+  postStatus?: PostStatus;
   images?: string[];
-  documents?: { name: string; url: string; type: string }[]; // Added documents field
-  likeCount: number; // Changed from stats object to flat fields based on view
-  commentCount: number;
-  viewCount: number;
-  stats?: { // Keep stats for backward prop compatibility if needed, but flatter is better usually.
-      likes: number;
-      comments: number;
-      views: number;
-  }; 
+  documents?: { name: string; url: string; type: string }[];
+  topic?: { id: string; name: string };
+  stats?: {
+    viewCount?: number;
+    commentCount?: number;
+    likeCount?: number;
+  };
+  permissions?: {
+    canEdit?: boolean;
+    canDelete?: boolean;
+    canReport?: boolean;
+  };
   attachments?: {
     id: string;
-    name: string; // Mapped from fileName usually or name
+    name: string;
     fileName: string;
     url: string;
     type: string;
+    size?: number;
   }[];
-  isLiked?: boolean; // Optimistic UI
+  isLiked?: boolean;
+  _debugRaw?: unknown;
 }
 
-export type Post = IPost; // Alias for backward compatibility
+export type Post = IPost;
 export type PostAttachment = NonNullable<IPost['attachments']>[number];
+
+export interface TrendingPost {
+  id: string;
+  title: string;
+  author: {
+    id?: string;
+    name: string;
+    avatar?: string;
+  };
+  category: string;
+  comments: number;
+  views: number;
+}

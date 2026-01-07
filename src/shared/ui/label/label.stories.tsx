@@ -1,28 +1,28 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import React from "react";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import React from 'react';
 
-import { Label } from "./label";
+import { Label } from './label';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Label> = {
-  title: "shared/Form/Label",
+  title: 'shared/Form/Label',
   component: Label,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
-    children: "Label text",
+    children: 'Label text',
   },
   argTypes: {
     children: {
-      control: "text",
-      description: "Displayed label text or React nodes.",
+      control: 'text',
+      description: 'Displayed label text or React nodes.',
     },
     className: {
-      control: "text",
-      description: "Optional className for custom styling.",
+      control: 'text',
+      description: 'Optional className for custom styling.',
     },
   },
 };
@@ -49,7 +49,7 @@ export const WithInput: Story = {
       <input
         id="email"
         type="email"
-        className="border rounded px-2 py-1 text-sm"
+        className="rounded border px-2 py-1 text-sm"
         placeholder="you@example.com"
       />
     </div>
@@ -62,12 +62,12 @@ export const WithInput: Story = {
  */
 export const DisabledState: Story = {
   render: () => (
-    <div className="flex flex-col gap-2 group-data-[disabled=true]">
+    <div className="group-data-[disabled=true] flex flex-col gap-2">
       <Label htmlFor="username">Username (disabled)</Label>
       <input
         id="username"
         disabled
-        className="border rounded px-2 py-1 text-sm disabled:opacity-50"
+        className="rounded border px-2 py-1 text-sm disabled:opacity-50"
       />
     </div>
   ),

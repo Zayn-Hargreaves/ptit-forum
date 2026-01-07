@@ -1,142 +1,180 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { useParams, useRouter } from 'next/navigation';
+import { TargetType } from '@entities/interaction/model/types';
 import { postApi } from '@entities/post/api/post-api';
+import { PostImageGrid } from '@entities/post/ui/post-image-grid';
+import { PostActionMenu } from '@features/post/update-post/ui/post-action-menu';
+import { ReactionButton } from '@features/post-reaction/ui/reaction-button';
+import { getAvatarUrl, getUserDisplayName } from '@shared/lib/user-display-utils';
 import { Button } from '@shared/ui/button/button';
-import { ArrowLeft, Loader2 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar/avatar';
+import { FileDownloadButton } from '@shared/ui/file-download-button';
+import { UserAvatar } from '@shared/ui/user-avatar/user-avatar';
+import { useQuery } from '@tanstack/react-query';
+import { CommentSection } from '@widgets/post-comments/comment-section';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { CommentSection } from '@features/post-comment/ui/comment-section';
-import { ReactionButton } from '@features/post-reaction/ui/reaction-button';
-import { PostImageGrid } from '@entities/post/ui/post-image-grid';
-import { FileDownloadButton } from '@shared/ui/file-download-button';
-import { getUserDisplayName, getUserInitials, getAvatarUrl } from '@shared/lib/user-display-utils';
-import { PostActionMenu } from '@features/post/update-post/ui/post-action-menu';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 
 export default function PostDetailPage() {
   const { postId } = useParams<{ postId: string }>();
   const router = useRouter();
 
-  const { data: post, isLoading, isError } = useQuery({
+  const {
+    data: post,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['post', postId],
-    queryFn: () => postApi.getPostDetail(postId),
+    queryFn: () => postApi.getDetail(postId),
     enabled: !!postId,
   });
 
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="text-primary h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (isError || !post) {
-     return (
-        <div className="text-center py-20 space-y-4">
-           <h2 className="text-xl font-semibold">Không tìm thấy bài viết</h2>
-           <Button variant="outline" onClick={() => router.back()}>Quay lại</Button>
-        </div>
-     );
+    return (
+      <div className="space-y-4 py-20 text-center">
+        <h2 className="text-xl font-semibold">Không tìm thấy bài viết</h2>
+        <Button variant="outline" onClick={() => router.back()}>
+          Quay lại
+        </Button>
+      </div>
+    );
   }
 
   // User info with fallbacks
   const authorName = getUserDisplayName(post.author?.fullName);
-  const authorAvatar = getAvatarUrl(post.author?.avatar);
-  const authorInitials = getUserInitials(post.author?.fullName);
+  const authorAvatar = getAvatarUrl(post.author?.avatarUrl);
 
   return (
-    <div className="max-w-4xl mx-auto py-6 px-4">
-       <Button 
-          variant="ghost" 
-          className="mb-4 pl-0 hover:pl-2 transition-all gap-2" 
-          onClick={() => router.back()}
-       >
-          <ArrowLeft className="h-4 w-4" /> 
-          Quay lại
-       </Button>
+    <div className="mx-auto max-w-4xl px-4 py-8">
+      {/* Navigation */}
+      <Button
+        variant="ghost"
+        className="text-muted-foreground hover:text-foreground mb-6 gap-2 pl-0 transition-all hover:pl-2"
+        onClick={() => router.back()}
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Quay lại diễn đàn
+      </Button>
 
-       <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
-          {/* Header */}
-          <div className="p-6 border-b">
-             <h1 className="text-2xl font-bold mb-4">{post.title}</h1>
-             <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border">
-                     <AvatarImage src={authorAvatar} />
-                     <AvatarFallback>{authorInitials}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                     <div className="font-semibold">{authorName}</div>
-                     <div className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: vi })}
-                     </div>
+      {/* Main Content Card */}
+      <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
+        <div className="border-b p-6 md:p-8">
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <h1 className="text-2xl leading-tight font-bold md:text-3xl">{post.title}</h1>
+            <PostActionMenu post={post} isDetailView={true} />
+          </div>
+
+          <div className="flex items-center gap-4">
+            {post.author?.id ? (
+              <UserAvatar
+                name={authorName}
+                avatarUrl={authorAvatar}
+                className="h-12 w-12 border-2"
+              />
+            ) : (
+              <UserAvatar name={authorName} avatarUrl={authorAvatar} className="h-12 w-12 border" />
+            )}
+            <div className="grid gap-0.5">
+              <span className="text-base font-semibold">{authorName}</span>
+              <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                <span>
+                  {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: vi })}
+                </span>
+                <span
+                  id="debug-post-date"
+                  className="hidden"
+                  data-raw={JSON.stringify(post._debugRaw)}
+                >
+                  {JSON.stringify(post._debugRaw)}
+                </span>
+                <span>•</span>
+                <span>{post.stats?.viewCount || 0} lượt xem</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Post Body */}
+        <div className="p-6 md:p-8">
+          <div
+            className="prose prose-lg dark:prose-invert max-w-none leading-relaxed break-words"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
+
+          {/* Images Grid */}
+          {post.images && post.images.length > 0 && (
+            <div className="mt-8">
+              <PostImageGrid images={post.images} />
+            </div>
+          )}
+
+          {post.documents && post.documents.length > 0 && (
+            <div className="bg-muted/30 mt-8 space-y-4 rounded-lg border p-4">
+              <h3 className="text-muted-foreground flex items-center gap-2 text-sm font-semibold tracking-wide uppercase">
+                <span className="bg-primary h-1.5 w-1.5 rounded-full" />
+                Tài liệu đính kèm ({post.documents.length})
+              </h3>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {post.documents.map((doc, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-background hover:border-primary/50 group flex items-center justify-between rounded-md border p-3 transition-all"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded text-xs font-bold uppercase">
+                        {doc.name.split('.').pop() || 'FILE'}
+                      </div>
+                      <div className="grid min-w-0 gap-0.5">
+                        <span className="group-hover:text-primary truncate text-sm font-medium transition-colors">
+                          {doc.name}
+                        </span>
+                        <span className="text-muted-foreground text-xs">Nhấn để tải xuống</span>
+                      </div>
+                    </div>
+                    <div className="ml-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
+                      <FileDownloadButton fileName={doc.name} fileUrl={doc.url} />
+                    </div>
                   </div>
-                </div>
-                
-                {/* Action Menu (3 dots) */}
-                <PostActionMenu post={post} isDetailView={true} />
-             </div>
-          </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
-          {/* Content */}
-          <div className="p-6 space-y-6">
-             {/* Text Content */}
-             <div 
-               className="prose dark:prose-invert max-w-none text-foreground leading-relaxed"
-               dangerouslySetInnerHTML={{ __html: post.content }}
-             />
-             
-             {/* Images */}
-             {post.images && post.images.length > 0 && (
-                <div className="mt-4">
-                   <PostImageGrid images={post.images} />
-                </div>
-             )}
+        {/* Reaction Bar */}
+        <div className="bg-muted/5 flex items-center justify-between border-t px-6 py-4 md:px-8">
+          <ReactionButton
+            targetId={post.id}
+            targetType={TargetType.POST}
+            initialLikeCount={post.stats?.likeCount || 0}
+            initialIsLiked={post.isLiked}
+            queryKey={['post', post.id]}
+          />
+          <div className="text-muted-foreground text-sm">
+            {post.stats?.commentCount || 0} bình luận
+          </div>
+        </div>
+      </div>
 
-             {/* Documents */}
-             {post.documents && post.documents.length > 0 && (
-                <div className="mt-6 space-y-3">
-                   <h3 className="font-semibold text-sm text-foreground/80">Tài liệu đính kèm ({post.documents.length})</h3>
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {post.documents.map((doc, idx) => (
-                         <div key={idx} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors">
-                            <div className="flex items-center gap-3 truncate">
-                               <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center text-primary font-bold text-xs uppercase shrink-0">
-                                  {doc.name.split('.').pop() || 'FILE'}
-                               </div>
-                               <span className="text-sm font-medium truncate" title={doc.name}>{doc.name}</span>
-                            </div>
-                            <div className="ml-4 shrink-0">
-                               <FileDownloadButton fileName={doc.name} fileUrl={doc.url} />
-                            </div>
-                         </div>
-                      ))}
-                   </div>
-                </div>
-             )}
-          </div>
-
-          {/* Footer Actions */}
-          <div className="p-4 bg-muted/5 border-t border-b flex items-center justify-between">
-             <ReactionButton 
-                postId={post.id} 
-                initialLikeCount={post.likeCount} 
-                initialIsLiked={post.isLiked} 
-                queryKey={['post', post.id]} // Direct update to this query
-             />
-             <div className="text-sm text-muted-foreground">
-                {post.viewCount} lượt xem
-             </div>
-          </div>
-          
-          {/* Comments Section - Reuse existing component */}
-          <div className="bg-muted/10 p-0">
-              <CommentSection postId={post.id} />
-          </div>
-       </div>
+      {/* Comments Section */}
+      <div className="mt-8">
+        <h3 className="mb-4 flex items-center gap-2 text-xl font-bold">
+          Bình luận
+          <span className="text-muted-foreground text-base font-normal">
+            ({post.stats?.commentCount || 0})
+          </span>
+        </h3>
+        <CommentSection postId={post.id} />
+      </div>
     </div>
   );
 }

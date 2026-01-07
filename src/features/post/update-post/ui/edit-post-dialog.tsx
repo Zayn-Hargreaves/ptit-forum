@@ -1,8 +1,9 @@
 'use client';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@shared/ui/dialog/dialog';
-import { PostForm } from '../../create-post/ui/post-form';
 import { IPost } from '@entities/post/model/types';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@shared/ui/dialog/dialog';
+
+import { PostForm } from '../../create-post/ui/post-form';
 
 interface EditPostDialogProps {
   post: IPost;
@@ -13,8 +14,8 @@ interface EditPostDialogProps {
 export function EditPostDialog({ post, open, onOpenChange }: Readonly<EditPostDialogProps>) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl flex flex-col p-0 gap-0 max-h-[90vh]">
-        <DialogHeader className="px-6 py-4 border-b">
+      <DialogContent className="flex max-h-[90vh] flex-col gap-0 p-0 sm:max-w-xl">
+        <DialogHeader className="border-b px-6 py-4">
           <DialogTitle>Chỉnh sửa bài viết</DialogTitle>
         </DialogHeader>
 

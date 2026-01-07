@@ -1,26 +1,27 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Kbd, KbdGroup } from "./kbd";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+
+import { Kbd, KbdGroup } from './kbd';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Kbd> = {
-  title: "shared/UI/Kbd",
+  title: 'shared/UI/Kbd',
   component: Kbd,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
-    children: "⌘",
+    children: '⌘',
   },
   argTypes: {
     children: {
-      control: "text",
-      description: "Text or symbols displayed inside the keyboard key.",
+      control: 'text',
+      description: 'Text or symbols displayed inside the keyboard key.',
     },
     className: {
-      control: "text",
-      description: "Custom className applied to the <kbd> element.",
+      control: 'text',
+      description: 'Custom className applied to the <kbd> element.',
     },
   },
 };
@@ -37,7 +38,7 @@ type Story = StoryObj<typeof Kbd>;
  */
 export const Default: Story = {
   args: {
-    children: "⌘",
+    children: '⌘',
   },
 };
 
@@ -60,9 +61,8 @@ export const ShortcutGroup: Story = {
  */
 export const InlineInText: Story = {
   render: () => (
-    <p className="max-w-md text-sm text-muted-foreground">
-      Press <Kbd>⌘</Kbd> + <Kbd>Enter</Kbd> to submit the form, or{" "}
-      <Kbd>Esc</Kbd> to cancel.
+    <p className="text-muted-foreground max-w-md text-sm">
+      Press <Kbd>⌘</Kbd> + <Kbd>Enter</Kbd> to submit the form, or <Kbd>Esc</Kbd> to cancel.
     </p>
   ),
 };

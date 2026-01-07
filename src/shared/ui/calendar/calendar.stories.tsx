@@ -1,54 +1,54 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Calendar } from "./calendar";
-import { addDays, subDays } from "date-fns";
-import { vi } from "date-fns/locale";
-import { useState } from "react";
-import { DateRange } from "react-day-picker";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { addDays, subDays } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import { useState } from 'react';
+import { DateRange } from 'react-day-picker';
+
+import { Calendar } from './calendar';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Calendar> = {
-  title: "shared/UI/Calendar",
+  title: 'shared/UI/Calendar',
   component: Calendar,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
     showOutsideDays: true,
-    className: "rounded-md border shadow-sm",
+    className: 'rounded-md border shadow-sm',
   },
   argTypes: {
     mode: {
-      control: "select",
-      options: ["default", "single", "multiple", "range"],
-      description: "Chế độ chọn ngày (đơn, nhiều ngày, hoặc khoảng thời gian).",
+      control: 'select',
+      options: ['default', 'single', 'multiple', 'range'],
+      description: 'Chế độ chọn ngày (đơn, nhiều ngày, hoặc khoảng thời gian).',
     },
     selected: {
       control: false,
-      description: "Giá trị ngày hiện tại đang được chọn (Controlled State).",
+      description: 'Giá trị ngày hiện tại đang được chọn (Controlled State).',
     },
     onSelect: {
-      action: "selected",
-      description: "Sự kiện khi người dùng chọn ngày.",
+      action: 'selected',
+      description: 'Sự kiện khi người dùng chọn ngày.',
     },
     numberOfMonths: {
-      control: "number",
-      description: "Số lượng tháng hiển thị cùng lúc.",
+      control: 'number',
+      description: 'Số lượng tháng hiển thị cùng lúc.',
     },
     disabled: {
       control: false,
-      description: "Danh sách các ngày bị vô hiệu hóa (không cho chọn).",
+      description: 'Danh sách các ngày bị vô hiệu hóa (không cho chọn).',
     },
     locale: {
       control: false,
-      description: "Cấu hình ngôn ngữ (Localization).",
+      description: 'Cấu hình ngôn ngữ (Localization).',
     },
     captionLayout: {
-      control: "select",
-      options: ["label", "dropdown", "dropdown-buttons"],
-      description:
-        "Kiểu hiển thị tiêu đề tháng (Label hoặc Dropdown chọn năm).",
+      control: 'select',
+      options: ['label', 'dropdown', 'dropdown-buttons'],
+      description: 'Kiểu hiển thị tiêu đề tháng (Label hoặc Dropdown chọn năm).',
     },
   },
 };
@@ -68,9 +68,7 @@ export const Default: Story = {
   render: (args) => {
     const [date, setDate] = useState<Date | undefined>(new Date());
 
-    return (
-      <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />
-    );
+    return <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />;
   },
 };
 
@@ -104,13 +102,13 @@ export const DateRangePicker: Story = {
  */
 export const MultipleMonths: Story = {
   args: {
-    mode: "single",
+    mode: 'single',
     numberOfMonths: 3,
   },
   render: (args) => {
     const [date, setDate] = useState<Date | undefined>(new Date());
     return (
-      <div className="border rounded-md p-4">
+      <div className="rounded-md border p-4">
         <Calendar
           mode="single"
           selected={date}
@@ -133,9 +131,7 @@ export const VietnameseLocale: Story = {
   },
   render: (args) => {
     const [date, setDate] = useState<Date | undefined>(new Date());
-    return (
-      <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />
-    );
+    return <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />;
   },
 };
 
@@ -146,15 +142,13 @@ export const VietnameseLocale: Story = {
  */
 export const WithDropdowns: Story = {
   args: {
-    captionLayout: "dropdown",
+    captionLayout: 'dropdown',
     fromYear: 2000,
     toYear: 2030,
   },
   render: (args) => {
     const [date, setDate] = useState<Date | undefined>(new Date());
-    return (
-      <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />
-    );
+    return <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />;
   },
 };
 
@@ -188,8 +182,6 @@ export const WithWeekNumbers: Story = {
   },
   render: (args) => {
     const [date, setDate] = useState<Date | undefined>(new Date());
-    return (
-      <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />
-    );
+    return <Calendar mode="single" selected={date} onSelect={setDate} {...(args as any)} />;
   },
 };

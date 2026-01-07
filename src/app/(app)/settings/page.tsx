@@ -1,23 +1,15 @@
-"use client";
+'use client';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@shared/ui/card/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@shared/ui/tabs/tabs";
-import { UpdateProfileForm } from "@features/profile/update-profile/ui/update-profile-form";
+import { UpdateProfileForm } from '@features/profile/update-profile/ui/update-profile-form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@shared/ui/card/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/ui/tabs/tabs';
 
 export default function SettingsPage() {
   return (
     <div className="container mx-auto max-w-4xl py-8">
       <div className="mb-8">
         <h1 className="mb-2 text-3xl font-bold">Cài đặt</h1>
-        <p className="text-muted-foreground">
-          Quản lý thông tin tài khoản và tùy chọn của bạn
-        </p>
+        <p className="text-muted-foreground">Quản lý thông tin tài khoản và tùy chọn của bạn</p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
@@ -35,12 +27,10 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Bảo mật</CardTitle>
-              <CardDescription>
-                Tính năng đổi mật khẩu đang phát triển...
-              </CardDescription>
+              <CardDescription>Tính năng đổi mật khẩu đang phát triển...</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Coming soon...</p>
+              <p className="text-muted-foreground text-sm">Coming soon...</p>
             </CardContent>
           </Card>
         </TabsContent>

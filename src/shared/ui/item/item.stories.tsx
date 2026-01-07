@@ -1,73 +1,67 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import React from "react";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { Link as LinkIcon, MessageCircle, MoreHorizontal, Star } from 'lucide-react';
+import React from 'react';
 
+import { Badge } from '../badge/badge';
+import { Button } from '../button/button';
 import {
   Item,
-  ItemMedia,
-  ItemContent,
   ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
   ItemGroup,
+  ItemHeader,
+  ItemMedia,
   ItemSeparator,
   ItemTitle,
-  ItemDescription,
-  ItemHeader,
-  ItemFooter,
-} from "./item";
-import { Button } from "../button/button";
-import { Badge } from "../badge/badge";
-import {
-  MoreHorizontal,
-  Star,
-  MessageCircle,
-  Link as LinkIcon,
-} from "lucide-react";
+} from './item';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Item> = {
-  title: "shared/UI/Item",
+  title: 'shared/UI/Item',
   component: Item,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
-    variant: "default",
-    size: "default",
+    variant: 'default',
+    size: 'default',
   },
   argTypes: {
     variant: {
-      control: "select",
-      options: ["default", "outline", "muted"],
-      description: "Visual variant of the item container.",
+      control: 'select',
+      options: ['default', 'outline', 'muted'],
+      description: 'Visual variant of the item container.',
       table: {
-        defaultValue: { summary: "default" },
+        defaultValue: { summary: 'default' },
       },
     },
     size: {
-      control: "select",
-      options: ["default", "sm"],
-      description: "Padding and spacing size.",
+      control: 'select',
+      options: ['default', 'sm'],
+      description: 'Padding and spacing size.',
       table: {
-        defaultValue: { summary: "default" },
+        defaultValue: { summary: 'default' },
       },
     },
     asChild: {
-      control: "boolean",
+      control: 'boolean',
       description:
-        "Render as a Radix Slot instead of a div (useful for turning the item into a link or button).",
+        'Render as a Radix Slot instead of a div (useful for turning the item into a link or button).',
       table: {
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: 'false' },
       },
     },
     className: {
-      control: "text",
-      description: "Custom className applied to the root item element.",
+      control: 'text',
+      description: 'Custom className applied to the root item element.',
     },
     children: {
       control: false,
-      description:
-        "Composed layout inside the item (media, content, header, footer, actions…).",
+      description: 'Composed layout inside the item (media, content, header, footer, actions…).',
     },
   },
 };
@@ -113,8 +107,7 @@ export const WithIconMedia: Story = {
           </Badge>
         </ItemTitle>
         <ItemDescription>
-          This project is marked as important and will appear at the top of your
-          list.
+          This project is marked as important and will appear at the top of your list.
         </ItemDescription>
       </ItemContent>
     </Item>
@@ -143,14 +136,11 @@ export const WithImageMedia: Story = {
           </ItemActions>
         </ItemHeader>
         <ItemDescription>
-          A quick overview of the latest updates to the component library and
-          design tokens.
+          A quick overview of the latest updates to the component library and design tokens.
         </ItemDescription>
         <ItemFooter>
-          <span className="text-xs text-muted-foreground">
-            Updated 2 hours ago
-          </span>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="text-muted-foreground text-xs">Updated 2 hours ago</span>
+          <div className="text-muted-foreground flex items-center gap-2 text-xs">
             <MessageCircle className="size-3.5" />
             <span>12 comments</span>
           </div>
@@ -177,14 +167,11 @@ export const WithActions: Story = {
           </ItemActions>
         </ItemHeader>
         <ItemDescription>
-          Performance overview for the last quarter including KPIs and
-          conversion metrics.
+          Performance overview for the last quarter including KPIs and conversion metrics.
         </ItemDescription>
         <ItemFooter>
-          <span className="text-xs text-muted-foreground">
-            Last edited by Anna
-          </span>
-          <span className="text-xs text-muted-foreground">5 min read</span>
+          <span className="text-muted-foreground text-xs">Last edited by Anna</span>
+          <span className="text-muted-foreground text-xs">5 min read</span>
         </ItemFooter>
       </ItemContent>
     </Item>
@@ -198,8 +185,8 @@ export const WithActions: Story = {
 export const AsLink: Story = {
   args: {
     asChild: true,
-    variant: "outline",
-    size: "sm",
+    variant: 'outline',
+    size: 'sm',
   },
   render: (args) => (
     <Item {...args} className="max-w-md">
@@ -231,7 +218,7 @@ export const AsLink: Story = {
  */
 export const GroupWithSeparators: Story = {
   render: () => (
-    <ItemGroup className="w-full max-w-lg border rounded-md bg-background">
+    <ItemGroup className="bg-background w-full max-w-lg rounded-md border">
       <li>
         <Item size="sm">
           <ItemContent>

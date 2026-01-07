@@ -1,73 +1,65 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Button } from "./button";
-import { ChevronRight, Loader2, Mail } from "lucide-react";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { ChevronRight, Loader2, Mail } from 'lucide-react';
 
-type ButtonVariantProps = NonNullable<
-  React.ComponentProps<typeof Button>["variant"]
->;
-type ButtonSizeProps = NonNullable<React.ComponentProps<typeof Button>["size"]>;
+import { Button } from './button';
+
+type ButtonVariantProps = NonNullable<React.ComponentProps<typeof Button>['variant']>;
+type ButtonSizeProps = NonNullable<React.ComponentProps<typeof Button>['size']>;
 
 const variantOptions: ButtonVariantProps[] = [
-  "default",
-  "destructive",
-  "outline",
-  "secondary",
-  "ghost",
-  "link",
+  'default',
+  'destructive',
+  'outline',
+  'secondary',
+  'ghost',
+  'link',
 ];
-const sizeOptions: ButtonSizeProps[] = [
-  "default",
-  "sm",
-  "lg",
-  "icon",
-  "icon-sm",
-  "icon-lg",
-];
+const sizeOptions: ButtonSizeProps[] = ['default', 'sm', 'lg', 'icon', 'icon-sm', 'icon-lg'];
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Button> = {
-  title: "shared/UI/Button",
+  title: 'shared/UI/Button',
   component: Button,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
-    children: "Button Text",
-    variant: "default",
-    size: "default",
+    children: 'Button Text',
+    variant: 'default',
+    size: 'default',
     disabled: false,
   },
   argTypes: {
     variant: {
-      control: "select",
+      control: 'select',
       options: variantOptions,
-      description: "Kiểu dáng của nút (màu sắc, nền).",
+      description: 'Kiểu dáng của nút (màu sắc, nền).',
     },
     size: {
-      control: "select",
+      control: 'select',
       options: sizeOptions,
-      description: "Kích thước của nút.",
+      description: 'Kích thước của nút.',
     },
     disabled: {
-      control: "boolean",
-      description: "Vô hiệu hóa nút.",
+      control: 'boolean',
+      description: 'Vô hiệu hóa nút.',
     },
     asChild: {
-      control: "boolean",
-      description: "Sử dụng Radix Slot làm con để truyền props xuống.",
+      control: 'boolean',
+      description: 'Sử dụng Radix Slot làm con để truyền props xuống.',
       table: {
         disable: true,
       },
     },
     children: {
-      control: "text",
-      description: "Nội dung hiển thị bên trong nút.",
+      control: 'text',
+      description: 'Nội dung hiển thị bên trong nút.',
     },
     onClick: {
-      action: "clicked",
-      description: "Sự kiện khi nút được nhấn.",
+      action: 'clicked',
+      description: 'Sự kiện khi nút được nhấn.',
     },
   },
 };
@@ -84,7 +76,7 @@ type Story = StoryObj<typeof Button>;
  */
 export const Default: Story = {
   args: {
-    children: "Nút Mặc Định",
+    children: 'Nút Mặc Định',
   },
 };
 
@@ -94,7 +86,7 @@ export const Default: Story = {
 export const AllVariants: Story = {
   args: {},
   parameters: {
-    layout: "padded",
+    layout: 'padded',
   },
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
@@ -112,15 +104,15 @@ export const AllVariants: Story = {
  */
 export const AllSizes: Story = {
   args: {
-    variant: "secondary",
+    variant: 'secondary',
   },
   parameters: {
-    layout: "padded",
+    layout: 'padded',
   },
   render: (args) => (
     <div className="flex items-end gap-4">
       {sizeOptions
-        .filter((size) => !size.startsWith("icon"))
+        .filter((size) => !size.startsWith('icon'))
         .map((size) => (
           <Button key={size} size={size} variant={args.variant}>
             {`Size: ${size.toUpperCase()}`}
@@ -141,8 +133,8 @@ export const WithIcon: Story = {
         Gửi Email
       </>
     ),
-    variant: "default",
-    size: "default",
+    variant: 'default',
+    size: 'default',
   },
 };
 
@@ -152,8 +144,8 @@ export const WithIcon: Story = {
 export const IconButton: Story = {
   args: {
     children: <ChevronRight />,
-    variant: "outline",
-    size: "icon",
+    variant: 'outline',
+    size: 'icon',
   },
   argTypes: {
     children: {
@@ -167,7 +159,7 @@ export const IconButton: Story = {
  */
 export const Disabled: Story = {
   args: {
-    children: "Nút Bị Khóa",
+    children: 'Nút Bị Khóa',
     disabled: true,
   },
 };
@@ -184,6 +176,6 @@ export const Loading: Story = {
       </>
     ),
     disabled: true,
-    variant: "secondary",
+    variant: 'secondary',
   },
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { MoreHorizontal, ShieldCheck, ShieldAlert, UserMinus } from 'lucide-react';
+import { Button } from '@shared/ui/button/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,9 +9,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@shared/ui/dropdown-menu/dropdown-menu';
-import { Button } from '@shared/ui/button/button';
-import { canManageMember, canChangeRole, type TopicRole } from '../lib/permission-utils';
+import { MoreHorizontal, ShieldAlert, ShieldCheck, UserMinus } from 'lucide-react';
 import { useState } from 'react';
+
+import { canChangeRole, canManageMember, type TopicRole } from '../lib/permission-utils';
 
 interface MemberActionMenuProps {
   viewerRole: TopicRole;
@@ -100,7 +101,7 @@ export function MemberActionMenu({
 
         {/* Remove Action */}
         <DropdownMenuItem
-          className="text-red-600 focus:text-red-600 focus:bg-red-50"
+          className="text-red-600 focus:bg-red-50 focus:text-red-600"
           onClick={handleRemove}
         >
           <UserMinus className="mr-2 h-4 w-4" />

@@ -1,10 +1,10 @@
-import { useMutation, useQueryClient, InfiniteData } from '@tanstack/react-query';
 import { commentApi } from '@entities/interaction/api/comment-api';
 import { Comment } from '@entities/interaction/model/types';
-import { PageResponse } from '@shared/api/types';
-import { useMe } from '@entities/session/model/queries';
-import { toast } from 'sonner';
 import { Post } from '@entities/post/model/types';
+import { useMe } from '@entities/session/model/queries';
+import { PageResponse } from '@shared/api/types';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 interface UseCreateCommentProps {
   postId: string;
@@ -15,7 +15,9 @@ export function useCreateComment({ postId, rootCommentId }: UseCreateCommentProp
   const queryClient = useQueryClient();
   const { data: me } = useMe();
 
-  const queryKey = rootCommentId ? ['comments', 'replies', rootCommentId] : ['comments', 'roots', postId];
+  const queryKey = rootCommentId
+    ? ['comments', 'replies', rootCommentId]
+    : ['comments', 'roots', postId];
 
   const postKey = ['post', postId];
 
@@ -81,7 +83,12 @@ export function useCreateComment({ postId, rootCommentId }: UseCreateCommentProp
         if (!oldPost) return oldPost;
         return {
           ...oldPost,
-          stats: { ...oldPost.stats, commentCount: oldPost.stats.commentCount + 1 },
+          stats: {
+            ...oldPost.stats,
+            commentCount: (oldPost.stats?.commentCount ?? 0) + 1,
+            viewCount: oldPost.stats?.viewCount ?? 0,
+            likeCount: oldPost.stats?.likeCount ?? 0,
+          },
         };
       });
 

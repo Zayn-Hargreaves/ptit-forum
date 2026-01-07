@@ -29,7 +29,6 @@ export interface UserStats {
   followingCount: number;
 }
 
-// Removed dob and facultyName to match backend
 export interface UserProfile extends User {
   bio?: string;
   studentCode?: string;
@@ -43,7 +42,6 @@ export interface UserProfile extends User {
 
 export interface UpdateProfilePayload {
   fullName?: string;
-  // dob removed
   phone?: string;
   studentCode?: string;
   classCode?: string;
@@ -53,8 +51,7 @@ export interface UpdateProfilePayload {
 export interface UserProfileResponseDto {
   id: string;
   email: string;
-  fullName: string | null; // Match backend nullable
-  // dob removed
+  fullName: string | null;
   avatarUrl: string;
   studentCode: string;
   classCode: string;

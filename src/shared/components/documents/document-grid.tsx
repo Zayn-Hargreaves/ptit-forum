@@ -1,92 +1,91 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-
-import { Download, Eye, FileText, Bookmark } from "lucide-react";
-import Link from "next/link";
-import { Card, CardContent, CardFooter } from "@shared/ui/card/card";
-import { Badge } from "@shared/ui/badge/badge";
-import { Button } from "@shared/ui/button/button";
-import { Pagination } from "@shared/ui/pagination/pagination";
+import { Badge } from '@shared/ui/badge/badge';
+import { Button } from '@shared/ui/button/button';
+import { Card, CardContent, CardFooter } from '@shared/ui/card/card';
+import { Pagination } from '@shared/ui/pagination/pagination';
+import { Bookmark, Download, Eye, FileText } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
 
 const documents = [
   {
     id: 1,
-    title: "Slide bài giảng Lập trình hướng đối tượng - Chương 1",
-    subject: "OOP",
-    type: "Slide",
-    semester: "Kỳ 3",
-    uploader: "Nguyễn Văn A",
-    uploadDate: "2 ngày trước",
+    title: 'Slide bài giảng Lập trình hướng đối tượng - Chương 1',
+    subject: 'OOP',
+    type: 'Slide',
+    semester: 'Kỳ 3',
+    uploader: 'Nguyễn Văn A',
+    uploadDate: '2 ngày trước',
     downloads: 234,
     views: 567,
-    fileType: "PDF",
-    fileSize: "2.5 MB",
+    fileType: 'PDF',
+    fileSize: '2.5 MB',
   },
   {
     id: 2,
-    title: "Đề thi giữa kỳ Cơ sở dữ liệu 2023",
-    subject: "Database",
-    type: "Đề thi",
-    semester: "Kỳ 4",
-    uploader: "Trần Thị B",
-    uploadDate: "5 ngày trước",
+    title: 'Đề thi giữa kỳ Cơ sở dữ liệu 2023',
+    subject: 'Database',
+    type: 'Đề thi',
+    semester: 'Kỳ 4',
+    uploader: 'Trần Thị B',
+    uploadDate: '5 ngày trước',
     downloads: 189,
     views: 423,
-    fileType: "PDF",
-    fileSize: "1.2 MB",
+    fileType: 'PDF',
+    fileSize: '1.2 MB',
   },
   {
     id: 3,
-    title: "Bài tập thực hành Mạng máy tính - Lab 1-5",
-    subject: "Network",
-    type: "Bài tập",
-    semester: "Kỳ 5",
-    uploader: "Lê Văn C",
-    uploadDate: "1 tuần trước",
+    title: 'Bài tập thực hành Mạng máy tính - Lab 1-5',
+    subject: 'Network',
+    type: 'Bài tập',
+    semester: 'Kỳ 5',
+    uploader: 'Lê Văn C',
+    uploadDate: '1 tuần trước',
     downloads: 156,
     views: 345,
-    fileType: "ZIP",
-    fileSize: "5.8 MB",
+    fileType: 'ZIP',
+    fileSize: '5.8 MB',
   },
   {
     id: 4,
-    title: "Tóm tắt Cấu trúc dữ liệu & Giải thuật",
-    subject: "DSA",
-    type: "Ghi chú",
-    semester: "Kỳ 3",
-    uploader: "Phạm Thị D",
-    uploadDate: "2 tuần trước",
+    title: 'Tóm tắt Cấu trúc dữ liệu & Giải thuật',
+    subject: 'DSA',
+    type: 'Ghi chú',
+    semester: 'Kỳ 3',
+    uploader: 'Phạm Thị D',
+    uploadDate: '2 tuần trước',
     downloads: 298,
     views: 678,
-    fileType: "PDF",
-    fileSize: "3.4 MB",
+    fileType: 'PDF',
+    fileSize: '3.4 MB',
   },
   {
     id: 5,
-    title: "Source code project Hệ quản trị CSDL",
-    subject: "Database",
-    type: "Bài tập",
-    semester: "Kỳ 4",
-    uploader: "Hoàng Văn E",
-    uploadDate: "3 tuần trước",
+    title: 'Source code project Hệ quản trị CSDL',
+    subject: 'Database',
+    type: 'Bài tập',
+    semester: 'Kỳ 4',
+    uploader: 'Hoàng Văn E',
+    uploadDate: '3 tuần trước',
     downloads: 167,
     views: 289,
-    fileType: "ZIP",
-    fileSize: "12.3 MB",
+    fileType: 'ZIP',
+    fileSize: '12.3 MB',
   },
   {
     id: 6,
-    title: "Slide Hệ điều hành - Toàn bộ khóa học",
-    subject: "OS",
-    type: "Slide",
-    semester: "Kỳ 5",
-    uploader: "Vũ Thị F",
-    uploadDate: "1 tháng trước",
+    title: 'Slide Hệ điều hành - Toàn bộ khóa học',
+    subject: 'OS',
+    type: 'Slide',
+    semester: 'Kỳ 5',
+    uploader: 'Vũ Thị F',
+    uploadDate: '1 tháng trước',
     downloads: 445,
     views: 892,
-    fileType: "PDF",
-    fileSize: "18.7 MB",
+    fileType: 'PDF',
+    fileSize: '18.7 MB',
   },
 ];
 
@@ -95,34 +94,28 @@ export function DocumentGrid() {
   const itemsPerPage = 6;
   const totalPages = Math.ceil(documents.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedDocuments = documents.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const paginatedDocuments = documents.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           {documents.length} tài liệu • Trang {currentPage}/{totalPages}
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         {paginatedDocuments.map((doc) => (
-          <Card
-            key={doc.id}
-            className="transition-all hover:border-primary/50 hover:shadow-md"
-          >
+          <Card key={doc.id} className="hover:border-primary/50 transition-all hover:shadow-md">
             <CardContent className="p-6">
               <div className="mb-4 flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                    <FileText className="h-6 w-6 text-primary" />
+                  <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-lg">
+                    <FileText className="text-primary h-6 w-6" />
                   </div>
                   <div className="flex-1">
                     <Link href={`/documents/${doc.id}`}>
-                      <h3 className="mb-2 font-semibold leading-tight hover:text-primary">
+                      <h3 className="hover:text-primary mb-2 leading-tight font-semibold">
                         {doc.title}
                       </h3>
                     </Link>
@@ -135,14 +128,14 @@ export function DocumentGrid() {
                 </div>
               </div>
 
-              <div className="mb-4 space-y-1 text-sm text-muted-foreground">
+              <div className="text-muted-foreground mb-4 space-y-1 text-sm">
                 <p>Người tải lên: {doc.uploader}</p>
                 <p>
                   {doc.fileType} • {doc.fileSize} • {doc.uploadDate}
                 </p>
               </div>
 
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <div className="text-muted-foreground flex items-center justify-between text-sm">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1">
                     <Download className="h-4 w-4" />
@@ -162,11 +155,7 @@ export function DocumentGrid() {
                   Xem
                 </Link>
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 bg-transparent"
-              >
+              <Button variant="outline" size="sm" className="flex-1 bg-transparent">
                 <Download className="mr-2 h-4 w-4" />
                 Tải về
               </Button>

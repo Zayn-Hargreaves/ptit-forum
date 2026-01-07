@@ -1,5 +1,6 @@
 // src/entities/post/model/use-infinite-posts.ts
 import { useInfiniteQuery } from '@tanstack/react-query';
+
 import { postApi } from '../api/post-api';
 
 export type SortMode = 'latest' | 'trending';
@@ -20,12 +21,12 @@ const TIME_RANGE_MAP: Record<TimeRange, 'WEEK' | 'MONTH' | 'ALL'> = {
 
 export type FetchMode = 'feed' | 'topic' | 'pending';
 
-export function useInfinitePosts({ 
-  topicId = null, 
-  authorId = null, 
-  sortMode = 'latest', 
+export function useInfinitePosts({
+  topicId = null,
+  authorId = null,
+  sortMode = 'latest',
   timeRange = 'week',
-  fetchMode = 'feed' 
+  fetchMode = 'feed',
 }: UseInfinitePostsProps & { fetchMode?: FetchMode }) {
   const apiRange = TIME_RANGE_MAP[timeRange];
 
@@ -34,10 +35,10 @@ export function useInfinitePosts({
 
     queryFn: ({ pageParam = 0 }) => {
       if (fetchMode === 'topic' && topicId) {
-        return postApi.getByTopic(topicId, { pageParam, size: 10 });
+        return postApi.getPostsByTopic(topicId, pageParam as number, 10);
       }
       if (fetchMode === 'pending' && topicId) {
-        return postApi.getPendingByTopic(topicId, pageParam, 10);
+        return postApi.getPendingPostsByTopic(topicId, pageParam as number, 10);
       }
       return postApi.getNewsfeed({
         pageParam,

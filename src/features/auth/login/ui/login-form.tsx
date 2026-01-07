@@ -1,25 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Loader2, Mail } from "lucide-react";
-
-import { Button } from "@shared/ui/button/button";
-import { Input } from "@shared/ui/input/input";
-import { PasswordInput } from "@shared/ui/input/password-input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@shared/ui/form/form";
+import { authApi } from '@features/auth/api/auth-api';
+import { SocialLogin } from '@features/auth/social-login/social-login';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { BACKEND_ERROR_CODES } from '@shared/constants/error-codes';
+import { validateRedirectUrl } from '@shared/lib/utils';
+import { Button } from '@shared/ui/button/button';
 import {
   Card,
   CardContent,
@@ -27,27 +13,40 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@shared/ui/card/card";
-import { LoginInput, loginSchema } from "@shared/validators/auth";
-import { BACKEND_ERROR_CODES } from "@shared/constants/error-codes";
-import { validateRedirectUrl } from "@shared/lib/utils";
-import { SocialLogin } from "@features/auth/social-login/social-login";
-import { authApi } from "@features/auth/api/auth-api";
+} from '@shared/ui/card/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@shared/ui/form/form';
+import { Input } from '@shared/ui/input/input';
+import { PasswordInput } from '@shared/ui/input/password-input';
+import { LoginInput, loginSchema } from '@shared/validators/auth';
+import { useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import { Loader2, Mail } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
 
-  const redirectUrl = validateRedirectUrl(searchParams.get("redirect"));
+  const redirectUrl = validateRedirectUrl(searchParams.get('redirect'));
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-    mode: "onBlur",
+    mode: 'onBlur',
   });
 
   const { isSubmitting } = form.formState;
@@ -56,36 +55,31 @@ export function LoginForm() {
     try {
       await authApi.login(values);
 
-      await queryClient.invalidateQueries({ queryKey: ["me"] });
+      await queryClient.invalidateQueries({ queryKey: ['me'] });
 
-      toast.success("Đăng nhập thành công", {
-        description: "Chào mừng bạn quay trở lại!",
+      toast.success('Đăng nhập thành công', {
+        description: 'Chào mừng bạn quay trở lại!',
       });
 
       router.replace(redirectUrl);
-    } catch (error: any) {
-      const errorResponse = error.response?.data;
-      if (errorResponse?.code === BACKEND_ERROR_CODES.ACCOUNT_NOT_VERIFIED) {
-        toast.info(
-          "Tài khoản chưa xác thực. Đang chuyển hướng tới trang nhập OTP..."
-        );
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ code: number; message: string }>;
+      const errorData = axiosError.response?.data;
 
+      if (errorData?.code === BACKEND_ERROR_CODES.ACCOUNT_NOT_VERIFIED) {
+        toast.info('Tài khoản chưa xác thực. Đang chuyển hướng tới trang nhập OTP...');
         router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
         return;
       }
 
-      toast.error(
-        errorResponse?.message || "Thông tin đăng nhập không chính xác"
-      );
+      toast.error(errorData?.message || 'Thông tin đăng nhập không chính xác');
     }
   };
 
   return (
-    <Card className="border-2 shadow-md w-full max-w-md">
+    <Card className="w-full max-w-md border-2 shadow-md">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">
-          Đăng nhập
-        </CardTitle>
+        <CardTitle className="text-center text-2xl font-bold">Đăng nhập</CardTitle>
         <CardDescription className="text-center">
           Nhập email và mật khẩu để truy cập diễn đàn
         </CardDescription>
@@ -101,7 +95,7 @@ export function LoginForm() {
                 <FormItem>
                   <FormLabel>Email sinh viên</FormLabel>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                     <FormControl>
                       <Input
                         placeholder="sinhvien@student.ptit.edu.vn"
@@ -125,7 +119,7 @@ export function LoginForm() {
                     <FormLabel>Mật khẩu</FormLabel>
                     <Link
                       href="/forgot-password"
-                      className="text-xs text-primary hover:underline font-medium"
+                      className="text-primary text-xs font-medium hover:underline"
                     >
                       Quên mật khẩu?
                     </Link>
@@ -142,19 +136,14 @@ export function LoginForm() {
               )}
             />
 
-            <Button
-              type="submit"
-              className="w-full font-bold"
-              size="lg"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" className="w-full font-bold" size="lg" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Đang xác thực...
                 </>
               ) : (
-                "Đăng nhập"
+                'Đăng nhập'
               )}
             </Button>
           </form>
@@ -166,12 +155,9 @@ export function LoginForm() {
       </CardContent>
 
       <CardFooter className="flex justify-center">
-        <div className="text-center text-sm text-muted-foreground">
-          Chưa có tài khoản?{" "}
-          <Link
-            href="/register"
-            className="font-bold text-primary hover:underline"
-          >
+        <div className="text-muted-foreground text-center text-sm">
+          Chưa có tài khoản?{' '}
+          <Link href="/register" className="text-primary font-bold hover:underline">
             Đăng ký ngay
           </Link>
         </div>
