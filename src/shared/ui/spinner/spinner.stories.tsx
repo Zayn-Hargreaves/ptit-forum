@@ -1,32 +1,33 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import React from "react";
-import { Spinner } from "./spinner";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import React from 'react';
+
+import { Spinner } from './spinner';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Spinner> = {
-  title: "shared/UI/Spinner",
+  title: 'shared/UI/Spinner',
   component: Spinner,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     className: {
-      control: "text",
-      description: "Custom Tailwind classes applied to the spinner element.",
+      control: 'text',
+      description: 'Custom Tailwind classes applied to the spinner element.',
     },
     width: {
-      control: "text",
+      control: 'text',
       table: { disable: true }, // Spinner inherits props; width will pass via className
     },
     height: {
-      control: "text",
+      control: 'text',
       table: { disable: true }, // Same reason
     },
   },
   args: {
-    className: "text-muted-foreground",
+    className: 'text-muted-foreground',
   },
 };
 
@@ -49,7 +50,7 @@ export const Default: Story = {
  */
 export const Large: Story = {
   args: {
-    className: "size-10 text-primary",
+    className: 'size-10 text-primary',
   },
   render: (args) => <Spinner {...args} />,
 };
@@ -61,7 +62,7 @@ export const InsideButton: Story = {
   render: (args) => (
     <button
       disabled
-      className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-white opacity-80"
+      className="bg-primary flex items-center gap-2 rounded-md px-4 py-2 text-white opacity-80"
     >
       <Spinner {...args} className="size-4" />
       Processing...
@@ -74,7 +75,7 @@ export const InsideButton: Story = {
  */
 export const Inline: Story = {
   render: (args) => (
-    <p className="flex items-center gap-2 text-sm text-muted-foreground">
+    <p className="text-muted-foreground flex items-center gap-2 text-sm">
       Fetching data
       <Spinner {...args} className="size-3" />
     </p>

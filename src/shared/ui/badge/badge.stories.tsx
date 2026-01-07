@@ -1,33 +1,34 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Rocket } from "lucide-react";
-import * as React from "react";
-import { Badge } from "./badge";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { Rocket } from 'lucide-react';
+import * as React from 'react';
+
+import { Badge } from './badge';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Badge> = {
-  title: "shared/UI/Badge",
+  title: 'shared/UI/Badge',
   component: Badge,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
 
   args: {
-    children: "Badge",
+    children: 'Badge',
   },
 
   argTypes: {
     variant: {
-      description: "The visual style of the badge.",
+      description: 'The visual style of the badge.',
       control: {
-        type: "select",
+        type: 'select',
       },
-      options: ["default", "secondary", "destructive", "outline"],
+      options: ['default', 'secondary', 'destructive', 'outline'],
     },
     children: {
-      description: "The content of the badge (text, icon, etc.)",
-      control: "text",
+      description: 'The content of the badge (text, icon, etc.)',
+      control: 'text',
     },
     asChild: {
       table: { disable: true },
@@ -47,8 +48,8 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
   args: {
-    variant: "default",
-    children: "Default",
+    variant: 'default',
+    children: 'Default',
   },
 };
 
@@ -57,8 +58,8 @@ export const Default: Story = {
  */
 export const Secondary: Story = {
   args: {
-    variant: "secondary",
-    children: "Secondary",
+    variant: 'secondary',
+    children: 'Secondary',
   },
 };
 
@@ -67,8 +68,8 @@ export const Secondary: Story = {
  */
 export const Outline: Story = {
   args: {
-    variant: "outline",
-    children: "Outline",
+    variant: 'outline',
+    children: 'Outline',
   },
 };
 
@@ -77,8 +78,8 @@ export const Outline: Story = {
  */
 export const Destructive: Story = {
   args: {
-    variant: "destructive",
-    children: "Destructive",
+    variant: 'destructive',
+    children: 'Destructive',
   },
 };
 
@@ -94,7 +95,7 @@ export const WithIcon: Story = {
     </Badge>
   ),
   args: {
-    variant: "default",
+    variant: 'default',
     children: undefined,
   },
 };
@@ -112,7 +113,7 @@ export const AsLink: Story = {
     </Badge>
   ),
   args: {
-    variant: "outline",
+    variant: 'outline',
     children: undefined,
   },
 };

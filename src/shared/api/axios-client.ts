@@ -6,8 +6,15 @@ import { toast } from 'sonner';
 // - Client-side: Proxy through Next.js API Routes ('/api')
 const getBaseUrl = (): string => {
   if (typeof window === 'undefined') {
+    // 🟢 SERVER SIDE
+    if (process.env.INTERNAL_API_URL) {
+      console.log('Server fetching data from:', process.env.INTERNAL_API_URL);
+      return process.env.INTERNAL_API_URL;
+    }
     return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
   }
+
+  // 🔵 CLIENT SIDE
   return '/api';
 };
 
@@ -52,10 +59,10 @@ export const apiClient = axios.create({
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (value: unknown) => void;
-  reject: (reason?: any) => void;
+  reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -71,7 +78,7 @@ const processQueue = (error: any, token: string | null = null) => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<{ message?: string; error?: string }>) => {
-    const originalRequest = error.config as any;
+    const originalRequest = error.config as { _retry?: boolean } & typeof error.config;
     const isClient = typeof window !== 'undefined';
 
     // Handle Network Errors
@@ -95,6 +102,7 @@ apiClient.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         })
           .then(() => {
+            // Retry the original request after refresh completes
             return apiClient(originalRequest);
           })
           .catch((err) => {
@@ -106,6 +114,10 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        if (isClient) {
+          console.log('🔄 Token expired, attempting refresh...');
+        }
+
         // Create a dedicated instance for auth calls to avoid circular deps and ensure credentials
         const authClient = axios.create({
           baseURL: API_URL,
@@ -119,17 +131,32 @@ apiClient.interceptors.response.use(
         const refreshResponse = await authClient.post('/auth/refresh');
 
         if (refreshResponse.status === 200) {
+          if (isClient) {
+            console.log('✅ Token refresh successful, retrying requests...');
+          }
           processQueue(null); // Resolve all queued requests
-          return apiClient(originalRequest); // Retry original
+          // Retry the original request with the new token
+          return apiClient(originalRequest);
         }
-      } catch (refreshError) {
+      } catch (refreshError: unknown) {
+        const refreshErr = refreshError as AxiosError;
+        if (isClient) {
+          console.error('❌ Token refresh failed:', refreshErr.response?.status);
+        }
         processQueue(refreshError, null);
         // If refresh fails, we let the 401 error propagate.
         // The UI (AuthProvider) should listen to strict 401s or we can simply toast here.
         if (isClient) {
           toast.error('Session expired. Please login again.');
           // Optional: Redirect to login or let auth-provider handle it
-          // window.location.href = '/auth/login';
+          const path = window.location.pathname;
+          if (
+            !path.startsWith('/login') &&
+            !path.startsWith('/register') &&
+            !path.startsWith('/auth/login')
+          ) {
+            window.location.href = '/login';
+          }
         }
         return Promise.reject(refreshError);
       } finally {
@@ -161,5 +188,5 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );

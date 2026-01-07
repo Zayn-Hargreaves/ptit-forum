@@ -1,49 +1,50 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import React from "react";
-import { RadioGroup, RadioGroupItem } from "./radio-group";
-import { Label } from "../label/label";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import React from 'react';
+
+import { Label } from '../label/label';
+import { RadioGroup, RadioGroupItem } from './radio-group';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof RadioGroup> = {
-  title: "shared/Form/RadioGroup",
+  title: 'shared/Form/RadioGroup',
   component: RadioGroup,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
-    defaultValue: "option-1",
+    defaultValue: 'option-1',
   },
   argTypes: {
     value: {
-      control: "text",
-      description: "Controlled value of the radio group.",
+      control: 'text',
+      description: 'Controlled value of the radio group.',
     },
     defaultValue: {
-      control: "text",
-      description: "Initial value when used in uncontrolled mode.",
+      control: 'text',
+      description: 'Initial value when used in uncontrolled mode.',
       table: {
-        defaultValue: { summary: "option-1" },
+        defaultValue: { summary: 'option-1' },
       },
     },
     disabled: {
-      control: "boolean",
+      control: 'boolean',
       description:
-        "When true, all radio items should be rendered in a disabled state (you must wire this yourself to each item).",
+        'When true, all radio items should be rendered in a disabled state (you must wire this yourself to each item).',
     },
     orientation: {
-      control: "radio",
-      options: ["horizontal", "vertical"],
-      description: "Layout direction for the radio group.",
+      control: 'radio',
+      options: ['horizontal', 'vertical'],
+      description: 'Layout direction for the radio group.',
     },
     className: {
-      control: "text",
-      description: "Custom className applied to the radio group root.",
+      control: 'text',
+      description: 'Custom className applied to the radio group root.',
     },
     children: {
       control: false,
-      description: "RadioGroupItem elements that belong to this group.",
+      description: 'RadioGroupItem elements that belong to this group.',
     },
   },
 };
@@ -54,9 +55,7 @@ type Story = StoryObj<typeof RadioGroup>;
 
 // --- SMALL DEMO COMPONENTS FOR HOOKS ---
 
-const BasicDemo: React.FC<React.ComponentProps<typeof RadioGroup>> = (
-  props
-) => {
+const BasicDemo: React.FC<React.ComponentProps<typeof RadioGroup>> = (props) => {
   return (
     <RadioGroup {...props} className="grid gap-3">
       <div className="flex items-center gap-2">
@@ -76,7 +75,7 @@ const BasicDemo: React.FC<React.ComponentProps<typeof RadioGroup>> = (
 };
 
 const ControlledDemo: React.FC = () => {
-  const [value, setValue] = React.useState("monthly");
+  const [value, setValue] = React.useState('monthly');
 
   return (
     <div className="flex flex-col gap-3">
@@ -90,16 +89,14 @@ const ControlledDemo: React.FC = () => {
           <Label htmlFor="billing-yearly">Yearly billing</Label>
         </div>
       </RadioGroup>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-muted-foreground text-xs">
         Selected: <span className="font-medium">{value}</span>
       </p>
     </div>
   );
 };
 
-const HorizontalDemo: React.FC<React.ComponentProps<typeof RadioGroup>> = (
-  props
-) => {
+const HorizontalDemo: React.FC<React.ComponentProps<typeof RadioGroup>> = (props) => {
   return (
     <RadioGroup
       {...props}
@@ -135,11 +132,7 @@ const ErrorStateDemo: React.FC = () => {
         className="grid gap-2"
       >
         <div className="flex items-center gap-2">
-          <RadioGroupItem
-            value="basic"
-            id="plan-basic"
-            aria-invalid={showError}
-          />
+          <RadioGroupItem value="basic" id="plan-basic" aria-invalid={showError} />
           <Label htmlFor="plan-basic">Basic</Label>
         </div>
         <div className="flex items-center gap-2">
@@ -147,11 +140,7 @@ const ErrorStateDemo: React.FC = () => {
           <Label htmlFor="plan-pro">Pro</Label>
         </div>
       </RadioGroup>
-      {showError && (
-        <p className="text-xs text-destructive">
-          Please select a plan to continue.
-        </p>
-      )}
+      {showError && <p className="text-destructive text-xs">Please select a plan to continue.</p>}
     </div>
   );
 };
@@ -180,7 +169,7 @@ export const Controlled: Story = {
  */
 export const Horizontal: Story = {
   args: {
-    defaultValue: "center",
+    defaultValue: 'center',
   },
   render: (args) => <HorizontalDemo {...args} />,
 };

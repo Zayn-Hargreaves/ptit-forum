@@ -1,23 +1,17 @@
-"use client";
+'use client';
 
-import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { Bell, Upload } from "lucide-react";
+import { useAuth } from '@shared/providers/auth-provider';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@shared/ui';
+import { Bell, Upload } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@shared/ui";
-import { useAuth } from "@shared/providers/auth-provider";
-
-import { NAV_LINKS, isActiveRoute } from "./model/nav-links";
-import { NavbarLogo } from "./ui/logo";
-import { NavbarNavLinks } from "./ui/nav-links";
-import { NavbarSearchForm } from "./ui/search-form";
-import { NavbarAuthActions } from "./ui/auth-actions";
-import { NavbarMobileMenu } from "./ui/mobile.menu";
+import { isActiveRoute, NAV_LINKS } from './model/nav-links';
+import { NavbarAuthActions } from './ui/auth-actions';
+import { NavbarLogo } from './ui/logo';
+import { NavbarMobileMenu } from './ui/mobile.menu';
+import { NavbarNavLinks } from './ui/nav-links';
+import { NavbarSearchForm } from './ui/search-form';
 
 export function Navbar() {
   const router = useRouter();
@@ -31,29 +25,25 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-md supports-backdrop-filter:bg-background/60">
+    <nav className="bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <NavbarLogo />
 
-        <NavbarNavLinks
-          links={NAV_LINKS}
-          pathname={pathname}
-          isActiveRoute={isActiveRoute}
-        />
+        <NavbarNavLinks links={NAV_LINKS} pathname={pathname} isActiveRoute={isActiveRoute} />
 
         <div className="flex items-center gap-2">
           <NavbarSearchForm
             pathname={pathname}
             onSubmitQuery={onSubmitQuery}
-            className="hidden lg:flex flex-1 px-8"
+            className="hidden flex-1 px-8 lg:flex"
           />
 
           {!isLoading && user && (
             <Button
               variant="default"
               size="sm"
-              onClick={() => router.push("/documents/upload")}
-              className="hidden lg:flex gap-2 mr-2"
+              onClick={() => router.push('/documents/upload')}
+              className="mr-2 hidden gap-2 lg:flex"
             >
               <Upload className="h-4 w-4" />
               <span>Đăng tài liệu</span>
@@ -63,16 +53,12 @@ export function Navbar() {
           {!isLoading && user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative shrink-0"
-                >
+                <Button variant="ghost" size="icon" className="relative shrink-0">
                   <Bell className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-80">
-                <div className="p-4 text-center text-sm text-muted-foreground">
+                <div className="text-muted-foreground p-4 text-center text-sm">
                   Thông báo (Coming Soon)
                 </div>
               </DropdownMenuContent>
@@ -93,12 +79,7 @@ export function Navbar() {
                 className="block lg:hidden"
               />
             }
-            authSlot={
-              <NavbarAuthActions
-                isMobile
-                onCloseMobileMenu={() => setOpen(false)}
-              />
-            }
+            authSlot={<NavbarAuthActions isMobile onCloseMobileMenu={() => setOpen(false)} />}
           />
         </div>
       </div>

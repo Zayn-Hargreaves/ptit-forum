@@ -1,43 +1,37 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { AlertTriangle, Inbox, Package, Plus, RefreshCw, Search } from 'lucide-react';
+
 import {
   Empty,
-  EmptyHeader,
-  EmptyTitle,
-  EmptyDescription,
   EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
   EmptyMedia,
-} from "./empty";
-import {
-  Inbox,
-  Package,
-  Search,
-  AlertTriangle,
-  Plus,
-  RefreshCw,
-} from "lucide-react";
+  EmptyTitle,
+} from './empty';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Empty> = {
-  title: "shared/UI/Empty",
+  title: 'shared/UI/Empty',
   component: Empty,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {},
   argTypes: {
     className: {
-      control: "text",
-      description: "Custom className to extend the base Empty styles.",
+      control: 'text',
+      description: 'Custom className to extend the base Empty styles.',
       table: {
-        defaultValue: { summary: "undefined" },
+        defaultValue: { summary: 'undefined' },
       },
     },
     children: {
       control: false,
       description:
-        "Custom content to render inside the Empty container (usually composed from EmptyHeader, EmptyContent, etc.).",
+        'Custom content to render inside the Empty container (usually composed from EmptyHeader, EmptyContent, etc.).',
     },
   },
 };
@@ -61,12 +55,12 @@ export const Default: Story = {
         </EmptyMedia>
         <EmptyTitle>No items yet</EmptyTitle>
         <EmptyDescription>
-          You haven&apos;t added anything here. Start by creating a new item and
-          it will show up in this space.
+          You haven&apos;t added anything here. Start by creating a new item and it will show up in
+          this space.
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <button className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90">
+        <button className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow">
           <Plus className="mr-2 size-4" />
           Add item
         </button>
@@ -88,12 +82,11 @@ export const SearchEmpty: Story = {
         </EmptyMedia>
         <EmptyTitle>No results found</EmptyTitle>
         <EmptyDescription>
-          Try adjusting your filters or search query. Make sure all words are
-          spelled correctly.
+          Try adjusting your filters or search query. Make sure all words are spelled correctly.
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <button className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
+        <button className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-4 text-sm font-medium shadow-sm">
           Clear filters
         </button>
       </EmptyContent>
@@ -114,12 +107,12 @@ export const InboxEmpty: Story = {
         </EmptyMedia>
         <EmptyTitle>All caught up</EmptyTitle>
         <EmptyDescription>
-          There are no new notifications at the moment. We&apos;ll let you know
-          when something changes.
+          There are no new notifications at the moment. We&apos;ll let you know when something
+          changes.
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <button className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
+        <button className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-4 text-sm font-medium shadow-sm">
           <RefreshCw className="mr-2 size-4" />
           Refresh
         </button>
@@ -141,13 +134,12 @@ export const WithLinkInDescription: Story = {
         </EmptyMedia>
         <EmptyTitle>Something went wrong</EmptyTitle>
         <EmptyDescription>
-          We couldn&apos;t load your data. Please{" "}
-          <a href="#">try again later</a> or <a href="#">contact support</a> if
-          the problem persists.
+          We couldn&apos;t load your data. Please <a href="#">try again later</a> or{' '}
+          <a href="#">contact support</a> if the problem persists.
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <button className="inline-flex h-9 items-center justify-center rounded-md bg-destructive px-4 text-sm font-medium text-destructive-foreground shadow hover:bg-destructive/90">
+        <button className="bg-destructive text-destructive-foreground hover:bg-destructive/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow">
           Retry
         </button>
       </EmptyContent>
@@ -169,12 +161,10 @@ export const Playground: Story = {
             <Inbox />
           </EmptyMedia>
           <EmptyTitle>Empty list</EmptyTitle>
-          <EmptyDescription>
-            Create your first record to get started.
-          </EmptyDescription>
+          <EmptyDescription>Create your first record to get started.</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <button className="inline-flex h-8 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground shadow hover:bg-primary/90">
+          <button className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-8 items-center justify-center rounded-md px-3 text-xs font-medium shadow">
             New record
           </button>
         </EmptyContent>
@@ -187,12 +177,10 @@ export const Playground: Story = {
             <Search />
           </EmptyMedia>
           <EmptyTitle>No matches</EmptyTitle>
-          <EmptyDescription>
-            Try a different keyword or remove some filters.
-          </EmptyDescription>
+          <EmptyDescription>Try a different keyword or remove some filters.</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <button className="inline-flex h-8 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
+          <button className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-8 items-center justify-center rounded-md border px-3 text-xs font-medium shadow-sm">
             Reset filters
           </button>
         </EmptyContent>

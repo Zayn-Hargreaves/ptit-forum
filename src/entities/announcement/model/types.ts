@@ -1,17 +1,18 @@
-import {CohortCode} from "@shared/api/classroom.service";
+import { CohortCode } from '@shared/api/classroom.service';
 
+// Backend Enum: CLASS_MEETING, PAY_FEE, ACADEMIC, GENERAL
 export enum AnnouncementType {
-  GENERAL = "GENERAL",
-  CLASS_MEETING = "CLASS_MEETING",
-  PAY_FEE = "PAY_FEE",
-  ACADEMIC = "ACADEMIC",
+  GENERAL = 'GENERAL',
+  CLASS_MEETING = 'CLASS_MEETING',
+  PAY_FEE = 'PAY_FEE',
+  ACADEMIC = 'ACADEMIC',
 }
 
 export const ANNOUNCEMENT_TYPE_LABEL: Record<AnnouncementType, string> = {
-  [AnnouncementType.GENERAL]: "Thông báo chung",
-  [AnnouncementType.CLASS_MEETING]: "Họp lớp",
-  [AnnouncementType.PAY_FEE]: "Học phí",
-    [AnnouncementType.ACADEMIC]: "Học tập"
+  [AnnouncementType.GENERAL]: 'Thông báo chung',
+  [AnnouncementType.CLASS_MEETING]: 'Họp lớp',
+  [AnnouncementType.PAY_FEE]: 'Thu phí',
+  [AnnouncementType.ACADEMIC]: 'Học tập',
 };
 
 export interface BackendAnnouncement {
@@ -70,7 +71,7 @@ export interface BackendAnnouncementDetail {
   createdDate: string;
   modifiedDate: string | null;
 
-  announcementTargetResponses: any[];
+  announcementTargetResponses: unknown[];
   attachments: {
     id: string;
     fileName: string;
@@ -96,63 +97,68 @@ export interface AnnouncementDetail {
 }
 
 export interface AnnouncementFileResponse {
-    id: string;
-    fileName: string;
-    fileUrl: string;
-    fileType: string;
+  id: string;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
 }
 
 // Tương ứng: AnnouncementResponse
 export interface AnnouncementResponse {
-    id: string;
-    title: string;
-    content: string;
-    announcementType: AnnouncementType;
-    announcementStatus: boolean; // true = released, false = draft
-    createdBy: string; // email
-    createdDate: string; // LocalDate -> string (ISO)
-    modifiedBy: string;
-    modifiedDate: string;
+  id: string;
+  title: string;
+  content: string;
+  announcementType: AnnouncementType;
+  announcementStatus: boolean; // true = released, false = draft
+  createdBy: string; // email
+  createdDate: string; // LocalDate -> string (ISO)
+  modifiedBy: string;
+  modifiedDate: string;
 }
 
 export interface DetailedAnnouncement extends Announcement {
-    attachments: AnnouncementFileResponse[];
+  attachments: AnnouncementFileResponse[];
 }
 
 // --- REQUEST DTOs (Dữ liệu gửi lên BE) ---
 
 // Tương ứng: CreatedAnnouncementRequest
+// Tương ứng: CreateAnnouncementRequest (Updated with Targeting)
 export interface CreateAnnouncementPayload {
-    title: string;
-    content: string;
-    announcementType: AnnouncementType;
-    fileMetadataIds: string[]; // List<UUID>
+  title: string;
+  content: string;
+  announcementType: AnnouncementType;
+  isGlobal?: boolean;
+  targetFaculties?: string[];
+  targetCohorts?: string[]; // CohortCode[] but passed as string keys
+  specificClassCodes?: string[];
+  fileMetadataIds?: string[];
 }
 
 // Tương ứng: ReleaseAnnouncementRequest
 export interface ReleaseAnnouncementPayload {
-    facultyIds: string[];
-    classCodes: string[];
-    schoolYearCodes: CohortCode[];
+  facultyIds: string[];
+  classCodes: string[];
+  schoolYearCodes: CohortCode[];
 }
 
 // Tương ứng: UpdatedAnnouncementRequest
 export interface UpdateAnnouncementPayload {
-    title: string;
-    content: string;
-    announcementType: AnnouncementType;
-    announcementStatus: boolean;
-    facultyIds: string[];
-    classCodes: string[];
-    schoolYearCodes: CohortCode[];
+  title: string;
+  content: string;
+  announcementType: AnnouncementType;
+  announcementStatus: boolean;
+  facultyIds: string[];
+  classCodes: string[];
+  schoolYearCodes: CohortCode[];
 }
 
 // Tương ứng: SearchAnnouncementRequest
 export interface AnnouncementSearchParams {
-    page?: number;
-    size?: number;
-    title?: string;
-    type?: AnnouncementType;
-    status?: boolean;
-    // Thêm các field khác nếu backend hỗ trợ filter
+  page?: number;
+  size?: number;
+  title?: string;
+  type?: AnnouncementType;
+  status?: boolean;
+  // Thêm các field khác nếu backend hỗ trợ filter
 }

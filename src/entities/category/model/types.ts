@@ -1,3 +1,10 @@
+export interface ICategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  postCount?: number;
+}
 
 export enum CategoryType {
     CLUB = "CLUB",
@@ -34,13 +41,3 @@ export interface UpdateCategoryPayload {
     description: string;
     categoryType: CategoryType;
 }
-
-// --- SEARCH/FILTER (Optional) ---
-// Controller hiện tại chỉ có getAll() không tham số,
-// nhưng nếu sau này bạn thêm filter thì cấu trúc sẽ như sau:
-/*
-export interface CategorySearchParams {
-    keyword?: string;
-    type?: CategoryType;
-}
-*/

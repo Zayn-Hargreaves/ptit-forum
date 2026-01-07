@@ -1,4 +1,4 @@
-import { apiClient } from "@shared/api/axios-client";
+import { apiClient } from '@shared/api/axios-client';
 
 export type RegisterPayload = {
   email: string;
@@ -13,43 +13,40 @@ export type VerifyEmailPayload = {
 
 export const authApi = {
   login: async (payload: { email: string; password: string }) => {
-    const { data } = await apiClient.post("/auth/login", payload);
+    const { data } = await apiClient.post('/auth/login', payload);
     // Token is now handled by HttpOnly Cookie via Next.js Proxy
     return data;
   },
 
   register: async (payload: RegisterPayload) => {
-    const { data } = await apiClient.post("/users/register", payload);
+    const { data } = await apiClient.post('/users/register', payload);
     return data;
   },
 
   verifyEmail: async (payload: VerifyEmailPayload) => {
-    const { data } = await apiClient.post("/users/verify", payload);
+    const { data } = await apiClient.post('/users/verify', payload);
     return data;
   },
 
   resendVerifyCode: async (email: string) => {
-    const { data } = await apiClient.post("/users/resend", null, {
+    const { data } = await apiClient.post('/users/resend', null, {
       params: { email },
     });
     return data;
   },
 
   requestResetPassword: async (email: string) => {
-    const { data } = await apiClient.post("/users/password/reset", { email });
+    const { data } = await apiClient.post('/users/password/reset', { email });
     return data;
   },
 
   verifyOtp: async (email: string, otp: string) => {
-    const { data } = await apiClient.post("/users/otp", { email, otp });
+    const { data } = await apiClient.post('/users/otp', { email, otp });
     return data;
   },
 
-  resetPassword: async (payload: {
-    passwordSessionId: string;
-    newPassword: string;
-  }) => {
-    const { data } = await apiClient.put("/users/change-password", payload);
+  resetPassword: async (payload: { passwordSessionId: string; newPassword: string }) => {
+    const { data } = await apiClient.put('/users/change-password', payload);
     return data;
   },
 };

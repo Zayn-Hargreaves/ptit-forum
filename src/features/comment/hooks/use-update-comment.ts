@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient, InfiniteData } from '@tanstack/react-query';
 import { commentApi } from '@entities/interaction/api/comment-api';
 import { Comment } from '@entities/interaction/model/types';
 import { PageResponse } from '@shared/api/types';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 interface UseUpdateCommentProps {
@@ -11,7 +11,9 @@ interface UseUpdateCommentProps {
 
 export function useUpdateComment({ rootCommentId, postId }: UseUpdateCommentProps) {
   const queryClient = useQueryClient();
-  const queryKey = rootCommentId ? ['comments', 'replies', rootCommentId] : ['comments', 'roots', postId];
+  const queryKey = rootCommentId
+    ? ['comments', 'replies', rootCommentId]
+    : ['comments', 'roots', postId];
 
   return useMutation({
     mutationFn: ({ commentId, content }: { commentId: string; content: string }) =>
@@ -20,7 +22,11 @@ export function useUpdateComment({ rootCommentId, postId }: UseUpdateCommentProp
       await queryClient.cancelQueries({ queryKey });
       const previousData = queryClient.getQueryData(queryKey);
 
-      const updateCommentInPages = (pages: PageResponse<Comment>[], commentId: string, newContent: string) => {
+      const updateCommentInPages = (
+        pages: PageResponse<Comment>[],
+        commentId: string,
+        newContent: string,
+      ) => {
         const newPages = [];
         for (const page of pages) {
           const newContentArray = [];

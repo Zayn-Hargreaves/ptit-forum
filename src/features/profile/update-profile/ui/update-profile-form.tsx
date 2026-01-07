@@ -1,16 +1,13 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { CalendarIcon, Loader2, Save } from "lucide-react";
-import { format } from "date-fns";
-
-import { Button } from "@shared/ui/button/button";
-import { Input } from "@shared/ui/input/input";
+import { sessionApi } from '@entities/session/api/session-api';
+import { sessionKeys } from '@entities/session/lib/query-keys';
+import { useMe } from '@entities/session/model/queries';
+import { AvatarUploader } from '@features/profile/avatar-uploader/ui/avatar-uploader';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { getErrorMessage } from '@shared/lib/utils';
+import { Button } from '@shared/ui/button/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@shared/ui/card/card';
 import {
   Form,
   FormControl,
@@ -19,22 +16,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@shared/ui/form/form";
-import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card/card";
-import { Calendar } from "@shared/ui/calendar/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@shared/ui/popover/popover";
-import { cn } from "@shared/lib/utils";
-
-import { sessionApi } from "@entities/session/api/session-api";
-import { useMe } from "@entities/session/model/queries";
-import { sessionKeys } from "@entities/session/lib/query-keys";
-import { AvatarUploader } from "@features/profile/avatar-uploader/ui/avatar-uploader";
-import { ProfileFormValues, profileSchema } from "@shared/validators/auth";
-import { getErrorMessage } from "@shared/lib/utils";
+} from '@shared/ui/form/form';
+import { Input } from '@shared/ui/input/input';
+import { ProfileFormValues, profileSchema } from '@shared/validators/auth';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Loader2, Save } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 export function UpdateProfileForm() {
   const router = useRouter();
@@ -44,42 +34,39 @@ export function UpdateProfileForm() {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullName: "",
-      phone: "",
-      studentCode: "",
-      classCode: "",
-      dob: undefined,
+      fullName: '',
+      phone: '',
+      studentCode: '',
+      classCode: '',
     },
-    mode: "onChange",
+    mode: 'onChange',
   });
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (!user) return;
 
     form.reset({
-      fullName: user.fullName || "",
-      phone: user.phone || "",
-      studentCode: user.studentCode || "",
+      fullName: user.fullName || '',
+      phone: user.phone || '',
+      studentCode: user.studentCode || '',
 
-      classCode: user.classCode || "",
-      dob: user.dob ? new Date(user.dob) : undefined,
+      classCode: user.classCode || '',
     });
   }, [user, form]);
 
   const { mutate: handleSave, isPending } = useMutation({
     mutationFn: async (values: ProfileFormValues) => {
-      const payload = {
-        ...values,
-        dob: values.dob ? format(values.dob, "yyyy-MM-dd") : undefined,
-      };
-      return await sessionApi.updateProfile(payload);
+      return await sessionApi.updateProfile(values, selectedFile ?? undefined);
     },
     onSuccess: async () => {
-      toast.success("Cập nhật hồ sơ thành công");
+      toast.success('Cập nhật hồ sơ thành công');
       await queryClient.invalidateQueries({ queryKey: sessionKeys.me() });
-      router.push("/");
+      setSelectedFile(null); // Clear selected file after success
+      router.push('/');
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const message = getErrorMessage(error);
       toast.error(`Lỗi: ${message}`);
     },
@@ -92,28 +79,25 @@ export function UpdateProfileForm() {
   if (isLoadingUser) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="text-primary h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-md">
+    <Card className="mx-auto w-full max-w-2xl shadow-md">
       <CardHeader>
-        <CardTitle className="text-xl text-center uppercase">
-          Thông tin cá nhân
-        </CardTitle>
+        <CardTitle className="text-center text-xl uppercase">Thông tin cá nhân</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-8">
         <div className="flex flex-col items-center justify-center space-y-4">
           <AvatarUploader
             currentAvatarUrl={user?.avatarUrl}
-            fallbackName={user?.fullName || "User"}
+            fallbackName={user?.fullName || 'User'}
+            onFileSelect={setSelectedFile}
           />
-          <p className="text-sm text-muted-foreground">
-            Click vào ảnh để thay đổi
-          </p>
+          <p className="text-muted-foreground text-sm">Click vào ảnh để thay đổi</p>
         </div>
 
         <Form {...form}>
@@ -194,52 +178,10 @@ export function UpdateProfileForm() {
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="dob"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Ngày sinh</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "dd/MM/yyyy")
-                              ) : (
-                                <span>Chọn ngày sinh</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
             </div>
 
-            <div className="pt-4 flex justify-end gap-2">
+            <div className="flex justify-end gap-2 pt-4">
               <Button
                 type="button"
                 variant="ghost"
@@ -251,7 +193,7 @@ export function UpdateProfileForm() {
 
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isPending || (!form.formState.isDirty && !selectedFile)}
                 className="min-w-[150px]"
               >
                 {isPending ? (

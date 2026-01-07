@@ -63,5 +63,4 @@ export const BACKEND_ERROR_CODES = {
   UNSUPPORTED_TARGET_TYPE: 1052,
 } as const;
 
-export type BackendErrorCode =
-  (typeof BACKEND_ERROR_CODES)[keyof typeof BACKEND_ERROR_CODES];
+export type BackendErrorCode = (typeof BACKEND_ERROR_CODES)[keyof typeof BACKEND_ERROR_CODES];

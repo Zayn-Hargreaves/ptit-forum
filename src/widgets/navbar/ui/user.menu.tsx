@@ -1,7 +1,6 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { LogOut, User as UserIcon, Settings } from "lucide-react";
+import { User } from '@entities/session/model/types';
 import {
   Button,
   DropdownMenu,
@@ -9,9 +8,10 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@shared/ui";
-import { UserAvatar } from "@shared/ui/user-avatar/user-avatar";
-import { User } from "@entities/session/model/types";
+} from '@shared/ui';
+import { UserAvatar } from '@shared/ui/user-avatar/user-avatar';
+import { LogOut, Settings, User as UserIcon } from 'lucide-react';
+import Link from 'next/link';
 
 interface NavbarUserMenuProps {
   user: User;
@@ -19,17 +19,14 @@ interface NavbarUserMenuProps {
   isMobile?: boolean;
 }
 
-export function NavbarUserMenu({
-  user,
-  onLogout,
-}: Readonly<NavbarUserMenuProps>) {
+export function NavbarUserMenu({ user, onLogout }: Readonly<NavbarUserMenuProps>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full relative h-9 w-9 overflow-hidden"
+          className="relative h-9 w-9 overflow-hidden rounded-full"
         >
           <UserAvatar
             name={user.fullName || user.email}
@@ -43,10 +40,8 @@ export function NavbarUserMenu({
         {/* Header hiển thị tên & email */}
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
-            <p className="font-medium leading-none truncate">{user.fullName}</p>
-            <p className="w-[200px] truncate text-xs text-muted-foreground">
-              {user.email}
-            </p>
+            <p className="truncate leading-none font-medium">{user.fullName}</p>
+            <p className="text-muted-foreground w-[200px] truncate text-xs">{user.email}</p>
           </div>
         </div>
         <DropdownMenuSeparator />
@@ -70,7 +65,10 @@ export function NavbarUserMenu({
         {user.role === 'ADMIN' && (
           <>
             <DropdownMenuItem asChild>
-              <Link href="/admin/documents" className="cursor-pointer font-semibold text-yellow-600 focus:text-yellow-700">
+              <Link
+                href="/admin/documents"
+                className="cursor-pointer font-semibold text-yellow-600 focus:text-yellow-700"
+              >
                 <span className="mr-2">⚡</span>
                 Admin Dashboard
               </Link>
@@ -81,7 +79,7 @@ export function NavbarUserMenu({
 
         <DropdownMenuItem
           onClick={onLogout}
-          className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+          className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer"
         >
           <LogOut className="mr-2 h-4 w-4" />
           Đăng xuất

@@ -1,21 +1,18 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "./collapsible";
-import { ChevronsUpDown, Plus, X } from "lucide-react";
-import { useState } from "react";
-import { Button } from "../button/button";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { ChevronsUpDown, Plus, X } from 'lucide-react';
+import { useState } from 'react';
+
+import { Button } from '../button/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './collapsible';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Collapsible> = {
-  title: "shared/UI/Collapsible",
+  title: 'shared/UI/Collapsible',
   component: Collapsible,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
     defaultOpen: false,
@@ -23,20 +20,20 @@ const meta: Meta<typeof Collapsible> = {
   },
   argTypes: {
     open: {
-      control: "boolean",
-      description: "Trạng thái mở (Controlled State).",
+      control: 'boolean',
+      description: 'Trạng thái mở (Controlled State).',
     },
     defaultOpen: {
-      control: "boolean",
-      description: "Trạng thái mở mặc định (Uncontrolled).",
+      control: 'boolean',
+      description: 'Trạng thái mở mặc định (Uncontrolled).',
     },
     onOpenChange: {
-      action: "open changed",
-      description: "Sự kiện khi trạng thái mở thay đổi.",
+      action: 'open changed',
+      description: 'Sự kiện khi trạng thái mở thay đổi.',
     },
     disabled: {
-      control: "boolean",
-      description: "Vô hiệu hóa tương tác.",
+      control: 'boolean',
+      description: 'Vô hiệu hóa tương tác.',
     },
     asChild: {
       table: { disable: true },
@@ -59,9 +56,7 @@ export const Default: Story = {
   render: (args) => (
     <Collapsible {...args} className="w-[350px] space-y-2">
       <div className="flex items-center justify-between space-x-4 px-4">
-        <h4 className="text-sm font-semibold">
-          @peduarte starred 3 repositories
-        </h4>
+        <h4 className="text-sm font-semibold">@peduarte starred 3 repositories</h4>
         <CollapsibleTrigger asChild>
           <Button variant="ghost" size="sm" className="w-9 p-0">
             <ChevronsUpDown className="h-4 w-4" />
@@ -70,17 +65,11 @@ export const Default: Story = {
         </CollapsibleTrigger>
       </div>
 
-      <div className="rounded-md border px-4 py-3 font-mono text-sm">
-        @radix-ui/primitives
-      </div>
+      <div className="rounded-md border px-4 py-3 font-mono text-sm">@radix-ui/primitives</div>
 
       <CollapsibleContent className="space-y-2">
-        <div className="rounded-md border px-4 py-3 font-mono text-sm">
-          @radix-ui/colors
-        </div>
-        <div className="rounded-md border px-4 py-3 font-mono text-sm">
-          @stitches/react
-        </div>
+        <div className="rounded-md border px-4 py-3 font-mono text-sm">@radix-ui/colors</div>
+        <div className="rounded-md border px-4 py-3 font-mono text-sm">@stitches/react</div>
       </CollapsibleContent>
     </Collapsible>
   ),
@@ -95,10 +84,7 @@ export const OpenByDefault: Story = {
     defaultOpen: true,
   },
   render: (args) => (
-    <Collapsible
-      {...args}
-      className="w-[350px] rounded-md border p-4 shadow-sm"
-    >
+    <Collapsible {...args} className="w-[350px] rounded-md border p-4 shadow-sm">
       <CollapsibleTrigger className="flex w-full items-center justify-between font-semibold">
         <span>Chi tiết đơn hàng</span>
         <Plus className="h-4 w-4" />
@@ -112,7 +98,7 @@ export const OpenByDefault: Story = {
           <span className="text-muted-foreground">Sản phẩm B</span>
           <span>$25.00</span>
         </div>
-        <div className="border-t pt-2 flex justify-between font-medium">
+        <div className="flex justify-between border-t pt-2 font-medium">
           <span>Tổng cộng</span>
           <span>$75.00</span>
         </div>
@@ -127,18 +113,15 @@ export const OpenByDefault: Story = {
  */
 export const IconAnimation: Story = {
   render: (args) => (
-    <Collapsible
-      {...args}
-      className="w-[300px] border rounded-lg bg-card text-card-foreground"
-    >
-      <CollapsibleTrigger className="flex w-full items-center justify-between p-4 font-medium hover:bg-muted/50 transition-colors [&[data-state=open]>svg]:rotate-180">
+    <Collapsible {...args} className="bg-card text-card-foreground w-[300px] rounded-lg border">
+      <CollapsibleTrigger className="hover:bg-muted/50 flex w-full items-center justify-between p-4 font-medium transition-colors [&[data-state=open]>svg]:rotate-180">
         Câu hỏi thường gặp?
         <ChevronsUpDown className="h-4 w-4 transition-transform duration-200" />
       </CollapsibleTrigger>
 
-      <CollapsibleContent className="px-4 pb-4 text-sm text-muted-foreground animate-in slide-in-from-top-2">
-        Đây là nội dung trả lời cho câu hỏi. Collapsible rất hữu ích để ẩn các
-        thông tin không quan trọng, giúp giao diện gọn gàng hơn.
+      <CollapsibleContent className="text-muted-foreground animate-in slide-in-from-top-2 px-4 pb-4 text-sm">
+        Đây là nội dung trả lời cho câu hỏi. Collapsible rất hữu ích để ẩn các thông tin không quan
+        trọng, giúp giao diện gọn gàng hơn.
       </CollapsibleContent>
     </Collapsible>
   ),
@@ -156,10 +139,10 @@ export const Controlled: Story = {
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? "Đóng Panel" : "Mở Panel"}
+            {isOpen ? 'Đóng Panel' : 'Mở Panel'}
           </Button>
-          <span className="text-sm text-muted-foreground">
-            State hiện tại: {isOpen ? "Open" : "Closed"}
+          <span className="text-muted-foreground text-sm">
+            State hiện tại: {isOpen ? 'Open' : 'Closed'}
           </span>
         </div>
 
@@ -171,15 +154,11 @@ export const Controlled: Story = {
         >
           {/* Note: You don't strictly need a Trigger inside if you control it externally, 
               but it's good practice to leave one for accessibility/internal toggle */}
-          <div className="flex items-center justify-between rounded-md border px-4 py-3 bg-muted/20">
+          <div className="bg-muted/20 flex items-center justify-between rounded-md border px-4 py-3">
             <span className="text-sm font-medium">Panel điều khiển</span>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="icon" className="h-6 w-6">
-                {isOpen ? (
-                  <X className="h-3 w-3" />
-                ) : (
-                  <ChevronsUpDown className="h-3 w-3" />
-                )}
+                {isOpen ? <X className="h-3 w-3" /> : <ChevronsUpDown className="h-3 w-3" />}
               </Button>
             </CollapsibleTrigger>
           </div>

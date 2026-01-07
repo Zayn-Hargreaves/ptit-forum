@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { SendHorizonal, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-
+import { useMe } from '@entities/session/model/queries';
+import { useCreateComment } from '@features/comment/hooks/use-create-comment';
 import { Button } from '@shared/ui/button/button';
 import { LiteEditor } from '@shared/ui/editor/lite-editor';
-import { useCreateComment } from '@features/comment/hooks/use-create-comment';
+import { UserAvatar } from '@shared/ui/user-avatar/user-avatar';
+import { Loader2, SendHorizonal } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface CommentFormProps {
   postId: string;
@@ -29,6 +30,7 @@ export function CommentForm({
   autoFocus = false,
 }: Readonly<CommentFormProps>) {
   const [content, setContent] = useState('');
+  const { data: me } = useMe();
 
   const { mutate, isPending } = useCreateComment({
     postId,
@@ -55,27 +57,39 @@ export function CommentForm({
         onError: () => {
           toast.error('Không thể gửi bình luận. Vui lòng thử lại.');
         },
-      }
+      },
     );
   };
 
-  return (
-    <form className="mt-2" onSubmit={handleSubmit}>
-      <LiteEditor
-        value={content}
-        onChange={setContent}
-        placeholder={placeholder || 'Viết bình luận...'}
-        disabled={isPending}
-        autoFocus={autoFocus}
-        onSubmit={handleSubmit}
-      />
+  const currentAvatar = me?.avatarUrl;
 
-      <div className="flex justify-end mt-2">
-        <Button type="submit" disabled={isPending || !content.trim()} size="sm">
-          {isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <SendHorizonal className="h-4 w-4 mr-2" />}
-          {isPending ? 'Đang gửi...' : 'Gửi'}
-        </Button>
+  return (
+    <div className="mt-4 flex gap-3">
+      <UserAvatar name={me?.fullName} avatarUrl={currentAvatar} className="mt-1 h-8 w-8" />
+
+      <div className="flex-1">
+        <form onSubmit={handleSubmit}>
+          <LiteEditor
+            value={content}
+            onChange={setContent}
+            placeholder={placeholder || 'Viết bình luận...'}
+            disabled={isPending}
+            autoFocus={autoFocus}
+            onSubmit={handleSubmit}
+          />
+
+          <div className="mt-2 flex justify-end">
+            <Button type="submit" disabled={isPending || !content.trim()} size="sm">
+              {isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <SendHorizonal className="mr-2 h-4 w-4" />
+              )}
+              {isPending ? 'Đang gửi...' : 'Gửi'}
+            </Button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 }
