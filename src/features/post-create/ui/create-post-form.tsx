@@ -1,10 +1,11 @@
 'use client';
 
-import { postApi } from '@entities/post/api/post-api';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FileMetadata, useFileUpload } from '@shared/hooks/use-file-upload';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@shared/ui/button/button';
-import { GithubEditor } from '@shared/ui/editor/github-editor';
+import { Input } from '@shared/ui/input/input';
+import { Textarea } from '@shared/ui/textarea/textarea'; // Fallback if no MD Editor yet, plan to update later or now? User said "Use MDEditor".
 // Finding MDEditor might take time if not installed. User suggested @uiw/react-md-editor.
 // I will check if it's installed. If not, I will use Textarea for now and add a TODO.
 // Actually checking package.json... @uiw/react-md-editor is NOT in package.json.
@@ -17,22 +18,15 @@ import { GithubEditor } from '@shared/ui/editor/github-editor';
 // to ensure basic functionality first, then handle the editor library if I have approval.
 // Wait, I am in AGENTIC mode. I can propose installing it.
 // For now, I will use Textarea to match the previous implementation but with the new Schema.
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@shared/ui/form/form';
-import { Input } from '@shared/ui/input/input';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Paperclip, X } from 'lucide-react';
-import { ChangeEvent, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
-import { CreatePostFormValues, createPostSchema } from '../model/schema';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@shared/ui/form/form';
+import { postApi } from '@entities/post/api/post-api';
+import { toast } from 'sonner';
+import { createPostSchema, CreatePostFormValues } from '../model/schema';
+import { ChangeEvent, useState } from 'react';
+import { Paperclip, X } from 'lucide-react';
+import { GithubEditor } from '@shared/ui/editor/github-editor';
+import { useFileUpload } from '@shared/hooks/use-file-upload';
 
 interface CreatePostFormProps {
   topicId: string;
@@ -43,8 +37,8 @@ interface CreatePostFormProps {
 export function CreatePostForm({ topicId, onSuccess, onCancel }: CreatePostFormProps) {
   const queryClient = useQueryClient();
   const [files, setFiles] = useState<File[]>([]);
-
-  const { upload, isUploading } = useFileUpload<FileMetadata>({
+  
+  const { upload, isUploading } = useFileUpload({
     validate: { maxSizeMB: 20 },
   });
 
@@ -61,24 +55,51 @@ export function CreatePostForm({ topicId, onSuccess, onCancel }: CreatePostFormP
   // 2. Mutation
   const mutation = useMutation({
     mutationFn: async (data: CreatePostFormValues) => {
-      const fileIds: string[] = [];
+        const fileIds: string[] = [];
 
-      // Upload attachments sequentially
-      for (const file of files) {
-        const res = await upload(file, '/files/upload', 'POST', 'file', { folderName: 'posts' });
-        // Assuming response structure has ID. Checking FileMetadataResponse in backend:
-        // It has `id`, `url`, `fileName`.
-        // `useFileUpload` returns `result`.
-        if (res?.id) {
-          fileIds.push(res.id);
+        // Upload attachments sequentially
+        for (const file of files) {
+           const res = await upload(file, '/files/upload', 'POST', 'file', { folderName: 'posts' });
+           // Assuming response structure has ID. Checking FileMetadataResponse in backend:
+           // It has `id`, `url`, `fileName`.
+           // `useFileUpload` returns `result`.
+           if (res?.id) {
+               fileIds.push(res.id);
+           }
         }
-      }
 
-      // Pass IDs via 'images' field which is mapped to fileMetadataIds in post-api
-      return postApi.createPost(topicId, {
-        ...data,
-        images: fileIds,
+        // Pass IDs via 'images' field which is mapped to fileMetadataIds in post-api
+        return postApi.createPost(topicId, {
+            ...data,
+            images: fileIds 
+        });
+    },
+    onMutate: async (newPost) => {
+      await queryClient.cancelQueries({ queryKey: ['posts', topicId] });
+      const previousPosts = queryClient.getQueryData(['posts', topicId]);
+      queryClient.setQueryData(['posts', topicId], (old: any[] = []) => {
+        const optimisticPost = {
+            id: 'temp-' + Date.now(),
+            title: newPost.title,
+            content: newPost.content,
+            author: { id: 'me', fullName: 'Tôi (Đang gửi)', avatar: undefined },
+            createdAt: new Date().toISOString(),
+            likeCount: 0,
+            commentCount: 0,
+            viewCount: 0,
+            images: [], 
+            isLiked: false
+        };
+        return [optimisticPost, ...old];
       });
+      return { previousPosts };
+    },
+    onError: (err, newPost, context) => {
+      toast.error('Đăng bài thất bại, vui lòng thử lại.');
+      console.error(err);
+      if (context?.previousPosts) {
+          queryClient.setQueryData(['posts', topicId], context.previousPosts);
+      }
     },
     onSuccess: () => {
       toast.success('Đăng bài thành công!');
@@ -86,13 +107,8 @@ export function CreatePostForm({ topicId, onSuccess, onCancel }: CreatePostFormP
       setFiles([]);
       onSuccess();
     },
-    onError: (err) => {
-      toast.error('Đăng bài thất bại, vui lòng thử lại.');
-      console.error(err);
-    },
     onSettled: () => {
-      // Invalidate all post queries to ensure lists are updated
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['posts', topicId] });
     },
   });
 
@@ -101,20 +117,20 @@ export function CreatePostForm({ topicId, onSuccess, onCancel }: CreatePostFormP
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      const updatedFiles = [...files, ...newFiles];
-      setFiles(updatedFiles);
-      form.setValue('attachments', updatedFiles, { shouldValidate: true });
-    }
+      if (e.target.files) {
+          const newFiles = Array.from(e.target.files);
+          const updatedFiles = [...files, ...newFiles];
+          setFiles(updatedFiles);
+          form.setValue('attachments', updatedFiles, { shouldValidate: true });
+      }
   };
 
   const removeFile = (index: number) => {
-    const updatedFiles = files.filter((_, i) => i !== index);
-    setFiles(updatedFiles);
-    form.setValue('attachments', updatedFiles, { shouldValidate: true });
+      const updatedFiles = files.filter((_, i) => i !== index);
+      setFiles(updatedFiles);
+      form.setValue('attachments', updatedFiles, { shouldValidate: true });
   };
-
+  
   const isPending = mutation.isPending || isUploading;
 
   return (
@@ -141,7 +157,11 @@ export function CreatePostForm({ topicId, onSuccess, onCancel }: CreatePostFormP
             <FormItem>
               <FormLabel>Nội dung chi tiết</FormLabel>
               <FormControl>
-                <GithubEditor value={field.value} onChange={field.onChange} disabled={isPending} />
+                 <GithubEditor 
+                    value={field.value}
+                    onChange={field.onChange}
+                    disabled={isPending}
+                 />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -149,61 +169,54 @@ export function CreatePostForm({ topicId, onSuccess, onCancel }: CreatePostFormP
         />
 
         <FormField
-          control={form.control}
-          name="attachments"
-          render={() => (
-            <FormItem>
-              <FormLabel>Tài liệu đính kèm</FormLabel>
-              <FormControl>
-                <div className="space-y-3">
-                  <Input
-                    type="file"
-                    multiple
-                    className="cursor-pointer"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,image/*"
-                    onChange={handleFileChange}
-                    disabled={isPending}
-                  />
-                  {files.length > 0 && (
-                    <div className="space-y-2">
-                      {files.map((file, index) => (
-                        <div
-                          key={index}
-                          className="bg-muted/50 flex items-center justify-between rounded-md p-2 text-sm"
-                        >
-                          <div className="flex items-center gap-2 truncate">
-                            <Paperclip className="text-muted-foreground h-4 w-4" />
-                            <span className="max-w-[200px] truncate">{file.name}</span>
-                            <span className="text-muted-foreground text-xs">
-                              ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => removeFile(index)}
-                            className="text-muted-foreground hover:text-destructive"
-                            disabled={isPending}
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
+            control={form.control}
+            name="attachments"
+            render={() => (
+                <FormItem>
+                    <FormLabel>Tài liệu đính kèm</FormLabel>
+                    <FormControl>
+                        <div className="space-y-3">
+                            <Input 
+                                type="file" 
+                                multiple 
+                                className="cursor-pointer"
+                                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,image/*"
+                                onChange={handleFileChange}
+                                disabled={isPending}
+                            />
+                            {files.length > 0 && (
+                                <div className="space-y-2">
+                                    {files.map((file, index) => (
+                                        <div key={index} className="flex items-center justify-between p-2 bg-muted/50 rounded-md text-sm">
+                                            <div className="flex items-center gap-2 truncate">
+                                                <Paperclip className="h-4 w-4 text-muted-foreground" />
+                                                <span className="truncate max-w-[200px]">{file.name}</span>
+                                                <span className="text-muted-foreground text-xs">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                                            </div>
+                                            <button 
+                                                type="button" 
+                                                onClick={() => removeFile(index)}
+                                                className="text-muted-foreground hover:text-destructive"
+                                                disabled={isPending}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
         />
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isPending}>
-            Hủy
-          </Button>
-          <Button type="submit" disabled={isPending}>
-            {mutation.isPending || isUploading ? 'Đang xử lý...' : 'Đăng bài viết'}
-          </Button>
+           <Button type="button" variant="outline" onClick={onCancel} disabled={isPending}>Hủy</Button>
+           <Button type="submit" disabled={isPending}>
+              {mutation.isPending || isUploading ? 'Đang xử lý...' : 'Đăng bài viết'}
+           </Button>
         </div>
       </form>
     </Form>

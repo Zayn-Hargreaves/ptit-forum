@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { cn } from '@shared/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar/avatar';
-import { useMemo } from 'react';
+import { useMemo } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@shared/ui/avatar/avatar";
+import { cn } from "@shared/lib/utils";
 
 interface UserAvatarProps {
   name?: string | null;
@@ -16,18 +16,22 @@ function stringToColor(str: string) {
     hash = str.codePointAt(i)! + ((hash << 5) - hash);
   }
   const c = (hash & 0x00ffffff).toString(16).toUpperCase();
-  return '#' + '000000'.substring(0, 6 - c.length) + c;
+  return "#" + "000000".substring(0, 6 - c.length) + c;
 }
 
-export function UserAvatar({ name, avatarUrl, className }: Readonly<UserAvatarProps>) {
-  const displayName = name || 'User';
+export function UserAvatar({
+  name,
+  avatarUrl,
+  className,
+}: Readonly<UserAvatarProps>) {
+  const displayName = name || "User";
 
   const initials = useMemo(() => {
     return displayName
-      .split(' ')
+      .split(" ")
       .filter((n) => n.length > 0)
       .map((n) => n[0])
-      .join('')
+      .join("")
       .substring(0, 2)
       .toUpperCase();
   }, [displayName]);
@@ -35,13 +39,19 @@ export function UserAvatar({ name, avatarUrl, className }: Readonly<UserAvatarPr
   const bgColor = useMemo(() => stringToColor(displayName), [displayName]);
 
   return (
-    <Avatar className={cn('border transition-opacity hover:opacity-80', className)}>
+    <Avatar
+      className={cn("border transition-opacity hover:opacity-80", className)}
+    >
       {avatarUrl ? (
-        <AvatarImage src={avatarUrl} alt={displayName} className="object-cover" />
+        <AvatarImage
+          src={avatarUrl}
+          alt={displayName}
+          className="object-cover"
+        />
       ) : null}
 
       <AvatarFallback
-        className="font-bold text-white"
+        className="text-white font-bold"
         style={{ backgroundColor: avatarUrl ? undefined : bgColor }}
       >
         {initials}

@@ -1,10 +1,12 @@
-import { fetchTrendingPosts } from '@entities/post/api/fetch-trending';
-import type { TrendingPost } from '@entities/post/model/types';
-import { Avatar, AvatarFallback } from '@shared/ui/avatar/avatar';
-import { Badge } from '@shared/ui/badge/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/ui/card/card';
-import { Eye, FileText, MessageSquare, TrendingUp } from 'lucide-react';
-import Link from 'next/link';
+import Link from "next/link";
+import { MessageSquare, Eye, TrendingUp, FileText } from "lucide-react";
+
+import { fetchTrendingPosts } from "@entities/post/api/fetch-trending";
+import type { TrendingPost } from "@entities/post/model/types";
+
+import { Avatar, AvatarFallback } from "@shared/ui/avatar/avatar";
+import { Badge } from "@shared/ui/badge/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card/card";
 
 export async function TrendingSection() {
   let posts: TrendingPost[] = [];
@@ -22,7 +24,10 @@ export async function TrendingSection() {
       <div className="container mx-auto px-4">
         <div className="mb-12 flex items-center justify-between">
           <h2 className="text-3xl font-bold tracking-tight">Đang thịnh hành</h2>
-          <Link href="/forum" className="text-primary text-sm font-medium hover:underline">
+          <Link
+            href="/forum"
+            className="text-sm font-medium text-primary hover:underline"
+          >
             Xem tất cả
           </Link>
         </div>
@@ -32,15 +37,15 @@ export async function TrendingSection() {
           <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="text-primary h-5 w-5" />
+                <TrendingUp className="h-5 w-5 text-primary" />
                 Bài viết nổi bật
               </CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-4">
               {posts.map((post) => {
-                const authorName = post.author?.name?.trim() || 'Ẩn danh';
-                const authorFallback = (authorName[0] || 'U').toUpperCase();
+                const authorName = post.author?.name?.trim() || "Ẩn danh";
+                const authorFallback = (authorName[0] || "U").toUpperCase();
 
                 // Link chuẩn theo routing của em:
                 const href = `/forum/post/${post.id}`;
@@ -49,19 +54,21 @@ export async function TrendingSection() {
                   <Link
                     key={post.id}
                     href={href}
-                    className="hover:border-primary/50 block rounded-lg border p-4 transition-all hover:shadow-md"
+                    className="block rounded-lg border p-4 transition-all hover:border-primary/50 hover:shadow-md"
                   >
                     <div className="mb-2 flex items-start justify-between gap-4">
-                      <h3 className="hover:text-primary leading-tight font-semibold">
+                      <h3 className="font-semibold leading-tight hover:text-primary">
                         {post.title}
                       </h3>
                       <Badge variant="secondary">{post.category}</Badge>
                     </div>
 
-                    <div className="text-muted-foreground flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Avatar className="h-5 w-5">
-                          <AvatarFallback className="text-xs">{authorFallback}</AvatarFallback>
+                          <AvatarFallback className="text-xs">
+                            {authorFallback}
+                          </AvatarFallback>
                         </Avatar>
                         <span className="line-clamp-1">{authorName}</span>
                       </div>
@@ -88,13 +95,15 @@ export async function TrendingSection() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="text-primary h-5 w-5" />
+                  <FileText className="h-5 w-5 text-primary" />
                   Tài liệu mới
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-sm">
+              <CardContent className="text-sm text-muted-foreground">
                 {/* TODO: thay bằng fetchRecentDocuments() */}
-                <div className="rounded-lg border p-3">Chưa kết nối dữ liệu tài liệu. (TODO)</div>
+                <div className="rounded-lg border p-3">
+                  Chưa kết nối dữ liệu tài liệu. (TODO)
+                </div>
               </CardContent>
             </Card>
 
@@ -103,7 +112,7 @@ export async function TrendingSection() {
               <CardHeader>
                 <CardTitle className="text-base">Sinh viên năng động</CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-sm">
+              <CardContent className="text-sm text-muted-foreground">
                 {/* TODO: thay bằng fetchTopContributors() */}
                 <div className="rounded-lg border p-3">
                   Chưa kết nối dữ liệu leaderboard. (TODO)

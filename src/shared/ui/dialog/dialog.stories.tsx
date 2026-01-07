@@ -1,44 +1,43 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { AlertTriangle, Check, Copy, Trash } from 'lucide-react';
-import { useState } from 'react';
-
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import {
   Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
-} from './dialog';
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "./dialog";
+import { Trash, Copy, Check, AlertTriangle } from "lucide-react";
+import { useState } from "react";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Dialog> = {
-  title: 'shared/UI/Dialog',
+  title: "shared/UI/Dialog",
   component: Dialog,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   args: {},
   argTypes: {
     open: {
-      control: 'boolean',
-      description: 'Trạng thái mở/đóng của Dialog (Controlled).',
+      control: "boolean",
+      description: "Trạng thái mở/đóng của Dialog (Controlled).",
     },
     onOpenChange: {
-      action: 'open changed',
-      description: 'Sự kiện khi trạng thái mở/đóng thay đổi.',
+      action: "open changed",
+      description: "Sự kiện khi trạng thái mở/đóng thay đổi.",
     },
     modal: {
-      control: 'boolean',
-      description: 'Chặn tương tác với bên ngoài (mặc định: true).',
+      control: "boolean",
+      description: "Chặn tương tác với bên ngoài (mặc định: true).",
     },
     children: {
       control: false,
-      description: 'Các thành phần con (Trigger, Content...).',
+      description: "Các thành phần con (Trigger, Content...).",
     },
   },
 };
@@ -57,7 +56,7 @@ type Story = StoryObj<typeof Dialog>;
 export const Default: Story = {
   render: (args) => (
     <Dialog {...args}>
-      <DialogTrigger className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex h-10 items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white shadow transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50">
+      <DialogTrigger className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-black text-white">
         Open Dialog
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -75,24 +74,27 @@ export const Default: Story = {
             <input
               id="name"
               defaultValue="Pedro Duarte"
-              className="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              className="col-span-3 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <label htmlFor="username" className="text-right text-sm font-medium">
+            <label
+              htmlFor="username"
+              className="text-right text-sm font-medium"
+            >
               Username
             </label>
             <input
               id="username"
               defaultValue="@peduarte"
-              className="border-input placeholder:text-muted-foreground focus-visible:ring-ring col-span-3 flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              className="col-span-3 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
         </div>
         <DialogFooter>
           <button
             type="submit"
-            className="inline-flex h-9 items-center justify-center rounded-md bg-black px-3 text-sm font-medium text-white shadow transition-colors hover:bg-black/90"
+            className="inline-flex h-9 items-center justify-center rounded-md bg-black text-white px-3 text-sm font-medium shadow transition-colors hover:bg-black/90"
           >
             Save changes
           </button>
@@ -109,7 +111,7 @@ export const Default: Story = {
 export const DestructiveAction: Story = {
   render: (args) => (
     <Dialog {...args}>
-      <DialogTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-colors">
+      <DialogTrigger className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
         <Trash className="mr-2 h-4 w-4" />
         Delete Account
       </DialogTrigger>
@@ -119,18 +121,20 @@ export const DestructiveAction: Story = {
             <AlertTriangle className="h-6 w-6 text-red-600" />
           </div>
           <DialogHeader>
-            <DialogTitle className="text-center">Are you absolutely sure?</DialogTitle>
+            <DialogTitle className="text-center">
+              Are you absolutely sure?
+            </DialogTitle>
             <DialogDescription className="text-center">
-              This action cannot be undone. This will permanently delete your account and remove
-              your data from our servers.
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
             </DialogDescription>
           </DialogHeader>
         </div>
-        <DialogFooter className="mt-4 gap-2 sm:justify-center">
-          <DialogClose className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-3 text-sm font-medium shadow-sm transition-colors">
+        <DialogFooter className="sm:justify-center gap-2 mt-4">
+          <DialogClose className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
             Cancel
           </DialogClose>
-          <button className="inline-flex h-9 items-center justify-center rounded-md bg-red-600 px-3 text-sm font-medium text-white shadow transition-colors hover:bg-red-600/90">
+          <button className="inline-flex h-9 items-center justify-center rounded-md bg-red-600 text-white px-3 text-sm font-medium shadow transition-colors hover:bg-red-600/90">
             Yes, delete account
           </button>
         </DialogFooter>
@@ -155,9 +159,11 @@ export const StatefulDialog: Story = {
 
     return (
       <div className="flex flex-col items-center gap-4">
-        <p className="text-muted-foreground text-sm">Current State: {open ? 'Open' : 'Closed'}</p>
+        <p className="text-sm text-muted-foreground">
+          Current State: {open ? "Open" : "Closed"}
+        </p>
         <Dialog {...args} open={open} onOpenChange={setOpen}>
-          <DialogTrigger className="bg-secondary text-secondary-foreground hover:bg-secondary/80 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm">
+          <DialogTrigger className="inline-flex h-10 items-center justify-center rounded-md bg-secondary text-secondary-foreground px-4 py-2 text-sm font-medium shadow-sm hover:bg-secondary/80">
             Share Link
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
@@ -176,19 +182,23 @@ export const StatefulDialog: Story = {
                   id="link"
                   defaultValue="https://ui.shadcn.com/docs/installation"
                   readOnly
-                  className="border-input focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 />
               </div>
               <button
                 onClick={handleCopy}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-black text-white shadow hover:bg-black/90"
               >
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                {copied ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
                 <span className="sr-only">Copy</span>
               </button>
             </div>
             <DialogFooter className="sm:justify-start">
-              <DialogClose className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-3 text-sm font-medium shadow-sm transition-colors">
+              <DialogClose className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
                 Close
               </DialogClose>
             </DialogFooter>

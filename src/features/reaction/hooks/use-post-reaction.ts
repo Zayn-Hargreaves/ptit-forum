@@ -1,9 +1,9 @@
+import { useMutation, useQueryClient, InfiniteData } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { Post } from '@entities/post/model/types';
 import { reactionApi } from '@entities/interaction/api/reaction-api';
 import { TargetType } from '@entities/interaction/model/types';
-import { Post } from '@entities/post/model/types';
 import { PageResponse } from '@shared/api/types';
-import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 
 interface UsePostReactionProps {
   post: Post;
@@ -32,14 +32,14 @@ export function usePostReaction({ post }: UsePostReactionProps) {
 
       const previousDetail = queryClient.getQueryData<Post>(detailKey);
 
-      const isLikedOld = post.isLiked ?? false;
+      const isLikedOld = post.userState?.liked ?? false;
       const newLikedState = !isLikedOld;
-      const newReactionCount = (post.stats?.likeCount || 0) + (newLikedState ? 1 : -1);
+      const newReactionCount = (post.stats?.reactionCount || 0) + (newLikedState ? 1 : -1);
 
       const updatePostLogic = (oldPost: Post): Post => ({
         ...oldPost,
-        isLiked: newLikedState,
-        stats: { ...oldPost.stats, likeCount: newReactionCount },
+        userState: { ...oldPost.userState, liked: newLikedState },
+        stats: { ...oldPost.stats, reactionCount: newReactionCount },
       });
 
       queryClient.setQueryData<Post>(detailKey, (old) => {
@@ -47,35 +47,35 @@ export function usePostReaction({ post }: UsePostReactionProps) {
         return updatePostLogic(old);
       });
 
-      queryClient.setQueriesData<InfiniteData<PostListPage>>(
-        { queryKey: listKeyRoot },
-        (oldData) => {
-          if (!oldData?.pages) return oldData;
+      queryClient.setQueriesData<InfiniteData<PostListPage>>({ queryKey: listKeyRoot }, (oldData) => {
+        if (!oldData?.pages) return oldData;
 
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              content: page.content.map((p) => {
-                if (p.id === post.id) {
-                  return updatePostLogic(p);
-                }
-                return p;
-              }),
-            })),
-          };
-        },
-      );
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            content: page.content.map((p) => {
+              if (p.id === post.id) {
+                return updatePostLogic(p);
+              }
+              return p;
+            }),
+          })),
+        };
+      });
 
       return { previousDetail };
     },
 
     onSuccess: (data) => {
       const syncRealData = (oldPost: Post): Post => {
+        const userState = { ...oldPost.userState };
+        const stats = { ...oldPost.stats };
+
         return {
           ...oldPost,
-          isLiked: data.reacted,
-          stats: { ...oldPost.stats, likeCount: data.totalReactions },
+          userState: { ...userState, liked: data.reacted },
+          stats: { ...stats, reactionCount: data.totalReactions },
         };
       };
 
@@ -84,22 +84,19 @@ export function usePostReaction({ post }: UsePostReactionProps) {
         return syncRealData(old);
       });
 
-      queryClient.setQueriesData<InfiniteData<PostListPage>>(
-        { queryKey: listKeyRoot },
-        (oldData) => {
-          if (!oldData?.pages) return oldData;
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              content: page.content.map((p) => {
-                if (p.id === post.id) return syncRealData(p);
-                return p;
-              }),
-            })),
-          };
-        },
-      );
+      queryClient.setQueriesData<InfiniteData<PostListPage>>({ queryKey: listKeyRoot }, (oldData) => {
+        if (!oldData?.pages) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            content: page.content.map((p) => {
+              if (p.id === post.id) return syncRealData(p);
+              return p;
+            }),
+          })),
+        };
+      });
     },
 
     onError: (err, variables, context) => {

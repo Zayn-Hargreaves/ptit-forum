@@ -1,11 +1,17 @@
-'use client';
+"use client";
 
-import { cn } from '@shared/lib/utils';
-import { Button, Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@shared/ui';
-import { GraduationCap, Menu } from 'lucide-react';
-import Link from 'next/link';
-
-import { NAV_LINKS } from '../model/nav-links';
+import Link from "next/link";
+import { GraduationCap, Menu } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  Button,
+} from "@shared/ui";
+import { NAV_LINKS } from "../model/nav-links";
+import { cn } from "@shared/lib/utils";
 
 export function NavbarMobileMenu({
   open,
@@ -25,14 +31,19 @@ export function NavbarMobileMenu({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden" aria-label="Mở menu">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          aria-label="Mở menu"
+        >
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
 
       <SheetContent side="left" className="w-[300px] sm:w-[400px]">
         <SheetHeader>
-          <SheetTitle className="flex items-center gap-2 text-left">
+          <SheetTitle className="text-left flex items-center gap-2">
             <GraduationCap className="h-5 w-5" /> PTIT Forum
           </SheetTitle>
         </SheetHeader>
@@ -47,12 +58,12 @@ export function NavbarMobileMenu({
                 <Link
                   key={l.href}
                   href={l.href}
-                  aria-current={active ? 'page' : undefined}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
-                    'rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
+                    "rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
                     active
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                   onClick={() => onOpenChange(false)}
                 >
@@ -62,7 +73,7 @@ export function NavbarMobileMenu({
             })}
           </div>
 
-          <div className="mt-auto border-t pt-4">{authSlot}</div>
+          <div className="mt-auto pt-4 border-t">{authSlot}</div>
         </div>
       </SheetContent>
     </Sheet>

@@ -1,50 +1,57 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { BarChart, Minus, MoveDown, MoveLeft, MoveRight, MoveUp, Plus } from 'lucide-react';
-import { useState } from 'react';
-
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import {
   Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
   DrawerTrigger,
-} from './drawer';
+  DrawerContent,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerClose,
+} from "./drawer";
+import {
+  BarChart,
+  Minus,
+  Plus,
+  MoveRight,
+  MoveLeft,
+  MoveUp,
+  MoveDown,
+} from "lucide-react";
+import { useState } from "react";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Drawer> = {
-  title: 'shared/UI/Drawer',
+  title: "shared/UI/Drawer",
   component: Drawer,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   args: {
     shouldScaleBackground: true,
   },
   argTypes: {
     direction: {
-      control: 'select',
-      options: ['top', 'bottom', 'left', 'right'],
-      description: 'Hướng xuất hiện của Drawer.',
+      control: "select",
+      options: ["top", "bottom", "left", "right"],
+      description: "Hướng xuất hiện của Drawer.",
       table: {
-        defaultValue: { summary: 'bottom' },
+        defaultValue: { summary: "bottom" },
       },
     },
     open: {
-      control: 'boolean',
-      description: 'Trạng thái mở/đóng (Controlled).',
+      control: "boolean",
+      description: "Trạng thái mở/đóng (Controlled).",
     },
     onOpenChange: {
-      action: 'open changed',
-      description: 'Sự kiện thay đổi trạng thái.',
+      action: "open changed",
+      description: "Sự kiện thay đổi trạng thái.",
     },
     shouldScaleBackground: {
-      control: 'boolean',
-      description: 'Hiệu ứng thu nhỏ background khi mở Drawer.',
+      control: "boolean",
+      description: "Hiệu ứng thu nhỏ background khi mở Drawer.",
     },
     children: {
       control: false,
@@ -66,7 +73,7 @@ type Story = StoryObj<typeof Drawer>;
 export const Default: Story = {
   render: (args) => (
     <Drawer {...args}>
-      <DrawerTrigger className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring inline-flex h-10 items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white shadow transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50">
+      <DrawerTrigger className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-black text-white">
         Open Drawer
       </DrawerTrigger>
       <DrawerContent>
@@ -79,18 +86,20 @@ export const Default: Story = {
             <div className="flex items-center justify-center space-x-2">
               <div className="flex-1 text-center">
                 <div className="text-7xl font-bold tracking-tighter">350</div>
-                <div className="text-muted-foreground text-[0.70rem] uppercase">Calories/day</div>
+                <div className="text-[0.70rem] uppercase text-muted-foreground">
+                  Calories/day
+                </div>
               </div>
             </div>
-            <div className="text-muted-foreground bg-muted/20 mt-3 flex h-[120px] w-full items-center justify-center rounded-md border border-dashed">
+            <div className="mt-3 h-[120px] w-full rounded-md border border-dashed flex items-center justify-center text-muted-foreground bg-muted/20">
               <BarChart className="h-8 w-8 opacity-50" />
             </div>
           </div>
           <DrawerFooter>
-            <button className="inline-flex h-10 items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-black/90">
+            <button className="inline-flex h-10 items-center justify-center rounded-md bg-black text-white px-4 py-2 text-sm font-medium shadow transition-colors hover:bg-black/90">
               Submit
             </button>
-            <DrawerClose className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-colors">
+            <DrawerClose className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
               Cancel
             </DrawerClose>
           </DrawerFooter>
@@ -106,32 +115,34 @@ export const Default: Story = {
  */
 export const DirectionRight: Story = {
   args: {
-    direction: 'right',
+    direction: "right",
   },
   render: (args) => (
     <Drawer {...args}>
-      <DrawerTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-colors">
+      <DrawerTrigger className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
         <MoveRight className="mr-2 h-4 w-4" />
         Open Right Side
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>Configuration</DrawerTitle>
-          <DrawerDescription>Adjust your view settings from the side.</DrawerDescription>
+          <DrawerDescription>
+            Adjust your view settings from the side.
+          </DrawerDescription>
         </DrawerHeader>
-        <div className="space-y-4 p-4">
-          <div className="bg-muted/40 flex h-24 items-center justify-center rounded-md border border-dashed">
+        <div className="p-4 space-y-4">
+          <div className="h-24 rounded-md bg-muted/40 border border-dashed flex items-center justify-center">
             Setting Item 1
           </div>
-          <div className="bg-muted/40 flex h-24 items-center justify-center rounded-md border border-dashed">
+          <div className="h-24 rounded-md bg-muted/40 border border-dashed flex items-center justify-center">
             Setting Item 2
           </div>
-          <div className="bg-muted/40 flex h-24 items-center justify-center rounded-md border border-dashed">
+          <div className="h-24 rounded-md bg-muted/40 border border-dashed flex items-center justify-center">
             Setting Item 3
           </div>
         </div>
         <DrawerFooter>
-          <DrawerClose className="bg-secondary text-secondary-foreground hover:bg-secondary/80 inline-flex h-10 w-full items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm">
+          <DrawerClose className="w-full inline-flex h-10 items-center justify-center rounded-md bg-secondary text-secondary-foreground px-4 py-2 text-sm font-medium shadow-sm hover:bg-secondary/80">
             Close Panel
           </DrawerClose>
         </DrawerFooter>
@@ -154,47 +165,53 @@ export const InteractiveGoal: Story = {
 
     return (
       <Drawer {...args}>
-        <DrawerTrigger className="inline-flex h-10 items-center justify-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-orange-700">
+        <DrawerTrigger className="inline-flex h-10 items-center justify-center rounded-md bg-orange-600 text-white px-4 py-2 text-sm font-medium shadow transition-colors hover:bg-orange-700">
           Set Calorie Goal
         </DrawerTrigger>
         <DrawerContent>
           <div className="mx-auto w-full max-w-sm">
             <DrawerHeader>
               <DrawerTitle>Move Goal</DrawerTitle>
-              <DrawerDescription>Set your daily activity goal.</DrawerDescription>
+              <DrawerDescription>
+                Set your daily activity goal.
+              </DrawerDescription>
             </DrawerHeader>
             <div className="p-4 pb-0">
               <div className="flex items-center justify-center space-x-2">
                 <button
                   onClick={() => onClick(-10)}
                   disabled={goal <= 200}
-                  className="bg-background hover:bg-accent flex h-8 w-8 shrink-0 items-center justify-center rounded-full border p-0 shadow-sm disabled:opacity-50"
+                  className="h-8 w-8 shrink-0 rounded-full border bg-background p-0 flex items-center justify-center hover:bg-accent disabled:opacity-50 shadow-sm"
                 >
                   <Minus className="h-4 w-4" />
                   <span className="sr-only">Decrease</span>
                 </button>
                 <div className="flex-1 text-center">
-                  <div className="text-7xl font-bold tracking-tighter">{goal}</div>
-                  <div className="text-muted-foreground text-[0.70rem] uppercase">Calories/day</div>
+                  <div className="text-7xl font-bold tracking-tighter">
+                    {goal}
+                  </div>
+                  <div className="text-[0.70rem] uppercase text-muted-foreground">
+                    Calories/day
+                  </div>
                 </div>
                 <button
                   onClick={() => onClick(10)}
                   disabled={goal >= 400}
-                  className="bg-background hover:bg-accent flex h-8 w-8 shrink-0 items-center justify-center rounded-full border p-0 shadow-sm disabled:opacity-50"
+                  className="h-8 w-8 shrink-0 rounded-full border bg-background p-0 flex items-center justify-center hover:bg-accent disabled:opacity-50 shadow-sm"
                 >
                   <Plus className="h-4 w-4" />
                   <span className="sr-only">Increase</span>
                 </button>
               </div>
-              <div className="text-muted-foreground bg-muted/20 mt-3 flex h-[120px] w-full items-center justify-center rounded-md border border-dashed">
+              <div className="mt-3 h-[120px] w-full rounded-md border border-dashed flex items-center justify-center text-muted-foreground bg-muted/20">
                 <BarChart className="h-8 w-8" />
               </div>
             </div>
             <DrawerFooter>
-              <button className="inline-flex h-10 items-center justify-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-black/90">
+              <button className="inline-flex h-10 items-center justify-center rounded-md bg-black text-white px-4 py-2 text-sm font-medium shadow transition-colors hover:bg-black/90">
                 Submit
               </button>
-              <DrawerClose className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-colors">
+              <DrawerClose className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
                 Cancel
               </DrawerClose>
             </DrawerFooter>
@@ -214,7 +231,7 @@ export const DirectionGallery: Story = {
     <div className="grid grid-cols-2 gap-4">
       {/* Top */}
       <Drawer {...args} direction="top">
-        <DrawerTrigger className="bg-muted/10 hover:bg-muted/30 flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed">
+        <DrawerTrigger className="flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed bg-muted/10 hover:bg-muted/30">
           <MoveDown className="mb-2 h-4 w-4" />
           Top
         </DrawerTrigger>
@@ -224,7 +241,7 @@ export const DirectionGallery: Story = {
               <DrawerTitle>Top Drawer</DrawerTitle>
               <DrawerDescription>Slide from the top.</DrawerDescription>
             </DrawerHeader>
-            <div className="h-24 p-4">Content...</div>
+            <div className="p-4 h-24">Content...</div>
             <DrawerFooter>
               <DrawerClose>Close</DrawerClose>
             </DrawerFooter>
@@ -234,7 +251,7 @@ export const DirectionGallery: Story = {
 
       {/* Bottom */}
       <Drawer {...args} direction="bottom">
-        <DrawerTrigger className="bg-muted/10 hover:bg-muted/30 flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed">
+        <DrawerTrigger className="flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed bg-muted/10 hover:bg-muted/30">
           <MoveUp className="mb-2 h-4 w-4" />
           Bottom
         </DrawerTrigger>
@@ -242,9 +259,11 @@ export const DirectionGallery: Story = {
           <div className="mx-auto w-full max-w-sm">
             <DrawerHeader>
               <DrawerTitle>Bottom Drawer</DrawerTitle>
-              <DrawerDescription>Slide from the bottom (Default).</DrawerDescription>
+              <DrawerDescription>
+                Slide from the bottom (Default).
+              </DrawerDescription>
             </DrawerHeader>
-            <div className="h-24 p-4">Content...</div>
+            <div className="p-4 h-24">Content...</div>
             <DrawerFooter>
               <DrawerClose>Close</DrawerClose>
             </DrawerFooter>
@@ -254,7 +273,7 @@ export const DirectionGallery: Story = {
 
       {/* Left */}
       <Drawer {...args} direction="left">
-        <DrawerTrigger className="bg-muted/10 hover:bg-muted/30 flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed">
+        <DrawerTrigger className="flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed bg-muted/10 hover:bg-muted/30">
           <MoveRight className="mb-2 h-4 w-4" />
           Left
         </DrawerTrigger>
@@ -263,7 +282,7 @@ export const DirectionGallery: Story = {
             <DrawerTitle>Left Drawer</DrawerTitle>
             <DrawerDescription>Sidebar style navigation.</DrawerDescription>
           </DrawerHeader>
-          <div className="h-full p-4">Content...</div>
+          <div className="p-4 h-full">Content...</div>
           <DrawerFooter>
             <DrawerClose>Close</DrawerClose>
           </DrawerFooter>
@@ -272,7 +291,7 @@ export const DirectionGallery: Story = {
 
       {/* Right */}
       <Drawer {...args} direction="right">
-        <DrawerTrigger className="bg-muted/10 hover:bg-muted/30 flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed">
+        <DrawerTrigger className="flex h-20 w-full flex-col items-center justify-center rounded-md border border-dashed bg-muted/10 hover:bg-muted/30">
           <MoveLeft className="mb-2 h-4 w-4" />
           Right
         </DrawerTrigger>
@@ -281,7 +300,7 @@ export const DirectionGallery: Story = {
             <DrawerTitle>Right Drawer</DrawerTitle>
             <DrawerDescription>Details panel style.</DrawerDescription>
           </DrawerHeader>
-          <div className="h-full p-4">Content...</div>
+          <div className="p-4 h-full">Content...</div>
           <DrawerFooter>
             <DrawerClose>Close</DrawerClose>
           </DrawerFooter>

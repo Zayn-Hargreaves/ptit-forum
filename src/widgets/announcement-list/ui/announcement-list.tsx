@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { fetchAnnouncements } from '@entities/announcement/api';
-import { announcementKeys } from '@entities/announcement/lib/query-keys';
-import { AnnouncementType } from '@entities/announcement/model/types';
-import { Badge } from '@shared/ui/badge/badge';
-import { Button } from '@shared/ui/button/button';
-import { Card, CardContent } from '@shared/ui/card/card';
-import { Pagination } from '@shared/ui/pagination/pagination';
-import { Skeleton } from '@shared/ui/skeleton/skeleton';
-import { useQuery } from '@tanstack/react-query';
-import { Calendar, FileText } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useQuery } from "@tanstack/react-query";
+import { useSearchParams, useRouter } from "next/navigation";
+import { fetchAnnouncements } from "@entities/announcement/api";
+import { announcementKeys } from "@entities/announcement/lib/query-keys";
+import { AnnouncementType } from "@entities/announcement/model/types";
+import { Pagination } from "@shared/ui/pagination/pagination";
+import { Card, CardContent } from "@shared/ui/card/card";
+import { Badge } from "@shared/ui/badge/badge";
+import { Button } from "@shared/ui/button/button";
+import { Calendar, FileText, Pin } from "lucide-react";
+import Link from "next/link";
+import { Skeleton } from "@shared/ui/skeleton/skeleton";
 
 export function AnnouncementsList() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const page = Math.max(1, Number(searchParams.get('page')) || 1);
-  const types = searchParams.getAll('type') as AnnouncementType[];
-  const keyword = searchParams.get('keyword') || undefined;
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const types = searchParams.getAll("type") as AnnouncementType[];
+  const keyword = searchParams.get("keyword") || undefined;
   const size = 10;
 
   const queryParams = { page, size, type: types, keyword };
@@ -32,14 +32,15 @@ export function AnnouncementsList() {
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('page', newPage.toString());
+    params.set("page", newPage.toString());
     router.push(`?${params.toString()}`, { scroll: true });
   };
 
   if (isLoading) return <AnnouncementsListSkeleton />;
-  if (isError) return <div className="text-red-500">Có lỗi khi tải thông báo.</div>;
+  if (isError)
+    return <div className="text-red-500">Có lỗi khi tải thông báo.</div>;
   if (!data || data.items.length === 0)
-    return <div className="py-10 text-center">Không có thông báo nào.</div>;
+    return <div className="text-center py-10">Không có thông báo nào.</div>;
 
   return (
     <div className="space-y-6">
@@ -47,7 +48,7 @@ export function AnnouncementsList() {
         {data.items.map((announcement) => (
           <Card
             key={announcement.id}
-            className={`hover:border-primary/50 transition-all hover:shadow-md`}
+            className={`transition-all hover:border-primary/50 hover:shadow-md`}
           >
             <CardContent className="p-6">
               <div className="flex gap-4">
@@ -58,12 +59,12 @@ export function AnnouncementsList() {
                         {/* Logic Pin chưa có từ API, tạm ẩn hoặc fake */}
                         {/* <Pin className="h-4 w-4 text-primary" /> */}
                         <Link href={`/announcements/${announcement.id}`}>
-                          <h3 className="hover:text-primary text-lg leading-tight font-semibold">
+                          <h3 className="text-lg font-semibold leading-tight hover:text-primary">
                             {announcement.title}
                           </h3>
                         </Link>
                       </div>
-                      <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">
+                      <p className="mb-3 text-sm text-muted-foreground line-clamp-2">
                         {announcement.excerpt}
                       </p>
                     </div>
@@ -71,11 +72,15 @@ export function AnnouncementsList() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <div className="text-muted-foreground flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span>{announcement.author}</span>
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
-                        <span>{new Date(announcement.date).toLocaleDateString('vi-VN')}</span>
+                        <span>
+                          {new Date(announcement.date).toLocaleDateString(
+                            "vi-VN"
+                          )}
+                        </span>
                       </div>
                     </div>
 
@@ -110,7 +115,7 @@ function AnnouncementsListSkeleton() {
   return (
     <div className="space-y-4">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="space-y-3 rounded-lg border p-6">
+        <div key={i} className="border rounded-lg p-6 space-y-3">
           <Skeleton className="h-6 w-3/4" />
           <Skeleton className="h-4 w-full" />
           <div className="flex justify-between pt-2">

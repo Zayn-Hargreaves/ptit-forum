@@ -1,64 +1,63 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React from "react";
 import {
-  BellIcon,
-  FolderIcon,
+  SidebarProvider,
+  Sidebar,
+  SidebarTrigger,
+  SidebarInset,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarMenuBadge,
+  SidebarMenuAction,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+  SidebarSeparator,
+  SidebarRail,
+  SidebarMenuSkeleton,
+} from "./sidebar";
+import { Button } from "../button/button";
+import { Input } from "../input/input";
+import { Skeleton } from "../skeleton/skeleton";
+import {
   HomeIcon,
-  PlusIcon,
   SearchIcon,
   SettingsIcon,
   StarIcon,
-} from 'lucide-react';
-import React from 'react';
-
-import { Button } from '../button/button';
-import { Input } from '../input/input';
-import { Skeleton } from '../skeleton/skeleton';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuBadge,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSkeleton,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarProvider,
-  SidebarRail,
-  SidebarSeparator,
-  SidebarTrigger,
-} from './sidebar';
+  FolderIcon,
+  BellIcon,
+  PlusIcon,
+} from "lucide-react";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof SidebarProvider> = {
-  title: 'shared/Layout/Sidebar',
+  title: "shared/Layout/Sidebar",
   component: SidebarProvider,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
   },
   argTypes: {
     // These are conceptual controls, not wired to the demo props directly
     // (the stories below showcase combinations instead).
     // They are here just to describe the component in Docs.
     className: {
-      control: 'text',
-      description: 'Custom className applied to the sidebar wrapper.',
+      control: "text",
+      description: "Custom className applied to the sidebar wrapper.",
     },
     defaultOpen: {
-      control: 'boolean',
-      description: 'Initial open state for the desktop sidebar.',
+      control: "boolean",
+      description: "Initial open state for the desktop sidebar.",
       table: {
-        defaultValue: { summary: 'true' },
+        defaultValue: { summary: "true" },
       },
     },
   },
@@ -83,13 +82,17 @@ const BasicSidebarLayout: React.FC = () => {
         <SidebarHeader>
           <div className="flex items-center justify-between gap-2 px-1">
             <div className="flex items-center gap-2 text-sm font-semibold">
-              <span className="bg-primary text-primary-foreground inline-flex size-6 items-center justify-center rounded-md text-xs">
+              <span className="inline-flex size-6 items-center justify-center rounded-md bg-primary text-xs text-primary-foreground">
                 SB
               </span>
               <span>Sidebar App</span>
             </div>
           </div>
-          <Input placeholder="Search..." className="h-8 text-xs" data-sidebar="input" />
+          <Input
+            placeholder="Search..."
+            className="h-8 text-xs"
+            data-sidebar="input"
+          />
         </SidebarHeader>
 
         <SidebarContent>
@@ -172,15 +175,22 @@ const BasicSidebarLayout: React.FC = () => {
           <SidebarSeparator />
           <div className="flex items-center justify-between px-1 text-xs">
             <div className="flex items-center gap-2">
-              <span className="bg-primary text-primary-foreground inline-flex size-7 items-center justify-center rounded-full text-[10px] font-medium">
+              <span className="inline-flex size-7 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
                 JD
               </span>
               <div className="flex flex-col">
                 <span className="font-medium">John Doe</span>
-                <span className="text-muted-foreground text-[10px]">john@example.com</span>
+                <span className="text-[10px] text-muted-foreground">
+                  john@example.com
+                </span>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="size-7" aria-label="Notifications">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+              aria-label="Notifications"
+            >
               <BellIcon className="size-4" />
             </Button>
           </div>
@@ -188,7 +198,7 @@ const BasicSidebarLayout: React.FC = () => {
       </Sidebar>
 
       <SidebarInset>
-        <div className="bg-background flex h-12 items-center justify-between gap-2 border-b px-4">
+        <div className="flex h-12 items-center justify-between gap-2 border-b bg-background px-4">
           <div className="flex items-center gap-2">
             <SidebarTrigger />
             <span className="text-sm font-semibold">Dashboard</span>
@@ -204,22 +214,22 @@ const BasicSidebarLayout: React.FC = () => {
         <div className="flex flex-1 flex-col gap-4 p-4">
           <div className="flex flex-col gap-2">
             <span className="text-sm font-semibold">Overview</span>
-            <span className="text-muted-foreground text-xs">
-              This is a basic layout example using the Sidebar component with header, content and
-              footer.
+            <span className="text-xs text-muted-foreground">
+              This is a basic layout example using the Sidebar component with
+              header, content and footer.
             </span>
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="bg-card rounded-md border p-3 text-sm">
+            <div className="rounded-md border bg-card p-3 text-sm">
               <p className="font-medium">Traffic</p>
               <Skeleton className="mt-2 h-16 w-full" />
             </div>
-            <div className="bg-card rounded-md border p-3 text-sm">
+            <div className="rounded-md border bg-card p-3 text-sm">
               <p className="font-medium">Conversions</p>
               <Skeleton className="mt-2 h-16 w-full" />
             </div>
-            <div className="bg-card rounded-md border p-3 text-sm">
+            <div className="rounded-md border bg-card p-3 text-sm">
               <p className="font-medium">Errors</p>
               <Skeleton className="mt-2 h-16 w-full" />
             </div>
@@ -242,7 +252,7 @@ const InsetFloatingLayout: React.FC = () => {
         <SidebarRail />
         <SidebarHeader>
           <div className="flex items-center gap-2 px-1 text-sm font-semibold">
-            <span className="bg-primary text-primary-foreground inline-flex size-6 items-center justify-center rounded-md text-xs">
+            <span className="inline-flex size-6 items-center justify-center rounded-md bg-primary text-xs text-primary-foreground">
               IN
             </span>
             <span>Inset Layout</span>
@@ -272,15 +282,15 @@ const InsetFloatingLayout: React.FC = () => {
       </Sidebar>
 
       <SidebarInset>
-        <div className="bg-background flex h-12 items-center justify-between border-b px-4">
+        <div className="flex h-12 items-center justify-between border-b bg-background px-4">
           <div className="flex items-center gap-2">
             <SidebarTrigger />
             <span className="text-sm font-semibold">Inset variant</span>
           </div>
         </div>
-        <div className="text-muted-foreground flex flex-1 items-center justify-center p-6 text-sm">
-          The content area is inset and has its own rounded card-like container, while the sidebar
-          can collapse into an icon rail.
+        <div className="flex flex-1 items-center justify-center p-6 text-sm text-muted-foreground">
+          The content area is inset and has its own rounded card-like container,
+          while the sidebar can collapse into an icon rail.
         </div>
       </SidebarInset>
     </SidebarProvider>
@@ -315,7 +325,7 @@ export const LoadingSkeleton: Story = {
       <Sidebar side="left" variant="sidebar" collapsible="none">
         <SidebarHeader>
           <div className="flex items-center gap-2 px-1 text-sm font-semibold">
-            <span className="bg-primary text-primary-foreground inline-flex size-6 items-center justify-center rounded-md text-xs">
+            <span className="inline-flex size-6 items-center justify-center rounded-md bg-primary text-xs text-primary-foreground">
               LD
             </span>
             <span>Loading state</span>
@@ -345,8 +355,9 @@ export const LoadingSkeleton: Story = {
       </Sidebar>
 
       <SidebarInset>
-        <div className="text-muted-foreground flex flex-1 items-center justify-center p-6 text-sm">
-          Simulated loading state. Use <code>SidebarMenuSkeleton</code> while fetching sidebar data.
+        <div className="flex flex-1 items-center justify-center p-6 text-sm text-muted-foreground">
+          Simulated loading state. Use <code>SidebarMenuSkeleton</code> while
+          fetching sidebar data.
         </div>
       </SidebarInset>
     </SidebarProvider>

@@ -1,21 +1,24 @@
-import { mergeAttributes, Node } from '@tiptap/core';
+import { Node, mergeAttributes } from "@tiptap/core";
 
 export interface VideoOptions {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   HTMLAttributes: Record<string, any>;
 }
 
-declare module '@tiptap/core' {
+declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     video: {
-      setVideo: (options: { src: string; controls?: boolean; className?: string }) => ReturnType;
+      setVideo: (options: {
+        src: string;
+        controls?: boolean;
+        className?: string;
+      }) => ReturnType;
     };
   }
 }
 
 export const Video = Node.create<VideoOptions>({
-  name: 'video',
-  group: 'block',
+  name: "video",
+  group: "block",
 
   atom: true,
 
@@ -24,8 +27,9 @@ export const Video = Node.create<VideoOptions>({
   addOptions() {
     return {
       HTMLAttributes: {
-        class: 'rounded-md border border-border bg-black/5 my-4 max-h-[500px] w-auto mx-auto',
-        controls: 'true',
+        class:
+          "rounded-md border border-border bg-black/5 my-4 max-h-[500px] w-auto mx-auto",
+        controls: "true",
       },
     };
   },
@@ -39,7 +43,7 @@ export const Video = Node.create<VideoOptions>({
         default: true,
       },
       className: {
-        default: 'rounded-md max-w-full my-4',
+        default: "rounded-md max-w-full my-4",
       },
     };
   },
@@ -47,20 +51,23 @@ export const Video = Node.create<VideoOptions>({
   parseHTML() {
     return [
       {
-        tag: 'video',
+        tag: "video",
       },
     ];
   },
 
   renderHTML({ HTMLAttributes }) {
     const { className, ...rest } = HTMLAttributes;
-    return ['video', mergeAttributes(this.options.HTMLAttributes, { class: className }, rest)];
+    return [
+      "video",
+      mergeAttributes(this.options.HTMLAttributes, { class: className }, rest),
+    ];
   },
 
   addCommands() {
     return {
       setVideo:
-        ({ src, controls = true, className = 'rounded-md max-w-full my-4' }) =>
+        ({ src, controls = true, className = "rounded-md max-w-full my-4" }) =>
         ({ commands }) => {
           return commands.insertContent({
             type: this.name,

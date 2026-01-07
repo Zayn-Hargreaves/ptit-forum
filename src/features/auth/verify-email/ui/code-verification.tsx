@@ -1,13 +1,20 @@
-'use client';
+"use client";
 
-import { Button } from '@shared/ui/button/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@shared/ui/card/card';
-import { Input } from '@shared/ui/input/input';
-import { Label } from '@shared/ui/label/label';
-import { ArrowLeft } from 'lucide-react';
-import type React from 'react';
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import type React from "react";
+import { useState, useEffect } from "react";
+
+import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@shared/ui/card/card";
+import { Label } from "@shared/ui/label/label";
+import { Input } from "@shared/ui/input/input";
+import { Button } from "@shared/ui/button/button";
 
 /**
  * Props for the CodeVerification component.
@@ -42,10 +49,10 @@ export function CodeVerification({
   onResend,
   onBack,
   isLoading = false,
-  title = 'Xác thực email',
-  description = 'Nhập mã 6 số được gửi đến email của bạn',
+  title = "Xác thực email",
+  description = "Nhập mã 6 số được gửi đến email của bạn",
 }: CodeVerificationProps) {
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
 
   useEffect(() => {
@@ -64,7 +71,7 @@ export function CodeVerification({
    * @param {React.ChangeEvent<HTMLInputElement>} e - The change event from the input.
    */
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
     setCode(value);
   };
 
@@ -76,16 +83,16 @@ export function CodeVerification({
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     if (code.length !== 6) {
-      toast.warning('Mã không hợp lệ', {
-        description: 'Vui lòng nhập đầy đủ 6 số',
+      toast.warning("Mã không hợp lệ", {
+        description: "Vui lòng nhập đầy đủ 6 số",
       });
       return;
     }
     try {
       await onVerify(code);
-    } catch (_error) {
-      toast.error('Lỗi xác thực', {
-        description: 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+    } catch (error) {
+      toast.error("Lỗi xác thực", {
+        description: "Đã có lỗi xảy ra. Vui lòng thử lại.",
       });
     }
   };
@@ -99,15 +106,15 @@ export function CodeVerification({
     try {
       setResendTimer(RESEND_COOLDOWN_SECONDS);
       onResend();
-    } catch (_error) {
+    } catch (error) {
       setResendTimer(0); // Reset timer on error
-      toast.error('Lỗi gửi lại mã', {
-        description: 'Không thể gửi lại mã. Vui lòng thử lại.',
+      toast.error("Lỗi gửi lại mã", {
+        description: "Không thể gửi lại mã. Vui lòng thử lại.",
       });
       return;
     }
-    toast.info('Đã gửi lại mã', {
-      description: 'Vui lòng kiểm tra hộp thư của bạn',
+    toast.info("Đã gửi lại mã", {
+      description: "Vui lòng kiểm tra hộp thư của bạn",
     });
   };
 
@@ -119,12 +126,12 @@ export function CodeVerification({
             type="button"
             onClick={() => {
               Promise.resolve(onBack()).catch(() => {
-                toast.error('Lỗi điều hướng', {
-                  description: 'Không thể quay lại. Vui lòng thử lại.',
+                toast.error("Lỗi điều hướng", {
+                  description: "Không thể quay lại. Vui lòng thử lại.",
                 });
               });
             }}
-            className="hover:bg-muted rounded-lg p-1 transition-colors"
+            className="rounded-lg p-1 hover:bg-muted transition-colors"
             aria-label="Quay lại"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -146,12 +153,13 @@ export function CodeVerification({
               value={code}
               onChange={handleCodeChange}
               maxLength={6}
-              className="h-14 text-center font-mono text-3xl tracking-[1em]" // Larger size for readability
+              className="text-center text-3xl tracking-[1em] font-mono h-14" // Larger size for readability
               autoFocus
               required
             />
-            <p className="text-muted-foreground text-center text-sm">
-              Đã gửi đến <span className="text-foreground font-medium">{email}</span>
+            <p className="text-sm text-muted-foreground text-center">
+              Đã gửi đến{" "}
+              <span className="font-medium text-foreground">{email}</span>
             </p>
           </div>
 
@@ -161,19 +169,21 @@ export function CodeVerification({
             size="lg"
             disabled={isLoading || code.length !== 6}
           >
-            {isLoading ? 'Đang xác thực...' : 'Xác thực'}
+            {isLoading ? "Đang xác thực..." : "Xác thực"}
           </Button>
 
-          <div className="space-y-2 text-center">
-            <p className="text-muted-foreground text-sm">Không nhận được mã?</p>
+          <div className="text-center space-y-2">
+            <p className="text-sm text-muted-foreground">Không nhận được mã?</p>
             <Button
               type="button"
               variant="link"
               onClick={handleResend}
               disabled={resendTimer > 0 || isLoading}
-              className="h-auto p-0 font-normal"
+              className="p-0 h-auto font-normal"
             >
-              {resendTimer > 0 ? `Gửi lại sau ${resendTimer}s` : 'Gửi lại mã mới'}
+              {resendTimer > 0
+                ? `Gửi lại sau ${resendTimer}s`
+                : "Gửi lại mã mới"}
             </Button>
           </div>
         </form>

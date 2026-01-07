@@ -1,11 +1,7 @@
 import { ReportReason } from '@entities/interaction/model/types';
 import { z } from 'zod';
 
-export const emailSchema = z
-  .string()
-  .min(1, 'Email không được để trống')
-  .email('Email không hợp lệ')
-  .trim();
+export const emailSchema = z.string().min(1, 'Email không được để trống').email('Email không hợp lệ').trim();
 
 export const passwordSchema = z
   .string()
@@ -16,11 +12,7 @@ export const passwordSchema = z
   .regex(/\d/, 'Mật khẩu phải có ít nhất 1 chữ số')
   .regex(/[@$!%*?&]/, 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt');
 
-export const nameSchema = z
-  .string()
-  .min(1, 'Tên không được để trống')
-  .max(50, 'Tên quá dài')
-  .trim();
+export const nameSchema = z.string().min(1, 'Tên không được để trống').max(50, 'Tên quá dài').trim();
 
 export const loginSchema = z.object({
   email: emailSchema,
@@ -49,7 +41,7 @@ const userAuthResponseSchema = z.object({
       z.object({
         name: z.string(),
         permissions: z.array(z.any()),
-      }),
+      })
     )
     .optional(),
 });
@@ -63,6 +55,8 @@ export const BackendResponseSchema = z.object({
 });
 export const profileSchema = z.object({
   fullName: z.string().min(2, 'Họ tên quá ngắn').trim(),
+  
+
 
   phone: z
     .string()

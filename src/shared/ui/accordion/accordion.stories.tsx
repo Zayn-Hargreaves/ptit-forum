@@ -1,31 +1,35 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './accordion';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./accordion";
 
 const meta: Meta<typeof Accordion> = {
-  title: 'shared/UI/Accordion',
+  title: "shared/UI/Accordion",
   component: Accordion,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   args: {
-    type: 'single',
+    type: "single",
     collapsible: true,
   },
   argTypes: {
     type: {
-      control: 'radio',
-      options: ['single', 'multiple'],
+      control: "radio",
+      options: ["single", "multiple"],
       description: "Loại Accordion: 'single' (chỉ mở 1), 'multiple' (mở nhiều)",
     },
     collapsible: {
-      control: 'boolean',
-      description: 'Cho phép đóng item đang mở',
+      control: "boolean",
+      description: "Cho phép đóng item đang mở",
     },
     defaultValue: {
-      control: 'text',
-      description: 'Item mặc định được mở (key)',
+      control: "text",
+      description: "Item mặc định được mở (key)",
     },
   },
   decorators: [
@@ -49,7 +53,7 @@ type Story = StoryObj<typeof Accordion>;
  */
 export const Default: Story = {
   args: {
-    type: 'single',
+    type: "single",
     collapsible: true,
   },
   render: (args) => (
@@ -68,7 +72,9 @@ export const Default: Story = {
       </AccordionItem>
       <AccordionItem value="item-3">
         <AccordionTrigger>Đây là Tiêu đề Item 3</AccordionTrigger>
-        <AccordionContent>Nội dung cho Item 3. Ba item là ví dụ cơ bản.</AccordionContent>
+        <AccordionContent>
+          Nội dung cho Item 3. Ba item là ví dụ cơ bản.
+        </AccordionContent>
       </AccordionItem>
     </Accordion>
   ),
@@ -79,13 +85,15 @@ export const Default: Story = {
  */
 export const Multiple: Story = {
   args: {
-    type: 'multiple',
+    type: "multiple",
   },
   render: (args) => (
     <Accordion {...args}>
       <AccordionItem value="item-1">
         <AccordionTrigger>Mục 1 (Multiple)</AccordionTrigger>
-        <AccordionContent>Nội dung có thể mở song song với các mục khác.</AccordionContent>
+        <AccordionContent>
+          Nội dung có thể mở song song với các mục khác.
+        </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger>Mục 2 (Multiple)</AccordionTrigger>
@@ -106,9 +114,9 @@ export const Multiple: Story = {
  */
 export const DefaultOpen: Story = {
   args: {
-    type: 'single',
+    type: "single",
     collapsible: true,
-    defaultValue: 'item-2',
+    defaultValue: "item-2",
   },
   render: Default.render,
 };
@@ -118,9 +126,9 @@ export const DefaultOpen: Story = {
  */
 export const LongContent: Story = {
   args: {
-    type: 'single',
+    type: "single",
     collapsible: true,
-    defaultValue: 'item-1',
+    defaultValue: "item-1",
   },
   render: (args) => (
     <Accordion {...args}>
@@ -128,22 +136,26 @@ export const LongContent: Story = {
         <AccordionTrigger>Nội dung dài</AccordionTrigger>
         <AccordionContent>
           <p>
-            Đây là một đoạn nội dung rất dài. Lorem ipsum dolor sit amet, consectetur adipiscing
-            elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-            minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
-            eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
-            qui officia deserunt mollit anim id est laborum.
+            Đây là một đoạn nội dung rất dài. Lorem ipsum dolor sit amet,
+            consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
+            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+            exercitation ullamco laboris nisi ut aliquip ex ea commodo
+            consequat. Duis aute irure dolor in reprehenderit in voluptate velit
+            esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt mollit
+            anim id est laborum.
           </p>
           <p>
-            Thêm một đoạn nữa để đảm bảo nội dung đủ dài. Curabitur pretium tincidunt lacus. Nulla
-            gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit,
-            nec luctus magna felis sollicitudin mauris. Integer in sapien. Fusc...
+            Thêm một đoạn nữa để đảm bảo nội dung đủ dài. Curabitur pretium
+            tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et
+            commodo pharetra, est eros bibendum elit, nec luctus magna felis
+            sollicitudin mauris. Integer in sapien. Fusc...
           </p>
           <p>
-            Và đoạn thứ ba. Aliquam ac justo vel massa egestas interdum. Praesent tristique interdum
-            elit, ac tincidunt odio facilisis ut. Sed vitae ante sed nisl varius tristique. Nam ut
-            nulla ac massa euismod dignissim. Vivamus a magna eget ex lacinia ullamcorper.
+            Và đoạn thứ ba. Aliquam ac justo vel massa egestas interdum.
+            Praesent tristique interdum elit, ac tincidunt odio facilisis ut.
+            Sed vitae ante sed nisl varius tristique. Nam ut nulla ac massa
+            euismod dignissim. Vivamus a magna eget ex lacinia ullamcorper.
           </p>
         </AccordionContent>
       </AccordionItem>

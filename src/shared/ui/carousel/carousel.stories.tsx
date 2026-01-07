@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { useEffect, useState } from 'react';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import { Card, CardContent } from '../card/card';
+import { Card, CardContent } from "../card/card";
+import { useEffect, useState } from "react";
 import {
   Carousel,
   CarouselApi,
@@ -9,40 +9,41 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from './carousel';
+} from "./carousel";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Carousel> = {
-  title: 'shared/UI/Carousel',
+  title: "shared/UI/Carousel",
   component: Carousel,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   args: {
-    orientation: 'horizontal',
+    orientation: "horizontal",
   },
   argTypes: {
     orientation: {
-      control: 'select',
-      options: ['horizontal', 'vertical'],
-      description: 'Hướng trượt của Carousel (Ngang/Dọc).',
+      control: "select",
+      options: ["horizontal", "vertical"],
+      description: "Hướng trượt của Carousel (Ngang/Dọc).",
     },
     opts: {
-      control: 'object',
-      description: 'Các tùy chọn cấu hình của Embla Carousel (loop, align, ...).',
+      control: "object",
+      description:
+        "Các tùy chọn cấu hình của Embla Carousel (loop, align, ...).",
     },
     setApi: {
-      action: 'api set',
-      description: 'Callback nhận về instance API để điều khiển Carousel.',
+      action: "api set",
+      description: "Callback nhận về instance API để điều khiển Carousel.",
     },
     className: {
-      description: 'Class tùy chỉnh cho container chính.',
+      description: "Class tùy chỉnh cho container chính.",
     },
     plugins: {
       control: false,
-      description: 'Các plugin của Embla (Autoplay, AutoScroll...).',
+      description: "Các plugin của Embla (Autoplay, AutoScroll...).",
     },
   },
   decorators: [
@@ -106,7 +107,7 @@ export const MultipleItems: Story = {
   render: (args) => (
     <Carousel
       opts={{
-        align: 'start',
+        align: "start",
       }}
       className="w-full max-w-lg"
       {...args}
@@ -138,9 +139,9 @@ export const MultipleItems: Story = {
  */
 export const Vertical: Story = {
   args: {
-    orientation: 'vertical',
+    orientation: "vertical",
     opts: {
-      align: 'start',
+      align: "start",
     },
   },
   render: (args) => (
@@ -214,7 +215,7 @@ export const WithAPI: Story = {
       setCount(api.scrollSnapList().length);
       setCurrent(api.selectedScrollSnap() + 1);
 
-      api.on('select', () => {
+      api.on("select", () => {
         setCurrent(api.selectedScrollSnap() + 1);
       });
     }, [api]);
@@ -236,7 +237,7 @@ export const WithAPI: Story = {
           <CarouselPrevious />
           <CarouselNext />
         </Carousel>
-        <div className="text-muted-foreground py-2 text-center text-sm">
+        <div className="py-2 text-center text-sm text-muted-foreground">
           Slide {current} trên tổng số {count}
         </div>
       </div>

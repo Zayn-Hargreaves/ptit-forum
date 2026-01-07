@@ -1,13 +1,11 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, Lock, ZoomIn, ZoomOut } from 'lucide-react';
 import { useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { Document, Page } from 'react-pdf';
-
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Lock } from 'lucide-react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Button } from '@/shared/ui/button/button';
 import { Skeleton } from '@/shared/ui/skeleton/skeleton';
-
 import { setupPdfWorker } from '../model/pdf-worker';
 import { DocumentErrorFallback } from './document-error-fallback';
 
@@ -26,9 +24,11 @@ const PdfViewerContent = ({ url, isPremium = false, width }: PdfViewerProps) => 
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     setNumPages(numPages);
+    setIsLoading(false);
   }
 
   const changePage = (offset: number) => {
@@ -42,27 +42,17 @@ const PdfViewerContent = ({ url, isPremium = false, width }: PdfViewerProps) => 
   const isBlurred = !isPremium && pageNumber > 3;
 
   return (
-    <div className="flex w-full flex-col items-center space-y-4">
+    <div className="flex flex-col items-center space-y-4 w-full">
       {/* Toolbar */}
-      <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 flex w-full max-w-2xl items-center justify-between rounded-lg border p-2 shadow-sm backdrop-blur">
+      <div className="sticky top-0 z-10 flex w-full max-w-2xl items-center justify-between rounded-lg border bg-background/95 p-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            disabled={pageNumber <= 1}
-            onClick={() => changePage(-1)}
-          >
+          <Button variant="ghost" size="icon" disabled={pageNumber <= 1} onClick={() => changePage(-1)}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="text-sm font-medium">
             Page {pageNumber} of {numPages || '--'}
           </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            disabled={pageNumber >= numPages}
-            onClick={() => changePage(1)}
-          >
+          <Button variant="ghost" size="icon" disabled={pageNumber >= numPages} onClick={() => changePage(1)}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -79,7 +69,7 @@ const PdfViewerContent = ({ url, isPremium = false, width }: PdfViewerProps) => 
       </div>
 
       {/* PDF Document */}
-      <div className="relative flex min-h-[500px] w-full max-w-4xl justify-center overflow-hidden rounded-md border bg-slate-50 dark:bg-slate-900">
+      <div className="relative w-full max-w-4xl border rounded-md overflow-hidden bg-slate-50 dark:bg-slate-900 min-h-[500px] flex justify-center">
         <Document
           file={url}
           onLoadSuccess={onDocumentLoadSuccess}
@@ -107,7 +97,7 @@ const PdfViewerContent = ({ url, isPremium = false, width }: PdfViewerProps) => 
               width={width * 0.95 > MAX_VIEWER_WIDTH ? MAX_VIEWER_WIDTH : width * 0.95} // Cap max width or use responsive width
               scale={scale}
               className={`shadow-lg transition-all duration-200 ${
-                isBlurred ? 'pointer-events-none blur-md filter select-none' : ''
+                isBlurred ? 'filter blur-md select-none pointer-events-none' : ''
               }`}
               renderTextLayer={!isBlurred}
               renderAnnotationLayer={!isBlurred}
@@ -116,14 +106,12 @@ const PdfViewerContent = ({ url, isPremium = false, width }: PdfViewerProps) => 
             {/* Freemium Overlay */}
             {isBlurred && (
               <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/5 text-center">
-                <div className="bg-background/90 border-border/50 mx-4 max-w-sm rounded-xl border p-6 shadow-2xl backdrop-blur-sm">
-                  <div className="bg-primary/10 mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-                    <Lock className="text-primary h-6 w-6" />
+                <div className="rounded-xl bg-background/90 p-6 shadow-2xl backdrop-blur-sm border border-border/50 max-w-sm mx-4">
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                    <Lock className="h-6 w-6 text-primary" />
                   </div>
                   <h3 className="mb-2 text-lg font-bold">Premium Content</h3>
-                  <p className="text-muted-foreground mb-4 text-sm">
-                    Upgrade to premium to unlock the full document.
-                  </p>
+                  <p className="mb-4 text-sm text-muted-foreground">Upgrade to premium to unlock the full document.</p>
                   <Button className="w-full font-semibold">Unlock Now</Button>
                 </div>
               </div>
@@ -137,10 +125,7 @@ const PdfViewerContent = ({ url, isPremium = false, width }: PdfViewerProps) => 
 
 export const PdfViewer = (props: PdfViewerProps) => {
   return (
-    <ErrorBoundary
-      FallbackComponent={DocumentErrorFallback}
-      onReset={() => window.location.reload()}
-    >
+    <ErrorBoundary FallbackComponent={DocumentErrorFallback} onReset={() => window.location.reload()}>
       <PdfViewerContent {...props} />
     </ErrorBoundary>
   );

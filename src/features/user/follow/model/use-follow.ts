@@ -1,6 +1,6 @@
-import { UserProfile } from '@entities/session/model/types';
-import { followUser, unfollowUser } from '@entities/user/api/user-api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { followUser, unfollowUser } from '@entities/user/api/user-api';
+import { UserProfile } from '@entities/session/model/types';
 import { toast } from 'sonner'; // Assuming sonner is used, or replace with appropriate toast
 
 export function useFollow(targetUserId: string) {

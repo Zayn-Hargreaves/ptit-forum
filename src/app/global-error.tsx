@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export default function GlobalError({
   error,
@@ -10,7 +10,7 @@ export default function GlobalError({
   reset: () => void;
 }>) {
   useEffect(() => {
-    console.error('Global error occurred:', error);
+    console.error("Global error occurred:", error);
   }, [error]);
 
   return (
@@ -19,7 +19,7 @@ export default function GlobalError({
         <div className="flex min-h-screen flex-col items-center justify-center gap-4">
           <h2 className="text-2xl font-bold">Đã có lỗi xảy ra!</h2>
           <button
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded px-4 py-2"
+            className="rounded bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
             onClick={() => reset()}
           >
             Thử lại

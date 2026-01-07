@@ -1,30 +1,29 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import React from 'react';
-
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React from "react";
 import {
   Table,
+  TableHeader,
   TableBody,
-  TableCaption,
-  TableCell,
   TableFooter,
   TableHead,
-  TableHeader,
   TableRow,
-} from './table';
+  TableCell,
+  TableCaption,
+} from "./table";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Table> = {
-  title: 'shared/UI/Table',
+  title: "shared/UI/Table",
   component: Table,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   argTypes: {
     className: {
-      control: 'text',
-      description: 'Custom Tailwind utility classes applied to the table root.',
+      control: "text",
+      description: "Custom Tailwind utility classes applied to the table root.",
     },
   },
 };
@@ -41,7 +40,7 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
   render: (args) => (
-    <Table {...args} className="w-96 rounded-md border">
+    <Table {...args} className="w-96 border rounded-md">
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
@@ -70,7 +69,7 @@ export const Default: Story = {
  */
 export const WithFooter: Story = {
   render: () => (
-    <Table className="w-96 rounded-md border">
+    <Table className="w-96 border rounded-md">
       <TableHeader>
         <TableRow>
           <TableHead>Product</TableHead>
@@ -107,13 +106,13 @@ export const WithFooter: Story = {
 export const InteractiveRows: Story = {
   render: () => {
     const data = [
-      { name: 'Jane Cooper', email: 'jane@example.com', active: true },
-      { name: 'Mark Diaz', email: 'mark@example.com', active: false },
-      { name: 'Laura White', email: 'laura@example.com', active: true },
+      { name: "Jane Cooper", email: "jane@example.com", active: true },
+      { name: "Mark Diaz", email: "mark@example.com", active: false },
+      { name: "Laura White", email: "laura@example.com", active: true },
     ];
 
     return (
-      <Table className="w-[28rem] rounded-md border">
+      <Table className="w-[28rem] border rounded-md">
         <TableHeader>
           <TableRow>
             <TableHead>Status</TableHead>
@@ -123,8 +122,11 @@ export const InteractiveRows: Story = {
         </TableHeader>
         <TableBody>
           {data.map((item, idx) => (
-            <TableRow key={idx} data-state={item.active ? 'selected' : undefined}>
-              <TableCell>{item.active ? 'Active' : 'Inactive'}</TableCell>
+            <TableRow
+              key={idx}
+              data-state={item.active ? "selected" : undefined}
+            >
+              <TableCell>{item.active ? "Active" : "Inactive"}</TableCell>
               <TableCell>{item.name}</TableCell>
               <TableCell>{item.email}</TableCell>
             </TableRow>
@@ -141,7 +143,7 @@ export const InteractiveRows: Story = {
  */
 export const InCard: Story = {
   render: () => (
-    <div className="bg-card w-[32rem] space-y-3 rounded-lg border p-5 shadow-sm">
+    <div className="w-[32rem] rounded-lg border bg-card p-5 shadow-sm space-y-3">
       <h3 className="text-sm font-medium">Recent Registrations</h3>
       <Table>
         <TableHeader>

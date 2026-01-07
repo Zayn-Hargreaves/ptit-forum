@@ -1,27 +1,27 @@
-import { Avatar, AvatarFallback } from '@shared/ui/avatar/avatar';
-import { Badge } from '@shared/ui/badge/badge';
-import { Button } from '@shared/ui/button/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/ui/card/card';
-import { Separator } from '@shared/ui/separator/separator';
-import { Bookmark, Download, Flag, Share2 } from 'lucide-react';
+import { Avatar, AvatarFallback } from "@shared/ui/avatar/avatar";
+import { Badge } from "@shared/ui/badge/badge";
+import { Button } from "@shared/ui/button/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card/card";
+import { Separator } from "@shared/ui/separator/separator";
+import { Download, Bookmark, Share2, Flag } from "lucide-react";
 
-export function DocumentInfo({ documentId: _documentId }: { documentId: string }) {
+export function DocumentInfo({ documentId }: { documentId: string }) {
   // Mock data
   const document = {
-    title: 'Slide bài giảng Lập trình hướng đối tượng - Chương 1',
+    title: "Slide bài giảng Lập trình hướng đối tượng - Chương 1",
     description:
-      'Slide bài giảng chi tiết về các khái niệm cơ bản của lập trình hướng đối tượng, bao gồm class, object, inheritance, polymorphism.',
-    subject: 'OOP',
-    type: 'Slide',
-    semester: 'Kỳ 3',
-    uploader: 'Nguyễn Văn A',
+      "Slide bài giảng chi tiết về các khái niệm cơ bản của lập trình hướng đối tượng, bao gồm class, object, inheritance, polymorphism.",
+    subject: "OOP",
+    type: "Slide",
+    semester: "Kỳ 3",
+    uploader: "Nguyễn Văn A",
     uploaderLevel: 5,
-    uploadDate: '2 ngày trước',
+    uploadDate: "2 ngày trước",
     downloads: 234,
     views: 567,
-    fileType: 'PDF',
-    fileSize: '2.5 MB',
-    tags: ['oop', 'java', 'lập-trình'],
+    fileType: "PDF",
+    fileSize: "2.5 MB",
+    tags: ["oop", "java", "lập-trình"],
   };
 
   return (
@@ -32,7 +32,9 @@ export function DocumentInfo({ documentId: _documentId }: { documentId: string }
           <CardTitle className="text-lg">{document.title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-muted-foreground text-sm">{document.description}</p>
+          <p className="text-sm text-muted-foreground">
+            {document.description}
+          </p>
 
           <div className="flex flex-wrap gap-2">
             <Badge variant="secondary">{document.subject}</Badge>
@@ -99,7 +101,9 @@ export function DocumentInfo({ documentId: _documentId }: { documentId: string }
                   Level {document.uploaderLevel}
                 </Badge>
               </div>
-              <p className="text-muted-foreground text-sm">{document.uploadDate}</p>
+              <p className="text-sm text-muted-foreground">
+                {document.uploadDate}
+              </p>
             </div>
           </div>
         </CardContent>
@@ -122,7 +126,11 @@ export function DocumentInfo({ documentId: _documentId }: { documentId: string }
       </Card>
 
       {/* Report */}
-      <Button variant="ghost" size="sm" className="text-muted-foreground w-full">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="w-full text-muted-foreground"
+      >
         <Flag className="mr-2 h-4 w-4" />
         Báo cáo tài liệu
       </Button>

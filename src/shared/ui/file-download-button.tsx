@@ -11,11 +11,7 @@ interface FileDownloadButtonProps {
   variant?: 'default' | 'outline' | 'ghost' | 'link';
 }
 
-export const FileDownloadButton = ({
-  fileUrl,
-  fileName,
-  variant = 'outline',
-}: FileDownloadButtonProps) => {
+export const FileDownloadButton = ({ fileUrl, fileName, variant = 'outline' }: FileDownloadButtonProps) => {
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownload = async (e: React.MouseEvent) => {
@@ -28,7 +24,7 @@ export const FileDownloadButton = ({
       // 1. Fetch file from Firebase as Blob
       const response = await fetch(fileUrl);
       if (!response.ok) throw new Error('Download failed');
-
+      
       const blob = await response.blob();
 
       // 2. Create Object URL
@@ -44,7 +40,7 @@ export const FileDownloadButton = ({
       // 4. Cleanup
       link.remove();
       window.URL.revokeObjectURL(url);
-
+      
       toast.success('Đã bắt đầu tải xuống');
     } catch (error) {
       console.error('Download error:', error);
@@ -57,10 +53,10 @@ export const FileDownloadButton = ({
   };
 
   return (
-    <Button
-      variant={variant}
-      size="sm"
-      onClick={handleDownload}
+    <Button 
+      variant={variant} 
+      size="sm" 
+      onClick={handleDownload} 
       disabled={isDownloading}
       className="gap-2"
     >

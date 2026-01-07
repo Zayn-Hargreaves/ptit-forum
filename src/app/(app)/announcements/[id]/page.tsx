@@ -1,10 +1,10 @@
-import { getAnnouncementById } from '@entities/announcement/api';
-import { AnnouncementDetail } from '@entities/announcement/ui/announcement-detail';
-import { RelatedAnnouncements } from '@shared/components/announcements/related-annoucement';
-import { Metadata } from 'next';
-import { cookies } from 'next/headers';
-import { notFound } from 'next/navigation';
-import { cache } from 'react';
+import { cache } from "react";
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { getAnnouncementById } from "@entities/announcement/api";
+import { AnnouncementDetail } from "@entities/announcement/ui/announcement-detail";
+import { RelatedAnnouncements } from "@shared/components/announcements/related-annoucement";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -12,11 +12,11 @@ type PageProps = {
 
 const getCachedAnnouncement = cache(async (id: string) => {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get('accessToken');
+  const accessToken = cookieStore.get("accessToken");
 
   const headers: Record<string, string> = {};
   if (accessToken) {
-    headers['Authorization'] = `Bearer ${accessToken.value}`;
+    headers["Authorization"] = `Bearer ${accessToken.value}`;
   }
 
   return getAnnouncementById(id, {
@@ -32,11 +32,11 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
     return {
       title: `${data.title} | PTIT Forum`,
-      description: data.content?.slice(0, 160) || '',
+      description: data.content?.slice(0, 160) || "",
     };
   } catch (error) {
-    if (error instanceof Error && error.message === 'NOT_FOUND') {
-      return { title: 'Thông báo không tồn tại' };
+    if (error instanceof Error && error.message === "NOT_FOUND") {
+      return { title: "Thông báo không tồn tại" };
       // notFound();
     }
     throw error;
@@ -50,20 +50,23 @@ export default async function AnnouncementDetailPage(props: PageProps) {
     const announcement = await getCachedAnnouncement(params.id);
 
     return (
-      <div className="container mx-auto max-w-6xl px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="grid gap-8 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <AnnouncementDetail data={announcement} />
           </div>
 
-          <div className="space-y-6 lg:col-span-4">
-            <RelatedAnnouncements currentId={announcement.id} type={announcement.type} />
+          <div className="lg:col-span-4 space-y-6">
+            <RelatedAnnouncements
+              currentId={announcement.id}
+              type={announcement.type}
+            />
           </div>
         </div>
       </div>
     );
   } catch (error) {
-    if (error instanceof Error && error.message === 'NOT_FOUND') {
+    if (error instanceof Error && error.message === "NOT_FOUND") {
       notFound();
     }
     throw error;

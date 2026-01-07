@@ -1,59 +1,58 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import React from 'react';
-
-import { Slider } from './slider';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React from "react";
+import { Slider } from "./slider";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Slider> = {
-  title: 'shared/UI/Slider',
+  title: "shared/UI/Slider",
   component: Slider,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   argTypes: {
     className: {
-      control: 'text',
-      description: 'Custom className applied to the slider root.',
+      control: "text",
+      description: "Custom className applied to the slider root.",
     },
     value: {
-      control: 'object',
+      control: "object",
       description:
-        'Controlled value of the slider. When provided, the slider behaves as a controlled component.',
+        "Controlled value of the slider. When provided, the slider behaves as a controlled component.",
     },
     defaultValue: {
-      control: 'object',
+      control: "object",
       description:
-        'Initial value of the slider in uncontrolled mode. Can be a single-value or range (array of numbers).',
+        "Initial value of the slider in uncontrolled mode. Can be a single-value or range (array of numbers).",
     },
     min: {
-      control: 'number',
-      description: 'Minimum value of the slider.',
+      control: "number",
+      description: "Minimum value of the slider.",
     },
     max: {
-      control: 'number',
-      description: 'Maximum value of the slider.',
+      control: "number",
+      description: "Maximum value of the slider.",
     },
     step: {
-      control: 'number',
-      description: 'Step between values when moving the thumb.',
+      control: "number",
+      description: "Step between values when moving the thumb.",
     },
     orientation: {
-      control: 'inline-radio',
-      options: ['horizontal', 'vertical'],
-      description: 'Slider orientation.',
+      control: "inline-radio",
+      options: ["horizontal", "vertical"],
+      description: "Slider orientation.",
     },
     disabled: {
-      control: 'boolean',
-      description: 'Disables interaction when true.',
+      control: "boolean",
+      description: "Disables interaction when true.",
     },
   },
   args: {
     min: 0,
     max: 100,
     defaultValue: [40],
-    orientation: 'horizontal',
+    orientation: "horizontal",
   },
 };
 
@@ -85,15 +84,15 @@ export const Range: Story = {
  */
 export const Vertical: Story = {
   args: {
-    orientation: 'vertical',
+    orientation: "vertical",
     defaultValue: [60],
-    className: 'h-48 max-w-10',
+    className: "h-48 max-w-10",
   },
   render: (args) => (
     <div className="flex items-center gap-6">
       <div className="flex flex-col items-center gap-2">
-        <span className="text-muted-foreground text-xs">Volume</span>
-        <div className="flex h-48 items-center">
+        <span className="text-xs text-muted-foreground">Volume</span>
+        <div className="h-48 flex items-center">
           <Slider {...args} />
         </div>
       </div>
@@ -123,15 +122,21 @@ export const WithLabel: Story = {
       <div className="w-80 space-y-4">
         <div className="flex items-center justify-between text-sm">
           <span className="font-medium">Opacity</span>
-          <span className="text-muted-foreground tabular-nums">{value[0]}%</span>
+          <span className="tabular-nums text-muted-foreground">
+            {value[0]}%
+          </span>
         </div>
-        <Slider {...args} value={value} onValueChange={(val) => setValue(val)} />
+        <Slider
+          {...args}
+          value={value}
+          onValueChange={(val) => setValue(val)}
+        />
       </div>
     );
   },
   parameters: {
     controls: {
-      exclude: ['value', 'defaultValue', 'onValueChange'],
+      exclude: ["value", "defaultValue", "onValueChange"],
     },
   },
 };
@@ -152,10 +157,10 @@ export const WithTicks: Story = {
     return (
       <div className="w-80 space-y-3">
         <Slider {...args} />
-        <div className="text-muted-foreground relative flex justify-between text-[11px]">
+        <div className="relative flex justify-between text-[11px] text-muted-foreground">
           {ticks.map((tick) => (
             <span key={tick} className="flex flex-col items-center">
-              <span className="bg-border h-2 w-px" />
+              <span className="h-2 w-px bg-border" />
               <span className="mt-1 tabular-nums">{tick}</span>
             </span>
           ))}

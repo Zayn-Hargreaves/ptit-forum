@@ -1,9 +1,9 @@
 'use client';
 
-import { getMyProfile } from '@entities/user/api/user-api';
-import { AxiosError } from 'axios';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { AxiosError } from 'axios';
+import { getMyProfile } from '@entities/user/api/user-api';
 
 export function ClientProfileRedirect() {
   const router = useRouter();
@@ -36,7 +36,7 @@ export function ClientProfileRedirect() {
 
   return (
     <div className="flex h-[50vh] items-center justify-center">
-      <div className="border-primary h-8 w-8 animate-spin rounded-full border-4 border-t-transparent" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
     </div>
   );
 }

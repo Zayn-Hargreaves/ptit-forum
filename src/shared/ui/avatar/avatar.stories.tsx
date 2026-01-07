@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import * as React from 'react';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import * as React from "react";
 
-import { Avatar, AvatarFallback, AvatarImage } from './avatar';
+import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Avatar> = {
-  title: 'shared/UI/Avatar',
+  title: "shared/UI/Avatar",
   component: Avatar,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
   argTypes: {
     children: {
@@ -49,7 +49,10 @@ export const WithFallback: Story = {
 export const BrokenImage: Story = {
   render: (args) => (
     <Avatar {...args}>
-      <AvatarImage src="https://example.com/this-image-does-not-exist.jpg" alt="Ảnh lỗi" />
+      <AvatarImage
+        src="https://example.com/this-image-does-not-exist.jpg"
+        alt="Ảnh lỗi"
+      />
       <AvatarFallback>BI</AvatarFallback>
     </Avatar>
   ),
@@ -57,7 +60,7 @@ export const BrokenImage: Story = {
 
 export const CustomSize: Story = {
   args: {
-    className: 'size-16',
+    className: "size-16",
   },
   render: (args) => (
     <Avatar {...args}>
@@ -69,11 +72,15 @@ export const CustomSize: Story = {
 
 export const SquareShape: Story = {
   args: {
-    className: 'rounded-md',
+    className: "rounded-md",
   },
   render: (args) => (
     <Avatar {...args}>
-      <AvatarImage src="https://github.com/react.png" alt="@react" className="rounded-md" />
+      <AvatarImage
+        src="https://github.com/react.png"
+        alt="@react"
+        className="rounded-md"
+      />
       <AvatarFallback className="rounded-md">R</AvatarFallback>
     </Avatar>
   ),

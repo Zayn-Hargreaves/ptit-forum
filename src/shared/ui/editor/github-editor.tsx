@@ -1,44 +1,40 @@
 'use client';
 
-import { ALLOWED_MEDIA_MINES } from '@shared/constants/constants';
-import { useFileUpload } from '@shared/hooks/use-file-upload';
-import { cn } from '@shared/lib/utils';
-import { Button } from '@shared/ui/button/button';
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import React, { useCallback, useEffect, useImperativeHandle, useRef, forwardRef, useMemo } from 'react';
+import { useEditor, EditorContent, type Editor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
+
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import { common, createLowlight } from 'lowlight';
+
 import { Table } from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
-import TableRow from '@tiptap/extension-table-row';
-import { type Editor, EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import { common, createLowlight } from 'lowlight';
+
+import { Video } from './extensions/video';
+import { useFileUpload } from '@shared/hooks/use-file-upload';
+
+import { toast } from 'sonner';
+import { Button } from '@shared/ui/button/button';
 import {
   Bold,
+  Italic,
+  List,
+  ListOrdered,
+  Image as ImageIcon,
+  Loader2,
   Code2,
   Heading1,
   Heading2,
   Heading3,
-  Image as ImageIcon,
-  Italic,
-  List,
-  ListOrdered,
-  Loader2,
-  Quote,
   Table as TableIcon,
+  Quote,
 } from 'lucide-react';
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-} from 'react';
-import { toast } from 'sonner';
-
-import { Video } from './extensions/video';
+import { cn } from '@shared/lib/utils';
+import { ALLOWED_MEDIA_MINES } from '@shared/constants/constants';
 
 const lowlight = createLowlight(common);
 
@@ -56,8 +52,7 @@ export interface GithubEditorRef {
   focus: () => void;
 }
 
-const FIREBASE_BUCKET_URL =
-  'https://firebasestorage.googleapis.com/v0/b/graduated-project-17647.firebasestorage.app/o/';
+const FIREBASE_BUCKET_URL = "https://firebasestorage.googleapis.com/v0/b/graduated-project-17647.firebasestorage.app/o/";
 
 const isMediaFile = (file: File) => {
   const t = (file.type || '').toLowerCase();
@@ -107,7 +102,7 @@ const ToolbarButton = ({
 
 export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(function GithubEditor(
   { value = '', onChange, disabled },
-  ref,
+  ref
 ) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const editorRef = useRef<Editor | null>(null);
@@ -133,36 +128,33 @@ export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(funct
         folderName: 'posts',
       });
 
-      const finalResult = Array.isArray(result) ? result[0] : result;
-      let finalUrl = finalResult?.url;
+
+      let finalUrl = result?.url;
       if (finalUrl && !finalUrl.startsWith('http')) {
         finalUrl = `${FIREBASE_BUCKET_URL}${finalUrl}`;
       }
 
-      return finalUrl ?? finalResult?.fileName ?? null;
+      return finalUrl ?? result?.fileName ?? null;
     },
-    [upload],
+    [upload]
   );
 
-  const extensions = useMemo(
-    () => [
-      StarterKit.configure({ codeBlock: false }),
-      Placeholder.configure({
-        placeholder: 'Nhập nội dung bài viết...',
-      }),
-      CodeBlockLowlight.configure({
-        lowlight,
-        defaultLanguage: 'javascript',
-      }),
-      Table.configure({ resizable: true }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      Image.configure({ inline: true, allowBase64: true }),
-      Video,
-    ],
-    [],
-  );
+  const extensions = useMemo(() => [
+    StarterKit.configure({ codeBlock: false }),
+    Placeholder.configure({
+      placeholder: 'Nhập nội dung bài viết...',
+    }),
+    CodeBlockLowlight.configure({
+      lowlight,
+      defaultLanguage: 'javascript',
+    }),
+    Table.configure({ resizable: true }),
+    TableRow,
+    TableHeader,
+    TableCell,
+    Image.configure({ inline: true, allowBase64: true }),
+    Video,
+  ], []);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -247,7 +239,7 @@ export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(funct
       getHTML: () => editor?.getHTML() ?? '',
       focus: () => editor?.commands.focus(),
     }),
-    [editor],
+    [editor]
   );
 
   const triggerFileInput = () => fileInputRef.current?.click();
@@ -280,10 +272,10 @@ export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(funct
   if (!editor) return null;
 
   return (
-    <div className="border-input bg-background relative flex flex-col overflow-hidden rounded-md border">
+    <div className="rounded-md border border-input bg-background relative flex flex-col overflow-hidden">
       {/* Toolbar */}
-      <div className="bg-muted/20 flex items-center justify-between border-b px-2 py-1">
-        <div className="flex flex-wrap items-center gap-0.5">
+      <div className="flex items-center justify-between border-b px-2 py-1 bg-muted/20">
+        <div className="flex items-center gap-0.5 flex-wrap">
           <input
             type="file"
             ref={fileInputRef}
@@ -294,7 +286,7 @@ export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(funct
           />
 
           {/* Headings */}
-          <div className="mr-1 flex items-center space-x-0.5 border-r pr-1">
+          <div className="flex items-center border-r pr-1 mr-1 space-x-0.5">
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
               isActive={editor.isActive('heading', { level: 1 })}
@@ -316,7 +308,7 @@ export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(funct
           </div>
 
           {/* Formatting */}
-          <div className="mr-1 flex items-center space-x-0.5 border-r pr-1">
+          <div className="flex items-center border-r pr-1 mr-1 space-x-0.5">
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBold().run()}
               isActive={editor.isActive('bold')}
@@ -338,7 +330,7 @@ export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(funct
           </div>
 
           {/* Lists */}
-          <div className="mr-1 flex items-center space-x-0.5 border-r pr-1">
+          <div className="flex items-center border-r pr-1 mr-1 space-x-0.5">
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBulletList().run()}
               isActive={editor.isActive('bulletList')}
@@ -364,9 +356,7 @@ export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(funct
             />
 
             <ToolbarButton
-              onClick={() =>
-                editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
-              }
+              onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
               icon={TableIcon}
               label="Insert Table"
               disabled={disabled}
@@ -381,17 +371,13 @@ export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(funct
               disabled={disabled || isUploading}
               title="Insert Image/Video"
             >
-              {isUploading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <ImageIcon className="h-4 w-4" />
-              )}
+              {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
             </Button>
           </div>
         </div>
 
         {isUploading && (
-          <div className="text-muted-foreground hidden items-center gap-2 pr-1 text-xs sm:flex">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground pr-1">
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
             Uploading…
           </div>
@@ -400,7 +386,7 @@ export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(funct
 
       <EditorContent editor={editor} />
 
-      <div className="text-muted-foreground bg-muted/10 flex items-center gap-2 border-t px-3 py-2 text-xs">
+      <div className="border-t px-3 py-2 text-xs text-muted-foreground flex items-center gap-2 bg-muted/10">
         <span>Support: Drag & Drop Image/Video, Syntax Highlighting</span>
       </div>
     </div>

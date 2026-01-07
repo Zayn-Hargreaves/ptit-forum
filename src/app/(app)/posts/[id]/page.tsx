@@ -1,12 +1,43 @@
 'use client';
 
-import { TargetType } from '@entities/interaction/model/types';
+import React, { useEffect, useState, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useParams, useRouter } from 'next/navigation';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import {
+  ArrowLeft,
+  Calendar,
+  Eye,
+  MessageSquare,
+  Share2,
+  MoreHorizontal,
+  Paperclip,
+  Edit,
+  Trash2,
+  Flag,
+  Loader2,
+  Download,
+  Eye as EyeIcon,
+  FileText,
+  Image,
+  Video,
+} from 'lucide-react';
+import { toast } from 'sonner';
+
 import { postApi } from '@entities/post/api/post-api';
-import type { Post, PostAttachment } from '@entities/post/model/types';
 import { PostContent } from '@entities/post/ui/post-content';
-import { EditPostDialog } from '@features/post/update-post/ui/edit-post-dialog';
-import { ReactionButton } from '@features/reaction/ui/reaction-button';
-import { ReportDialog } from '@features/report/ui/report-dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar/avatar';
+import { Button } from '@shared/ui/button/button';
+import { Badge } from '@shared/ui/badge/badge';
+import { Skeleton } from '@shared/ui/skeleton/skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@shared/ui/dropdown-menu/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,42 +48,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@shared/ui/alert-dialog/alert-dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar/avatar';
-import { Badge } from '@shared/ui/badge/badge';
-import { Button } from '@shared/ui/button/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@shared/ui/dropdown-menu/dropdown-menu';
-import { Skeleton } from '@shared/ui/skeleton/skeleton';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { ReactionButton } from '@features/reaction/ui/reaction-button';
 import { CommentSection } from '@widgets/post-comments/comment-section';
-import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
-import {
-  ArrowLeft,
-  Calendar,
-  Download,
-  Edit,
-  Eye,
-  Eye as EyeIcon,
-  FileText,
-  Flag,
-  Image as ImageIcon,
-  Loader2,
-  MessageSquare,
-  MoreHorizontal,
-  Paperclip,
-  Share2,
-  Trash2,
-  Video,
-} from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
+import { EditPostDialog } from '@features/post/update-post/ui/edit-post-dialog';
+import { ReportDialog } from '@features/report/ui/report-dialog';
+import type { Post, PostAttachment } from '@entities/post/model/types';
+import { TargetType } from '@entities/interaction/model/types';
 
 export default function PostDetailPage() {
   const params = useParams();
@@ -131,7 +133,7 @@ export default function PostDetailPage() {
   const getFileIcon = (type: string) => {
     switch (type) {
       case 'IMAGE':
-        return <ImageIcon className="h-4 w-4 text-green-600" />;
+        return <Image className="h-4 w-4 text-green-600" />;
       case 'VIDEO':
         return <Video className="h-4 w-4 text-blue-600" />;
       case 'DOCUMENT':
@@ -179,7 +181,7 @@ export default function PostDetailPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
       toast.success('Đã tải xuống file');
-    } catch (_error) {
+    } catch (error) {
       toast.error('Không thể tải xuống file');
     }
   };
@@ -235,7 +237,7 @@ export default function PostDetailPage() {
 
   if (isError || !post) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4">
+      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
         <h2 className="text-2xl font-bold">Không tìm thấy bài viết</h2>
         <Button onClick={() => router.push('/forum')}>Quay lại diễn đàn</Button>
       </div>
@@ -246,23 +248,18 @@ export default function PostDetailPage() {
    * RENDER CONTENT
    * ===================== */
   return (
-    <div className="animate-in fade-in-50 container mx-auto max-w-4xl space-y-8 py-6">
+    <div className="container max-w-4xl py-6 mx-auto space-y-8 animate-in fade-in-50">
       {/* HEADER */}
       <div className="space-y-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-muted-foreground -ml-2 gap-2"
-          onClick={() => router.back()}
-        >
+        <Button variant="ghost" size="sm" className="gap-2 -ml-2 text-muted-foreground" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4" /> Quay lại
         </Button>
 
         <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 space-y-2">
+          <div className="space-y-2 flex-1">
             <h1 className="text-3xl font-extrabold tracking-tight lg:text-4xl">{post.title}</h1>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {/* ✅ Render Topic thật + fallback nếu null */}
               {post.topic?.name ? (
                 <Badge variant="secondary" className="hover:bg-secondary/80">
@@ -274,11 +271,11 @@ export default function PostDetailPage() {
                 </Badge>
               )}
 
-              <span className="text-muted-foreground text-sm">•</span>
+              <span className="text-sm text-muted-foreground">•</span>
 
-              <span className="text-muted-foreground flex items-center gap-1 text-sm">
+              <span className="text-sm text-muted-foreground flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
-                {format(new Date(post.createdAt), "dd/MM/yyyy 'lúc' HH:mm", {
+                {format(new Date(post.createdDateTime), "dd/MM/yyyy 'lúc' HH:mm", {
                   locale: vi,
                 })}
               </span>
@@ -310,10 +307,7 @@ export default function PostDetailPage() {
               )}
 
               {post.permissions?.canDelete && (
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={() => setIsDeleteOpen(true)}
-                >
+                <DropdownMenuItem className="text-destructive" onClick={() => setIsDeleteOpen(true)}>
                   <Trash2 className="mr-2 h-4 w-4" /> Xóa bài viết
                 </DropdownMenuItem>
               )}
@@ -322,7 +316,7 @@ export default function PostDetailPage() {
         </div>
 
         {/* AUTHOR */}
-        <div className="flex items-center justify-between border-y py-4">
+        <div className="flex items-center justify-between py-4 border-y">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10 border">
               <AvatarImage src={post.author?.avatarUrl ?? ''} />
@@ -330,8 +324,8 @@ export default function PostDetailPage() {
             </Avatar>
 
             <div>
-              <div className="text-sm font-semibold">{post.author?.fullName}</div>
-              <div className="text-muted-foreground text-xs">
+              <div className="font-semibold text-sm">{post.author?.fullName}</div>
+              <div className="text-xs text-muted-foreground">
                 {post.author?.badge && post.author?.faculty
                   ? `${post.author.badge} - ${post.author.faculty}`
                   : post.author?.badge || post.author?.faculty || ''}
@@ -349,9 +343,9 @@ export default function PostDetailPage() {
       <PostContent content={post.content} />
 
       {/* ATTACHMENTS */}
-      {post.attachments && post.attachments.length > 0 && (
-        <div className="bg-muted/30 rounded-lg border p-4">
-          <h3 className="mb-3 flex items-center gap-2 font-semibold">
+      {post.attachments?.length > 0 && (
+        <div className="p-4 border rounded-lg bg-muted/30">
+          <h3 className="font-semibold mb-3 flex items-center gap-2">
             <Paperclip className="h-4 w-4" /> Tài liệu đính kèm
           </h3>
 
@@ -359,17 +353,13 @@ export default function PostDetailPage() {
             {post.attachments.map((file: PostAttachment) => (
               <div
                 key={file.id}
-                className="bg-background hover:border-primary flex items-center justify-between rounded-lg border p-3 transition-colors"
+                className="flex items-center justify-between p-3 bg-background border rounded-lg hover:border-primary transition-colors"
               >
-                <div className="flex min-w-0 flex-1 items-center gap-3">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
                   {getFileIcon(file.type)}
-                  <div className="min-w-0 flex-1">
-                    <div className="text-foreground truncate text-sm font-medium">{file.name}</div>
-                    {file.size && (
-                      <div className="text-muted-foreground text-xs">
-                        {formatFileSize(file.size)}
-                      </div>
-                    )}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-foreground truncate">{file.name}</div>
+                    {file.size && <div className="text-xs text-muted-foreground">{formatFileSize(file.size)}</div>}
                   </div>
                 </div>
 
@@ -400,7 +390,7 @@ export default function PostDetailPage() {
       )}
 
       {/* FOOTER */}
-      <div className="text-muted-foreground flex items-center gap-6 border-t py-4">
+      <div className="flex items-center gap-6 py-4 border-t text-muted-foreground">
         <ReactionButton post={post} />
         <div className="flex items-center gap-2">
           <Eye className="h-5 w-5" /> {post.stats?.viewCount ?? 0}
@@ -411,7 +401,7 @@ export default function PostDetailPage() {
       </div>
 
       {/* COMMENTS */}
-      <CommentSection postId={id} postAuthorId={post.author?.id} />
+      <CommentSection postId={id} />
 
       {/* MODALS */}
       <EditPostDialog post={post} open={isEditOpen} onOpenChange={setIsEditOpen} />
@@ -430,11 +420,7 @@ export default function PostDetailPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Hủy</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deletePost(id)}
-              className="bg-destructive"
-              disabled={isDeleting}
-            >
+            <AlertDialogAction onClick={() => deletePost(id)} className="bg-destructive" disabled={isDeleting}>
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Xóa luôn
             </AlertDialogAction>
@@ -450,7 +436,7 @@ export default function PostDetailPage() {
  * ===================== */
 function PostDetailSkeleton() {
   return (
-    <div className="container mx-auto max-w-4xl space-y-8 py-6">
+    <div className="container max-w-4xl py-6 mx-auto space-y-8">
       <Skeleton className="h-8 w-24" />
       <Skeleton className="h-12 w-3/4" />
       <Skeleton className="h-40 w-full" />

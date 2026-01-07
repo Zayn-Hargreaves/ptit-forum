@@ -19,7 +19,7 @@ export const ROLE_LEVELS: Record<TopicRole, number> = {
 /**
  * Check if viewer can manage (remove, approve, change role) a target member
  * Rule: You can only manage members with LOWER level than yours
- *
+ * 
  * @example
  * canManageMember('MANAGER', 'MEMBER') // true (2 > 1)
  * canManageMember('MANAGER', 'MANAGER') // false (2 = 2)
@@ -29,7 +29,7 @@ export const ROLE_LEVELS: Record<TopicRole, number> = {
 export function canManageMember(viewerRole: TopicRole, targetRole: TopicRole): boolean {
   const viewerLevel = ROLE_LEVELS[viewerRole];
   const targetLevel = ROLE_LEVELS[targetRole];
-
+  
   return viewerLevel > targetLevel;
 }
 
@@ -59,23 +59,21 @@ export function getRoleLabel(role: TopicRole): string {
     MEMBER: 'Thành viên',
     GUEST: 'Khách',
   };
-
+  
   return labels[role] || role;
 }
 
 /**
  * Get Badge variant for role display
  */
-export function getRoleBadgeVariant(
-  role: TopicRole,
-): 'default' | 'secondary' | 'destructive' | 'outline' {
+export function getRoleBadgeVariant(role: TopicRole): 'default' | 'secondary' | 'destructive' | 'outline' {
   const variants: Record<TopicRole, 'default' | 'secondary' | 'destructive' | 'outline'> = {
     OWNER: 'destructive',
     MANAGER: 'default',
     MEMBER: 'secondary',
     GUEST: 'outline',
   };
-
+  
   return variants[role] || 'secondary';
 }
 

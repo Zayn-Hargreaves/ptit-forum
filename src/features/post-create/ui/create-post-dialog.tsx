@@ -1,27 +1,13 @@
 'use client';
 
-import { sessionApi } from '@entities/session/api/session-api';
-import { useMediaQuery } from '@shared/hooks/use-media-query';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@shared/ui/dialog/dialog';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@shared/ui/drawer/drawer';
-import { UserAvatar } from '@shared/ui/user-avatar/user-avatar';
-import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-
+import { useQuery } from '@tanstack/react-query';
+import { useMediaQuery } from '@shared/hooks/use-media-query';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@shared/ui/dialog/dialog';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@shared/ui/drawer/drawer';
+import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar/avatar';
 import { CreatePostForm } from './create-post-form';
+import { sessionApi } from '@entities/session/api/session-api';
 
 interface CreatePostDialogProps {
   topicId: string;
@@ -29,18 +15,25 @@ interface CreatePostDialogProps {
 
 export function CreatePostDialog({ topicId }: CreatePostDialogProps) {
   const [open, setOpen] = useState(false);
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   // Fetch current user profile
   const { data: user } = useQuery({
     queryKey: ['session', 'profile'],
-    queryFn: sessionApi.getProfile,
+    queryFn: sessionApi.getProfile
   });
 
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
   const TriggerButton = (
-    <div className="bg-card hover:bg-accent/50 mb-6 flex cursor-pointer items-center gap-4 rounded-xl border p-4 shadow-sm transition-colors">
-      <UserAvatar name={user?.fullName} avatarUrl={user?.avatarUrl} className="h-10 w-10" />
-      <div className="bg-muted/50 text-muted-foreground flex h-10 flex-1 items-center rounded-full px-4 text-sm">
+    <div className="bg-card border rounded-xl p-4 mb-6 cursor-pointer hover:bg-accent/50 transition-colors flex gap-4 items-center shadow-sm">
+      <Avatar className="h-10 w-10">
+        {user?.avatarUrl && <AvatarImage src={user.avatarUrl} alt={user.fullName} />}
+        <AvatarFallback>{user ? getInitials(user.fullName) : 'ME'}</AvatarFallback>
+      </Avatar>
+      <div className="flex-1 bg-muted/50 rounded-full h-10 flex items-center px-4 text-muted-foreground text-sm">
         Bạn đang nghĩ gì?
       </div>
     </div>
@@ -49,18 +42,17 @@ export function CreatePostDialog({ topicId }: CreatePostDialogProps) {
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>{TriggerButton}</DialogTrigger>
+        <DialogTrigger asChild>
+          {TriggerButton}
+        </DialogTrigger>
         <DialogContent className="sm:max-w-xl">
           <DialogHeader>
             <DialogTitle>Tạo bài viết thảo luận</DialogTitle>
-            <DialogDescription className="sr-only">
-              Tạo bài viết mới trong chủ đề này
-            </DialogDescription>
           </DialogHeader>
-          <CreatePostForm
-            topicId={topicId}
-            onSuccess={() => setOpen(false)}
-            onCancel={() => setOpen(false)}
+          <CreatePostForm 
+             topicId={topicId} 
+             onSuccess={() => setOpen(false)}
+             onCancel={() => setOpen(false)}
           />
         </DialogContent>
       </Dialog>
@@ -69,17 +61,19 @@ export function CreatePostDialog({ topicId }: CreatePostDialogProps) {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>{TriggerButton}</DrawerTrigger>
+      <DrawerTrigger asChild>
+        {TriggerButton}
+      </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-left">
           <DrawerTitle>Tạo bài viết thảo luận</DrawerTitle>
         </DrawerHeader>
         <div className="px-4">
-          <CreatePostForm
-            topicId={topicId}
-            onSuccess={() => setOpen(false)}
-            onCancel={() => setOpen(false)}
-          />
+             <CreatePostForm 
+                topicId={topicId} 
+                onSuccess={() => setOpen(false)}
+                onCancel={() => setOpen(false)}
+             />
         </div>
       </DrawerContent>
     </Drawer>

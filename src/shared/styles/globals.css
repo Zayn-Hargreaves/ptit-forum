@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 /* 👇 QUAN TRỌNG: Load plugin typography tại đây cho Tailwind v4 */
-@plugin '@tailwindcss/typography';
+@plugin "@tailwindcss/typography";
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));

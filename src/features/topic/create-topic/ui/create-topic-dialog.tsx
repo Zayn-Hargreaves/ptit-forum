@@ -1,7 +1,13 @@
 'use client';
 
-import { topicApi } from '@entities/topic/api/topic-api';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { Plus } from 'lucide-react';
+
 import { Button } from '@shared/ui/button/button';
 import {
   Dialog,
@@ -19,6 +25,7 @@ import {
   FormMessage,
 } from '@shared/ui/form/form';
 import { Input } from '@shared/ui/input/input';
+import { Textarea } from '@shared/ui/textarea/textarea';
 import {
   Select,
   SelectContent,
@@ -26,13 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@shared/ui/select/select';
-import { Textarea } from '@shared/ui/textarea/textarea';
-import { Plus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import * as z from 'zod';
+import { topicApi } from '@entities/topic/api/topic-api';
 
 const createTopicSchema = z.object({
   title: z.string().min(5, 'Tiêu đề phải có ít nhất 5 ký tự'),
@@ -126,7 +127,10 @@ export function CreateTopicDialog({ categoryId }: CreateTopicDialogProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Quyền truy cập</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Chọn quyền truy cập" />

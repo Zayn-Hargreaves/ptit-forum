@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Alert, AlertDescription, AlertTitle } from '@shared/ui/alert/alert';
-import { Button } from '@shared/ui/button/button';
-import { TriangleAlert } from 'lucide-react';
+import { TriangleAlert } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@shared/ui/alert/alert";
+import { Button } from "@shared/ui/button/button";
 
 interface IncompleteProfileBannerProps {
   onUpdateClick: () => void;
@@ -21,12 +21,14 @@ export function IncompleteProfileBanner({
         <TriangleAlert className="h-4 w-4" />
         <AlertTitle>Hồ sơ chưa hoàn thiện</AlertTitle>
         <AlertDescription className="flex items-center justify-between gap-4">
-          <span>Bạn sẽ không nhận được thông báo lớp học nếu thiếu Mã SV/Lớp.</span>
+          <span>
+            Bạn sẽ không nhận được thông báo lớp học nếu thiếu Mã SV/Lớp.
+          </span>
           <Button
             variant="outline"
             size="sm"
             onClick={onUpdateClick}
-            className="bg-background shrink-0 border-yellow-200 hover:bg-yellow-100 dark:border-yellow-800 dark:hover:bg-yellow-900/20"
+            className="shrink-0 bg-background hover:bg-yellow-100 dark:hover:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800"
           >
             Cập nhật ngay
           </Button>
