@@ -40,6 +40,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/faculties', label: 'Faculties', icon: GraduationCap },
     { href: '/admin/classrooms', label: 'Classrooms', icon: Presentation },
     { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
+    { href: '/admin/subjects', label: 'Subjects', icon: Megaphone },
+    { href: '/admin/subject-references', label: 'Subject-references', icon: Megaphone },
     { href: '/admin/documents', label: 'Documents', icon: FileText },
     { href: '/admin/users', label: 'Users', icon: Users },
     { href: '/admin/settings', label: 'Settings', icon: Settings },
