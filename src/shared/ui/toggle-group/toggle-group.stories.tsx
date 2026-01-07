@@ -1,79 +1,91 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { AlignCenter, AlignLeft, AlignRight, Bold, Italic, Underline } from 'lucide-react';
-import React from 'react';
-
-import { ToggleGroup, ToggleGroupItem } from './toggle-group';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React from "react";
+import { ToggleGroup, ToggleGroupItem } from "./toggle-group";
+import {
+  Bold,
+  Italic,
+  Underline,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+} from "lucide-react";
 
 // --- META DEFINITION ---
 
 const meta = {
-  title: 'shared/UI/ToggleGroup',
+  title: "shared/UI/ToggleGroup",
   component: ToggleGroup,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   argTypes: {
     type: {
-      control: 'inline-radio',
-      options: ['single', 'multiple'],
+      control: "inline-radio",
+      options: ["single", "multiple"],
       description:
-        'Defines whether the group behaves like a single-choice or multi-select toggle set.',
+        "Defines whether the group behaves like a single-choice or multi-select toggle set.",
     },
     orientation: {
-      control: 'inline-radio',
-      options: ['horizontal', 'vertical'],
-      description: 'Layout direction of the toggle group.',
+      control: "inline-radio",
+      options: ["horizontal", "vertical"],
+      description: "Layout direction of the toggle group.",
     },
     variant: {
-      control: 'inline-radio',
-      options: ['default', 'outline'],
-      description: 'Visual style of the toggle items. Propagated to children via context.',
+      control: "inline-radio",
+      options: ["default", "outline"],
+      description:
+        "Visual style of the toggle items. Propagated to children via context.",
     },
     size: {
-      control: 'inline-radio',
-      options: ['default', 'sm', 'lg'],
-      description: 'Size of the toggle items. Propagated to children via context.',
+      control: "inline-radio",
+      options: ["default", "sm", "lg"],
+      description:
+        "Size of the toggle items. Propagated to children via context.",
     },
     disabled: {
-      control: 'boolean',
+      control: "boolean",
       description:
-        'Disables interaction when true. Typically applied per item rather than on the group.',
+        "Disables interaction when true. Typically applied per item rather than on the group.",
     },
     value: {
-      control: 'object',
+      control: "object",
       description:
-        'Controlled value of the toggle group. For `single` it is a string, for `multiple` it is an array of strings.',
+        "Controlled value of the toggle group. For `single` it is a string, for `multiple` it is an array of strings.",
     },
     defaultValue: {
-      control: 'object',
-      description: 'Initial value in uncontrolled mode. Does not update after mount.',
+      control: "object",
+      description:
+        "Initial value in uncontrolled mode. Does not update after mount.",
     },
     rovingFocus: {
-      control: 'boolean',
-      description: 'Whether arrow key navigation should move focus through the items.',
+      control: "boolean",
+      description:
+        "Whether arrow key navigation should move focus through the items.",
     },
     loop: {
-      control: 'boolean',
-      description: 'When roving focus is enabled, controls if focus loops around at the ends.',
+      control: "boolean",
+      description:
+        "When roving focus is enabled, controls if focus loops around at the ends.",
     },
     onValueChange: {
       table: {
-        category: 'Events',
+        category: "Events",
       },
       control: false,
-      description: 'Callback fired when the group value changes. Receives the next value.',
+      description:
+        "Callback fired when the group value changes. Receives the next value.",
     },
     className: {
-      control: 'text',
-      description: 'Custom className applied to the toggle group root.',
+      control: "text",
+      description: "Custom className applied to the toggle group root.",
     },
   },
   args: {
-    type: 'single',
-    orientation: 'horizontal',
-    variant: 'outline',
-    size: 'default',
+    type: "single",
+    orientation: "horizontal",
+    variant: "outline",
+    size: "default",
     rovingFocus: true,
     loop: true,
   },
@@ -109,7 +121,7 @@ export const SingleSelect: Story = {
  */
 export const MultipleSelect: Story = {
   args: {
-    type: 'multiple',
+    type: "multiple",
   },
   render: (args) => (
     <ToggleGroup {...args} aria-label="Text formatting multi-select">
@@ -133,7 +145,7 @@ export const Sizes: Story = {
   render: (args) => (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
-        <span className="text-muted-foreground text-xs">Small</span>
+        <span className="text-xs text-muted-foreground">Small</span>
         <ToggleGroup {...args} size="sm" aria-label="Text alignment small">
           <ToggleGroupItem value="left" aria-label="Align left">
             <AlignLeft />
@@ -148,8 +160,12 @@ export const Sizes: Story = {
       </div>
 
       <div className="flex flex-col gap-1">
-        <span className="text-muted-foreground text-xs">Default</span>
-        <ToggleGroup {...args} size="default" aria-label="Text alignment default">
+        <span className="text-xs text-muted-foreground">Default</span>
+        <ToggleGroup
+          {...args}
+          size="default"
+          aria-label="Text alignment default"
+        >
           <ToggleGroupItem value="left" aria-label="Align left">
             <AlignLeft />
           </ToggleGroupItem>
@@ -163,7 +179,7 @@ export const Sizes: Story = {
       </div>
 
       <div className="flex flex-col gap-1">
-        <span className="text-muted-foreground text-xs">Large</span>
+        <span className="text-xs text-muted-foreground">Large</span>
         <ToggleGroup {...args} size="lg" aria-label="Text alignment large">
           <ToggleGroupItem value="left" aria-label="Align left">
             <AlignLeft />
@@ -185,8 +201,8 @@ export const Sizes: Story = {
  */
 export const Vertical: Story = {
   args: {
-    orientation: 'vertical',
-    type: 'single',
+    orientation: "vertical",
+    type: "single",
   },
   render: (args) => (
     <ToggleGroup {...args} aria-label="Vertical toggle group">
@@ -207,7 +223,7 @@ export const Vertical: Story = {
  * Small helper component to demonstrate a controlled ToggleGroup with React state.
  */
 function ControlledExample(props: React.ComponentProps<typeof ToggleGroup>) {
-  const [value, setValue] = React.useState<string[]>(['bold']);
+  const [value, setValue] = React.useState<string[]>(["bold"]);
 
   // Remove `defaultValue` and `type` from props to avoid conflicting types
   const { defaultValue: _defaultValue, type: _type, ...rest } = props;
@@ -232,10 +248,10 @@ function ControlledExample(props: React.ComponentProps<typeof ToggleGroup>) {
         </ToggleGroupItem>
       </ToggleGroup>
 
-      <div className="text-muted-foreground text-xs">
-        Active values:{' '}
-        <code className="bg-muted rounded px-2 py-0.5 text-[11px]">
-          {value.length ? value.join(', ') : 'none'}
+      <div className="text-xs text-muted-foreground">
+        Active values:{" "}
+        <code className="rounded bg-muted px-2 py-0.5 text-[11px]">
+          {value.length ? value.join(", ") : "none"}
         </code>
       </div>
     </div>
@@ -247,13 +263,13 @@ function ControlledExample(props: React.ComponentProps<typeof ToggleGroup>) {
  */
 export const Controlled: Story = {
   args: {
-    type: 'multiple',
+    type: "multiple",
   },
   render: (args) => <ControlledExample {...args} />,
   parameters: {
     controls: {
       // Avoid conflicts with internal state
-      exclude: ['value', 'defaultValue', 'onValueChange'],
+      exclude: ["value", "defaultValue", "onValueChange"],
     },
   },
 };
@@ -263,7 +279,7 @@ export const Controlled: Story = {
  */
 export const WithDisabledItems: Story = {
   args: {
-    type: 'single',
+    type: "single",
   },
   render: (args) => (
     <ToggleGroup {...args} aria-label="Formatting with disabled options">

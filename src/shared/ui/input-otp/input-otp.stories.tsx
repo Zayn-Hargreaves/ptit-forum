@@ -1,8 +1,13 @@
-import { cn } from '@shared/lib/utils';
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import React from 'react';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React from "react";
 
-import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from './input-otp';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+  InputOTPSeparator,
+} from "./input-otp";
+import { cn } from "@shared/lib/utils";
 
 // Loosen typing for stories so we can use `render` without fighting the union.
 const RawInputOTP = InputOTP as any;
@@ -10,50 +15,51 @@ const RawInputOTP = InputOTP as any;
 // --- META DEFINITION ---
 
 const meta: Meta<typeof InputOTP> = {
-  title: 'shared/Form/InputOTP',
+  title: "shared/Form/InputOTP",
   component: InputOTP,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   args: {
     maxLength: 6,
   },
   argTypes: {
     maxLength: {
-      control: 'number',
-      description: 'Total number of OTP characters.',
+      control: "number",
+      description: "Total number of OTP characters.",
       table: {
-        defaultValue: { summary: '6' },
+        defaultValue: { summary: "6" },
       },
     },
     value: {
       control: false,
-      description: 'Controlled OTP value as a string.',
+      description: "Controlled OTP value as a string.",
     },
     onChange: {
-      action: 'changed',
-      description: 'Called whenever the OTP value changes.',
+      action: "changed",
+      description: "Called whenever the OTP value changes.",
     },
     containerClassName: {
-      control: 'text',
-      description: 'ClassName applied to the outer OTP container.',
+      control: "text",
+      description: "ClassName applied to the outer OTP container.",
     },
     className: {
-      control: 'text',
-      description: 'ClassName applied to the underlying input.',
+      control: "text",
+      description: "ClassName applied to the underlying input.",
     },
     disabled: {
-      control: 'boolean',
-      description: 'Disable all OTP slots.',
+      control: "boolean",
+      description: "Disable all OTP slots.",
     },
     render: {
       control: false,
-      description: 'Render prop for custom layout. Used directly in the stories.',
+      description:
+        "Render prop for custom layout. Used directly in the stories.",
     },
     children: {
       control: false,
-      description: 'Alternative API from input-otp. Not used in these stories.',
+      description: "Alternative API from input-otp. Not used in these stories.",
     },
   },
 };
@@ -66,7 +72,7 @@ type InputOTPStoryProps = React.ComponentProps<typeof InputOTP>;
 // --- DEMO COMPONENTS (for hooks + clean lint) ---
 
 const DefaultDemo: React.FC<InputOTPStoryProps> = (props) => {
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState("");
 
   const maxLength = props.maxLength ?? 6;
 
@@ -85,15 +91,15 @@ const DefaultDemo: React.FC<InputOTPStoryProps> = (props) => {
           </InputOTPGroup>
         )}
       />
-      <p className="text-muted-foreground text-xs">
-        Current value: <span className="font-mono">{value || '(empty)'}</span>
+      <p className="text-xs text-muted-foreground">
+        Current value: <span className="font-mono">{value || "(empty)"}</span>
       </p>
     </div>
   );
 };
 
 const WithSeparatorDemo: React.FC<InputOTPStoryProps> = (props) => {
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState("");
 
   const maxLength = props.maxLength ?? 6;
 
@@ -116,13 +122,15 @@ const WithSeparatorDemo: React.FC<InputOTPStoryProps> = (props) => {
           </InputOTPGroup>
         )}
       />
-      <p className="text-muted-foreground text-xs">Enter the 6-digit code we sent to your email.</p>
+      <p className="text-xs text-muted-foreground">
+        Enter the 6-digit code we sent to your email.
+      </p>
     </div>
   );
 };
 
 const FourDigitDemo: React.FC<InputOTPStoryProps> = (props) => {
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState("");
 
   const maxLength = props.maxLength ?? 4;
 
@@ -144,7 +152,7 @@ const FourDigitDemo: React.FC<InputOTPStoryProps> = (props) => {
 };
 
 const ErrorDemo: React.FC<InputOTPStoryProps> = (props) => {
-  const [value, setValue] = React.useState('123000');
+  const [value, setValue] = React.useState("123000");
 
   const maxLength = props.maxLength ?? 6;
 
@@ -164,7 +172,7 @@ const ErrorDemo: React.FC<InputOTPStoryProps> = (props) => {
           </InputOTPGroup>
         )}
       />
-      <p className="text-destructive text-xs">
+      <p className="text-xs text-destructive">
         The code you entered is incorrect. Please try again.
       </p>
     </div>
@@ -172,7 +180,7 @@ const ErrorDemo: React.FC<InputOTPStoryProps> = (props) => {
 };
 
 const DisabledDemo: React.FC<InputOTPStoryProps> = (props) => {
-  const value = '123456';
+  const value = "123456";
   const maxLength = props.maxLength ?? value.length;
 
   return (
@@ -192,15 +200,18 @@ const DisabledDemo: React.FC<InputOTPStoryProps> = (props) => {
 };
 
 const CustomStyledDemo: React.FC<InputOTPStoryProps> = (props) => {
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState("");
 
   const maxLength = props.maxLength ?? 6;
 
   return (
     <RawInputOTP
       {...props}
-      containerClassName={cn('flex items-center gap-3', props.containerClassName)}
-      className={cn('text-primary', props.className)}
+      containerClassName={cn(
+        "flex items-center gap-3",
+        props.containerClassName
+      )}
+      className={cn("text-primary", props.className)}
       value={value}
       onChange={(val: string) => setValue(val)}
       maxLength={maxLength}
@@ -210,7 +221,7 @@ const CustomStyledDemo: React.FC<InputOTPStoryProps> = (props) => {
             <InputOTPSlot
               key={slot.id}
               index={index}
-              className="bg-background/40 h-10 w-10 rounded-md"
+              className="h-10 w-10 rounded-md bg-background/40"
             />
           ))}
         </InputOTPGroup>

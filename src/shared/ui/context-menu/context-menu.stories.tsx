@@ -1,56 +1,55 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import {
-  ArrowLeft,
-  ArrowRight,
-  FilePlus,
-  FolderPlus,
-  MoreHorizontal,
-  Printer,
-  RotateCcw,
-  Save,
-  Trash,
-} from 'lucide-react';
-import { useState } from 'react';
-
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import {
   ContextMenu,
-  ContextMenuCheckboxItem,
+  ContextMenuTrigger,
   ContextMenuContent,
-  ContextMenuGroup,
   ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuRadioGroup,
+  ContextMenuCheckboxItem,
   ContextMenuRadioItem,
+  ContextMenuLabel,
   ContextMenuSeparator,
   ContextMenuShortcut,
+  ContextMenuGroup,
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from './context-menu';
+  ContextMenuRadioGroup,
+} from "./context-menu";
+import {
+  ArrowLeft,
+  ArrowRight,
+  RotateCcw,
+  Printer,
+  Save,
+  Trash,
+  FolderPlus,
+  FilePlus,
+  MoreHorizontal,
+} from "lucide-react";
+import { useState } from "react";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof ContextMenu> = {
-  title: 'shared/UI/ContextMenu',
+  title: "shared/UI/ContextMenu",
   component: ContextMenu,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   args: {},
   argTypes: {
     children: {
       control: false,
-      description: 'Trigger và Content của menu.',
+      description: "Trigger và Content của menu.",
     },
     onOpenChange: {
-      action: 'open changed',
-      description: 'Sự kiện khi menu mở/đóng.',
+      action: "open changed",
+      description: "Sự kiện khi menu mở/đóng.",
     },
     modal: {
-      control: 'boolean',
-      description: 'Chặn tương tác với bên ngoài khi mở menu.',
+      control: "boolean",
+      description: "Chặn tương tác với bên ngoài khi mở menu.",
     },
   },
 };
@@ -69,7 +68,7 @@ type Story = StoryObj<typeof ContextMenu>;
 export const Default: Story = {
   render: (args) => (
     <ContextMenu {...args}>
-      <ContextMenuTrigger className="text-muted-foreground bg-muted/20 hover:bg-muted/40 flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm font-medium transition-colors select-none">
+      <ContextMenuTrigger className="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm font-medium text-muted-foreground select-none bg-muted/20 hover:bg-muted/40 transition-colors">
         Click chuột phải vào đây
       </ContextMenuTrigger>
       <ContextMenuContent className="w-64">
@@ -111,7 +110,7 @@ export const Default: Story = {
 export const WithSubmenu: Story = {
   render: (args) => (
     <ContextMenu {...args}>
-      <ContextMenuTrigger className="text-muted-foreground bg-muted/20 hover:bg-muted/40 flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm font-medium transition-colors select-none">
+      <ContextMenuTrigger className="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm font-medium text-muted-foreground select-none bg-muted/20 hover:bg-muted/40 transition-colors">
         Chuột phải (Có Submenu)
       </ContextMenuTrigger>
       <ContextMenuContent className="w-64">
@@ -163,20 +162,26 @@ export const StatefulItems: Story = {
   render: (args) => {
     const [showBookmarks, setShowBookmarks] = useState(true);
     const [showFullUrls, setShowFullUrls] = useState(false);
-    const [person, setPerson] = useState('pedro');
+    const [person, setPerson] = useState("pedro");
 
     return (
       <ContextMenu {...args}>
-        <ContextMenuTrigger className="text-muted-foreground bg-muted/20 hover:bg-muted/40 flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm font-medium transition-colors select-none">
+        <ContextMenuTrigger className="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm font-medium text-muted-foreground select-none bg-muted/20 hover:bg-muted/40 transition-colors">
           Chuột phải (Checkboxes & Radios)
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           <ContextMenuLabel inset>View Options</ContextMenuLabel>
-          <ContextMenuCheckboxItem checked={showBookmarks} onCheckedChange={setShowBookmarks}>
+          <ContextMenuCheckboxItem
+            checked={showBookmarks}
+            onCheckedChange={setShowBookmarks}
+          >
             Show Bookmarks Bar
             <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
           </ContextMenuCheckboxItem>
-          <ContextMenuCheckboxItem checked={showFullUrls} onCheckedChange={setShowFullUrls}>
+          <ContextMenuCheckboxItem
+            checked={showFullUrls}
+            onCheckedChange={setShowFullUrls}
+          >
             Show Full URLs
           </ContextMenuCheckboxItem>
 
@@ -184,7 +189,9 @@ export const StatefulItems: Story = {
 
           <ContextMenuLabel inset>People</ContextMenuLabel>
           <ContextMenuRadioGroup value={person} onValueChange={setPerson}>
-            <ContextMenuRadioItem value="pedro">Pedro Duarte</ContextMenuRadioItem>
+            <ContextMenuRadioItem value="pedro">
+              Pedro Duarte
+            </ContextMenuRadioItem>
             <ContextMenuRadioItem value="colm">Colm Tuite</ContextMenuRadioItem>
           </ContextMenuRadioGroup>
         </ContextMenuContent>

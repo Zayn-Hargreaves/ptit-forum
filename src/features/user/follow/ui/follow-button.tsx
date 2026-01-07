@@ -1,6 +1,6 @@
+import { Button } from '@shared/ui/button/button';
 import { UserProfile } from '@entities/session/model/types';
 import { useFollow } from '@features/user/follow/model/use-follow';
-import { Button } from '@shared/ui/button/button';
 import { Loader2, UserMinus, UserPlus } from 'lucide-react';
 
 interface FollowButtonProps {

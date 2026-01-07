@@ -1,11 +1,10 @@
 'use client';
 
-import { Post } from '@entities/post/model/types';
-import { cn } from '@shared/lib/utils';
-import { Button } from '@shared/ui/button/button';
 import { Heart } from 'lucide-react';
 import { useDebouncedCallback } from 'use-debounce';
-
+import { Button } from '@shared/ui/button/button';
+import { cn } from '@shared/lib/utils';
+import { Post } from '@entities/post/model/types';
 import { usePostReaction } from '../hooks/use-post-reaction';
 
 interface ReactionButtonProps {
@@ -21,22 +20,18 @@ export function ReactionButton({ post, className }: Readonly<ReactionButtonProps
       toggleReaction('LIKE');
     },
     500,
-    { leading: false, trailing: true },
+    { leading: false, trailing: true }
   );
 
-  const isLiked = Boolean(post.isLiked);
-  const count = post.stats?.likeCount ?? 0;
+  const isLiked = Boolean(post.userState?.liked);
+  const count = post.stats?.reactionCount ?? 0;
 
   return (
     <Button
       variant="ghost"
       size="sm"
       aria-label={isLiked ? `Unlike (${count} reactions)` : `Like (${count} reactions)`}
-      className={cn(
-        'group gap-2 transition-colors hover:text-red-500',
-        isLiked && 'text-red-500',
-        className,
-      )}
+      className={cn('gap-2 hover:text-red-500 transition-colors group', isLiked && 'text-red-500', className)}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -46,7 +41,7 @@ export function ReactionButton({ post, className }: Readonly<ReactionButtonProps
       <Heart
         className={cn(
           'h-5 w-5 transition-all duration-300',
-          isLiked ? 'scale-110 fill-current' : 'group-hover:scale-110',
+          isLiked ? 'fill-current scale-110' : 'group-hover:scale-110'
         )}
       />
       <span>{count}</span>

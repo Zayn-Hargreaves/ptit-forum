@@ -1,26 +1,28 @@
 'use client';
 
-import { ALLOWED_MEDIA_MINES } from '@shared/constants/constants';
-import { useFileUpload } from '@shared/hooks/use-file-upload';
-import { Button } from '@shared/ui/button/button';
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import { EditorView } from 'prosemirror-view';
+import { Slice } from 'prosemirror-model';
+import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
-import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import bash from 'highlight.js/lib/languages/bash';
-import css from 'highlight.js/lib/languages/css';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import { common, createLowlight } from 'lowlight';
+
+import { Loader2, Bold, Italic, Code2, ImageIcon } from 'lucide-react';
+import { Button } from '@shared/ui/button/button';
+import { useFileUpload } from '@shared/hooks/use-file-upload';
+import { toast } from 'sonner';
+import { ALLOWED_MEDIA_MINES } from '@shared/constants/constants';
+
+import ts from 'highlight.js/lib/languages/typescript';
 import javascript from 'highlight.js/lib/languages/javascript';
 import json from 'highlight.js/lib/languages/json';
-import python from 'highlight.js/lib/languages/python';
-import ts from 'highlight.js/lib/languages/typescript';
 import xml from 'highlight.js/lib/languages/xml';
-import { common, createLowlight } from 'lowlight';
-import { Bold, Code2, ImageIcon, Italic, Loader2 } from 'lucide-react';
-import { Slice } from 'prosemirror-model';
-import { EditorView } from 'prosemirror-view';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { toast } from 'sonner';
+import css from 'highlight.js/lib/languages/css';
+import bash from 'highlight.js/lib/languages/bash';
+import python from 'highlight.js/lib/languages/python';
 
 const lowlight = createLowlight(common);
 lowlight.register('ts', ts);
@@ -49,14 +51,7 @@ const isImageFile = (file: File) => (file.type || '').toLowerCase().startsWith('
 const FIREBASE_BUCKET_URL =
   'https://firebasestorage.googleapis.com/v0/b/graduated-project-17647.firebasestorage.app/o/';
 
-export function LiteEditor({
-  value,
-  onChange,
-  placeholder,
-  disabled,
-  autoFocus,
-  onSubmit,
-}: Readonly<LiteEditorProps>) {
+export function LiteEditor({ value, onChange, placeholder, disabled, autoFocus, onSubmit }: Readonly<LiteEditorProps>) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const { upload, isUploading } = useFileUpload({
@@ -82,15 +77,14 @@ export function LiteEditor({
         folderName: 'comments',
       });
 
-      const resultData = Array.isArray(result) ? result[0] : result;
-      let finalUrl = resultData?.url;
+      let finalUrl = result?.url;
       if (finalUrl && !finalUrl.startsWith('http')) {
         finalUrl = `${FIREBASE_BUCKET_URL}${finalUrl}`;
       }
 
-      return finalUrl ?? resultData?.fileName ?? null;
+      return finalUrl ?? result?.fileName ?? null;
     },
-    [upload],
+    [upload]
   );
 
   const extensions = useMemo(
@@ -110,17 +104,8 @@ export function LiteEditor({
       Image.configure({ inline: true, allowBase64: true }),
       Placeholder.configure({ placeholder: placeholder || 'Viết bình luận...' }),
     ],
-    [placeholder],
+    [placeholder]
   );
-
-  const editor = useEditor({
-    immediatelyRender: false,
-    editable: !disabled,
-    autofocus: autoFocus,
-    extensions,
-
-    onUpdate: ({ editor }) => onChange(editor.getHTML()),
-  });
 
   const editorProps = useMemo(
     () => ({
@@ -179,13 +164,18 @@ export function LiteEditor({
         return false;
       },
     }),
-    [handleUploadImage, onSubmit, editor],
+    [handleUploadImage, onSubmit]
   );
 
-  useEffect(() => {
-    if (!editor) return;
-    editor.setOptions({ editorProps });
-  }, [editor, editorProps]);
+  const editor = useEditor({
+    immediatelyRender: false,
+    editable: !disabled,
+    autofocus: autoFocus,
+    extensions,
+    editorProps,
+
+    onUpdate: ({ editor }) => onChange(editor.getHTML()),
+  });
 
   useEffect(() => {
     if (!editor) return;
@@ -222,7 +212,7 @@ export function LiteEditor({
   if (!editor) return null;
 
   return (
-    <div className="focus-within:ring-primary/50 bg-background relative overflow-hidden rounded-md border transition-all focus-within:ring-1">
+    <div className="relative border rounded-md focus-within:ring-1 focus-within:ring-primary/50 transition-all bg-background overflow-hidden">
       {/* Hidden input */}
       <input
         ref={fileInputRef}
@@ -237,7 +227,7 @@ export function LiteEditor({
       <EditorContent editor={editor} />
 
       {/* Toolbar lite */}
-      <div className="bg-muted/20 flex items-center gap-1 border-t p-1">
+      <div className="flex items-center gap-1 p-1 border-t bg-muted/20">
         <Button
           variant="ghost"
           size="icon"
@@ -286,9 +276,7 @@ export function LiteEditor({
           <ImageIcon className="h-3 w-3" />
         </Button>
 
-        {isUploading && (
-          <Loader2 className="text-muted-foreground mr-2 ml-auto h-3 w-3 animate-spin" />
-        )}
+        {isUploading && <Loader2 className="h-3 w-3 animate-spin ml-auto mr-2 text-muted-foreground" />}
       </div>
     </div>
   );

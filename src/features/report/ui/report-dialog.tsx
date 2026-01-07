@@ -1,38 +1,27 @@
 'use client';
 
-import { reportApi } from '@entities/interaction/api/report-api';
-import { REPORT_REASON_LABELS, TargetType } from '@entities/interaction/model/types';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@shared/ui/button/button';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { Loader2, AlertTriangle } from 'lucide-react';
+
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from '@shared/ui/dialog/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@shared/ui/form/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@shared/ui/select/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@shared/ui/form/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/ui/select/select';
 import { Textarea } from '@shared/ui/textarea/textarea';
+import { Button } from '@shared/ui/button/button';
+
+import { reportApi } from '@entities/interaction/api/report-api';
+import { REPORT_REASON_LABELS, TargetType } from '@entities/interaction/model/types';
 import { ReportFormValues, reportSchema } from '@shared/validators/auth';
-import { useMutation } from '@tanstack/react-query';
-import { AlertTriangle, Loader2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 interface ReportDialogProps {
   open: boolean;
@@ -41,16 +30,10 @@ interface ReportDialogProps {
   targetType: TargetType;
 }
 
-export function ReportDialog({
-  open,
-  onOpenChange,
-  targetId,
-  targetType,
-}: Readonly<ReportDialogProps>) {
+export function ReportDialog({ open, onOpenChange, targetId, targetType }: Readonly<ReportDialogProps>) {
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       reason: '' as any,
       description: '',
     },
@@ -69,10 +52,8 @@ export function ReportDialog({
       onOpenChange(false);
       form.reset();
     },
-    onError: (error: unknown) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const err = error as any;
-      const msg = err?.response?.data?.message;
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message;
       if (msg === 'Report already existed') {
         toast.warning('Bạn đã báo cáo nội dung này rồi.');
       } else if (msg === 'Cannot report self') {
@@ -91,9 +72,7 @@ export function ReportDialog({
             <AlertTriangle className="h-5 w-5 text-yellow-500" />
             Báo cáo vi phạm
           </DialogTitle>
-          <DialogDescription>
-            Hãy cho chúng tôi biết vấn đề bạn gặp phải với nội dung này.
-          </DialogDescription>
+          <DialogDescription>Hãy cho chúng tôi biết vấn đề bạn gặp phải với nội dung này.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -132,11 +111,7 @@ export function ReportDialog({
                 <FormItem>
                   <FormLabel>Chi tiết thêm (tùy chọn)</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Mô tả cụ thể vấn đề..."
-                      className="resize-none"
-                      {...field}
-                    />
+                    <Textarea placeholder="Mô tả cụ thể vấn đề..." className="resize-none" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -147,11 +122,7 @@ export function ReportDialog({
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Hủy
               </Button>
-              <Button
-                type="submit"
-                disabled={isPending}
-                className="bg-destructive hover:bg-destructive/90"
-              >
+              <Button type="submit" disabled={isPending} className="bg-destructive hover:bg-destructive/90">
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Gửi báo cáo
               </Button>

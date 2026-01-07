@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Define 1 item
 export const BackendPostDTOSchema = z.object({
@@ -29,8 +29,8 @@ export const BackendTrendingResponseSchema = z
   .object({
     result: z.union([
       z.array(BackendPostDTOSchema), // If result is directly an array
-      z.object({ content: z.array(BackendPostDTOSchema) }), // If result is a Page object
-    ]),
+      z.object({ content: z.array(BackendPostDTOSchema) }) // If result is a Page object
+    ])
   })
   .transform((data) => {
     if (Array.isArray(data.result)) {

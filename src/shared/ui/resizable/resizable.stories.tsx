@@ -1,33 +1,36 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import React from 'react';
-
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from './resizable';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React from "react";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "./resizable";
 
 // --- META ---
 
 const meta: Meta<typeof ResizablePanelGroup> = {
-  title: 'shared/UI/ResizablePanel',
+  title: "shared/UI/ResizablePanel",
   component: ResizablePanelGroup,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
   },
   argTypes: {
     direction: {
-      control: 'radio',
-      options: ['horizontal', 'vertical'],
-      description: 'Panel resizing direction.',
+      control: "radio",
+      options: ["horizontal", "vertical"],
+      description: "Panel resizing direction.",
       table: {
-        defaultValue: { summary: 'horizontal' },
+        defaultValue: { summary: "horizontal" },
       },
     },
     className: {
-      control: 'text',
-      description: 'Optional styling wrapper',
+      control: "text",
+      description: "Optional styling wrapper",
     },
   },
   args: {
-    direction: 'horizontal',
+    direction: "horizontal",
   },
 };
 
@@ -39,7 +42,7 @@ type Story = StoryObj<typeof ResizablePanelGroup>;
 
 const HorizontalExample: React.FC = () => {
   return (
-    <div className="h-48 w-full overflow-hidden rounded-md border">
+    <div className="w-full h-48 border rounded-md overflow-hidden">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={50} className="bg-muted p-4">
           Left Content
@@ -57,7 +60,7 @@ const HorizontalExample: React.FC = () => {
 
 const VerticalExample: React.FC = () => {
   return (
-    <div className="h-48 w-full overflow-hidden rounded-md border">
+    <div className="w-full h-48 border rounded-md overflow-hidden">
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={50} className="bg-muted p-4">
           Top panel
@@ -94,7 +97,7 @@ export const Vertical: Story = {
  */
 export const WithoutHandleIcon: Story = {
   render: () => (
-    <div className="h-48 w-full overflow-hidden rounded-md border">
+    <div className="w-full h-48 border rounded-md overflow-hidden">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={40} className="bg-muted p-4">
           Panel A

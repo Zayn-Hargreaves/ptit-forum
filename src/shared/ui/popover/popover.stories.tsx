@@ -1,38 +1,45 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import React from 'react';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React from "react";
 
-import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from './popover';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverAnchor,
+} from "./popover";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Popover> = {
-  title: 'shared/UI/Popover',
+  title: "shared/UI/Popover",
   component: Popover,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   args: {},
   argTypes: {
     open: {
-      control: 'boolean',
-      description: 'Controlled open state of the popover.',
+      control: "boolean",
+      description: "Controlled open state of the popover.",
     },
     defaultOpen: {
-      control: 'boolean',
-      description: 'Initial open state when the popover mounts.',
+      control: "boolean",
+      description: "Initial open state when the popover mounts.",
     },
     modal: {
-      control: 'boolean',
-      description: 'When true, interaction outside the popover is disabled while it is open.',
+      control: "boolean",
+      description:
+        "When true, interaction outside the popover is disabled while it is open.",
     },
     onOpenChange: {
-      action: 'open changed',
-      description: 'Callback fired when the open state changes.',
+      action: "open changed",
+      description: "Callback fired when the open state changes.",
     },
     children: {
       control: false,
-      description: 'Composition of PopoverTrigger, PopoverContent, and optional PopoverAnchor.',
+      description:
+        "Composition of PopoverTrigger, PopoverContent, and optional PopoverAnchor.",
     },
   },
 };
@@ -50,15 +57,15 @@ type Story = StoryObj<typeof Popover>;
 export const Default: Story = {
   render: (args) => (
     <Popover {...args}>
-      <PopoverTrigger className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium shadow">
+      <PopoverTrigger className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90">
         Open popover
       </PopoverTrigger>
       <PopoverContent>
         <div className="space-y-2 text-sm">
           <p className="font-medium">Popover title</p>
-          <p className="text-muted-foreground text-xs">
-            This is a basic popover. You can place any content here, such as text, links, or small
-            forms.
+          <p className="text-xs text-muted-foreground">
+            This is a basic popover. You can place any content here, such as
+            text, links, or small forms.
           </p>
         </div>
       </PopoverContent>
@@ -73,31 +80,34 @@ export const Default: Story = {
 export const WithForm: Story = {
   render: (args) => (
     <Popover {...args}>
-      <PopoverTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-4 text-sm font-medium shadow-sm">
+      <PopoverTrigger className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
         Rename project
       </PopoverTrigger>
       <PopoverContent>
         <form className="space-y-3 text-sm">
           <div className="space-y-1">
-            <label htmlFor="project-name" className="text-foreground text-xs font-medium">
+            <label
+              htmlFor="project-name"
+              className="text-xs font-medium text-foreground"
+            >
               Project name
             </label>
             <input
               id="project-name"
-              className="border-input bg-background focus-visible:ring-ring flex h-8 w-full rounded-md border px-2 text-xs shadow-sm outline-none focus-visible:ring-1"
+              className="flex h-8 w-full rounded-md border border-input bg-background px-2 text-xs shadow-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
               defaultValue="Untitled project"
             />
           </div>
           <div className="flex items-center justify-end gap-2">
             <button
               type="button"
-              className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-8 items-center justify-center rounded-md border px-3 text-xs font-medium shadow-sm"
+              className="inline-flex h-8 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-8 items-center justify-center rounded-md px-3 text-xs font-medium shadow"
+              className="inline-flex h-8 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground shadow hover:bg-primary/90"
             >
               Save
             </button>
@@ -116,9 +126,9 @@ export const PlacementGallery: Story = {
   render: (args) => (
     <div className="grid grid-cols-2 gap-8">
       <div className="flex flex-col items-center gap-2">
-        <span className="text-muted-foreground text-xs">Top</span>
+        <span className="text-xs text-muted-foreground">Top</span>
         <Popover {...args}>
-          <PopoverTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-3 text-xs font-medium shadow-sm">
+          <PopoverTrigger className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
             Top
           </PopoverTrigger>
           <PopoverContent side="top">
@@ -128,9 +138,9 @@ export const PlacementGallery: Story = {
       </div>
 
       <div className="flex flex-col items-center gap-2">
-        <span className="text-muted-foreground text-xs">Right</span>
+        <span className="text-xs text-muted-foreground">Right</span>
         <Popover {...args}>
-          <PopoverTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-3 text-xs font-medium shadow-sm">
+          <PopoverTrigger className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
             Right
           </PopoverTrigger>
           <PopoverContent side="right">
@@ -140,9 +150,9 @@ export const PlacementGallery: Story = {
       </div>
 
       <div className="flex flex-col items-center gap-2">
-        <span className="text-muted-foreground text-xs">Bottom</span>
+        <span className="text-xs text-muted-foreground">Bottom</span>
         <Popover {...args}>
-          <PopoverTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-3 text-xs font-medium shadow-sm">
+          <PopoverTrigger className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
             Bottom
           </PopoverTrigger>
           <PopoverContent side="bottom">
@@ -152,9 +162,9 @@ export const PlacementGallery: Story = {
       </div>
 
       <div className="flex flex-col items-center gap-2">
-        <span className="text-muted-foreground text-xs">Left</span>
+        <span className="text-xs text-muted-foreground">Left</span>
         <Popover {...args}>
-          <PopoverTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-3 text-xs font-medium shadow-sm">
+          <PopoverTrigger className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
             Left
           </PopoverTrigger>
           <PopoverContent side="left">
@@ -174,15 +184,16 @@ export const WithAnchor: Story = {
   render: (args) => (
     <div className="flex flex-col items-center gap-4">
       <Popover {...args}>
-        <PopoverAnchor className="bg-secondary text-secondary-foreground inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium">
+        <PopoverAnchor className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground">
           Anchor element
         </PopoverAnchor>
-        <PopoverTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-8 items-center justify-center rounded-md border px-3 text-xs font-medium shadow-sm">
+        <PopoverTrigger className="inline-flex h-8 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground">
           Toggle popover
         </PopoverTrigger>
         <PopoverContent>
-          <p className="text-muted-foreground text-xs">
-            This popover is positioned relative to the anchor element, not just the trigger.
+          <p className="text-xs text-muted-foreground">
+            This popover is positioned relative to the anchor element, not just
+            the trigger.
           </p>
         </PopoverContent>
       </Popover>

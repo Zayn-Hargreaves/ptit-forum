@@ -1,9 +1,14 @@
-import { Button } from '@shared/ui/button/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/ui/card/card';
-import { Checkbox } from '@shared/ui/checkbox/checkbox';
-import { SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/ui/select/select';
-import { Select } from 'react-day-picker';
-import { Label } from 'recharts';
+import { Button } from "@shared/ui/button/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card/card";
+import { Checkbox } from "@shared/ui/checkbox/checkbox";
+import {
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@shared/ui/select/select";
+import { Select } from "react-day-picker";
+import { Label } from "recharts";
 
 export function DocumentFilters() {
   return (
@@ -76,7 +81,7 @@ export function DocumentFilters() {
               <Checkbox id="slides" />
               <label
                 htmlFor="slides"
-                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Slide bài giảng
               </label>
@@ -85,7 +90,7 @@ export function DocumentFilters() {
               <Checkbox id="exercises" />
               <label
                 htmlFor="exercises"
-                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Bài tập
               </label>
@@ -94,7 +99,7 @@ export function DocumentFilters() {
               <Checkbox id="exams" />
               <label
                 htmlFor="exams"
-                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Đề thi
               </label>
@@ -103,7 +108,7 @@ export function DocumentFilters() {
               <Checkbox id="notes" />
               <label
                 htmlFor="notes"
-                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Ghi chú
               </label>

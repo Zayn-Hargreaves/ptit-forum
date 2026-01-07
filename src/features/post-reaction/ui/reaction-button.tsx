@@ -1,42 +1,33 @@
 'use client';
 
+import { Button } from '@shared/ui/button/button';
+import { Heart } from 'lucide-react';
+import { useReaction } from '../model/use-reaction';
 import { TargetType } from '@entities/interaction/model/types';
 import { cn } from '@shared/lib/utils';
-import { Button } from '@shared/ui/button/button';
-import { QueryKey } from '@tanstack/react-query';
-import { Heart } from 'lucide-react';
-
-import { useReaction } from '../model/use-reaction';
+import { useState } from 'react';
 
 interface ReactionButtonProps {
-  topicId?: string;
-  targetId: string; // Renamed from postId to be generic
-  targetType?: TargetType; // Default to POST if not provided
+  topicId?: string; // Optional if queryKey is provided
+  postId: string;
   initialLikeCount: number;
   initialIsLiked?: boolean;
-  queryKey?: QueryKey;
+  queryKey?: any[]; // Allow overriding queryKey
 }
 
-export function ReactionButton({
-  topicId,
-  targetId,
-  targetType = TargetType.POST,
-  initialLikeCount,
-  initialIsLiked,
-  queryKey,
-}: ReactionButtonProps) {
+export function ReactionButton({ topicId, postId, initialLikeCount, initialIsLiked, queryKey }: ReactionButtonProps) {
   const { mutate } = useReaction({
-    targetId,
-    targetType,
-    currentIsLiked: initialIsLiked || false,
-    currentCount: initialLikeCount,
-    queryKey: queryKey || ['posts', topicId],
+      targetId: postId,
+      targetType: TargetType.POST,
+      currentIsLiked: initialIsLiked || false,
+      currentCount: initialLikeCount,
+      queryKey: queryKey || ['posts', topicId]
   });
-
+  
   // Local state for animation purposes (logic is handled by RQ cache primarily, but this helps with immediate visual feedback if needed independently, though props driven is better)
   // Actually, since we are using optimistic updates via RQ, the props passed from the parent (PostCard) which reads from cache *should* update immediately.
   // So we just rely on props being fresh.
-
+  
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -44,20 +35,20 @@ export function ReactionButton({
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className={cn(
-        'group h-8 gap-1 px-2 transition-all hover:bg-red-50 hover:text-red-500 active:scale-95',
-        initialIsLiked && 'text-red-500',
-      )}
-      onClick={handleLike}
-    >
-      <Heart
+    <Button 
+        variant="ghost" 
+        size="sm" 
         className={cn(
-          'h-4 w-4 transition-transform duration-200 group-hover:scale-110',
-          initialIsLiked ? 'scale-110 fill-current' : '',
+            "gap-1 px-2 h-8 hover:bg-red-50 hover:text-red-500 transition-all active:scale-95 group",
+            initialIsLiked && "text-red-500"
         )}
+        onClick={handleLike}
+    >
+      <Heart 
+        className={cn(
+            "w-4 h-4 transition-transform duration-200 group-hover:scale-110", 
+            initialIsLiked ? "fill-current scale-110" : ""
+        )} 
       />
       <span className="text-xs font-medium tabular-nums">{initialLikeCount}</span>
     </Button>

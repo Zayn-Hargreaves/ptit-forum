@@ -4,7 +4,7 @@ export const stripHtml = (html: string) => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     return doc.body.textContent || '';
-  } catch (_e) {
+  } catch (e) {
     // Fallback for SSR or if DOMParser is missing
     return html.replace(/<[^>]*>?/gm, '');
   }

@@ -5,7 +5,6 @@
 export enum TargetType {
   POST = 'POST',
   COMMENT = 'COMMENT',
-  TOPIC = 'TOPIC',
 }
 
 export enum ReportReason {
@@ -106,14 +105,15 @@ export interface Comment {
 
   deleted?: boolean;
 
+  stats?: CommentStats;
+  userState?: CommentUserState;
   permissions?: CommentPermissions;
 
+  attachments?: CommentAttachment[];
+
   reactionCount?: number;
-  repliesCount?: number;
-  isLiked?: boolean;
 
   children?: Comment[];
-  _debugRaw?: unknown;
 }
 
 /* ======================================================

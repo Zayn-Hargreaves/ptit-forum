@@ -1,37 +1,36 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import React from 'react';
-
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React from "react";
 import {
   Menubar,
-  MenubarCheckboxItem,
+  MenubarMenu,
+  MenubarTrigger,
   MenubarContent,
   MenubarItem,
-  MenubarLabel,
-  MenubarMenu,
-  MenubarRadioGroup,
-  MenubarRadioItem,
   MenubarSeparator,
-  MenubarShortcut,
+  MenubarCheckboxItem,
+  MenubarRadioItem,
+  MenubarLabel,
+  MenubarRadioGroup,
   MenubarSub,
-  MenubarSubContent,
   MenubarSubTrigger,
-  MenubarTrigger,
-} from './menubar';
+  MenubarSubContent,
+  MenubarShortcut,
+} from "./menubar";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Menubar> = {
-  title: 'shared/UI/Menubar',
+  title: "shared/UI/Menubar",
   component: Menubar,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   argTypes: {
     children: { control: false },
     className: {
-      control: 'text',
-      description: 'Custom class applied to the menubar container',
+      control: "text",
+      description: "Custom class applied to the menubar container",
     },
   },
 };

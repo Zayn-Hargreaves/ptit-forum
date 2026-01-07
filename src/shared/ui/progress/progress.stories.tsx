@@ -1,31 +1,30 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import React from 'react';
-
-import { Progress } from './progress';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React from "react";
+import { Progress } from "./progress";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Progress> = {
-  title: 'shared/UI/Progress',
+  title: "shared/UI/Progress",
   component: Progress,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   args: {
     value: 40,
   },
   argTypes: {
     value: {
-      control: { type: 'number', min: 0, max: 100 },
-      description: 'Current progress value (0–100).',
+      control: { type: "number", min: 0, max: 100 },
+      description: "Current progress value (0–100).",
       table: {
-        defaultValue: { summary: '40' },
+        defaultValue: { summary: "40" },
       },
     },
     className: {
-      control: 'text',
-      description: 'Custom className applied to the progress root.',
+      control: "text",
+      description: "Custom className applied to the progress root.",
     },
   },
 };
@@ -44,7 +43,9 @@ export const Default: Story = {
   render: (args) => (
     <div className="flex w-64 flex-col gap-2">
       <Progress {...args} />
-      <span className="text-muted-foreground text-xs">{args.value}% complete</span>
+      <span className="text-xs text-muted-foreground">
+        {args.value}% complete
+      </span>
     </div>
   ),
 };
@@ -60,7 +61,7 @@ export const WithLabel: Story = {
   render: (args) => (
     <div className="flex w-72 flex-col gap-2">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-foreground font-medium">Uploading files</span>
+        <span className="font-medium text-foreground">Uploading files</span>
         <span className="text-muted-foreground">{args.value}%</span>
       </div>
       <Progress {...args} />
@@ -78,15 +79,15 @@ export const Sizes: Story = {
   render: (args) => (
     <div className="flex w-64 flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <span className="text-muted-foreground text-xs">Thin</span>
+        <span className="text-xs text-muted-foreground">Thin</span>
         <Progress {...args} className="h-1" />
       </div>
       <div className="flex flex-col gap-1">
-        <span className="text-muted-foreground text-xs">Default</span>
+        <span className="text-xs text-muted-foreground">Default</span>
         <Progress {...args} className="h-2" />
       </div>
       <div className="flex flex-col gap-1">
-        <span className="text-muted-foreground text-xs">Thick</span>
+        <span className="text-xs text-muted-foreground">Thick</span>
         <Progress {...args} className="h-3" />
       </div>
     </div>
@@ -98,14 +99,17 @@ const AnimatedDemo: React.FC = () => {
   const [value, setValue] = React.useState(0);
 
   React.useEffect(() => {
-    const id = setInterval(() => setValue((prev) => (prev >= 100 ? 0 : prev + 5)), 400);
+    const id = setInterval(
+      () => setValue((prev) => (prev >= 100 ? 0 : prev + 5)),
+      400
+    );
     return () => clearInterval(id);
   }, []);
 
   return (
     <div className="flex w-72 flex-col gap-2">
       <Progress value={value} />
-      <span className="text-muted-foreground text-xs">Loading… {value}%</span>
+      <span className="text-xs text-muted-foreground">Loading… {value}%</span>
     </div>
   );
 };

@@ -1,9 +1,13 @@
 'use client';
 
-import { SortMode, TimeRange } from '@entities/post/model/use-infinite-posts';
-import type { Topic } from '@entities/topic/model/types';
-import { cn } from '@shared/lib/utils';
+import { useMemo, useState } from 'react';
 import { Button } from '@shared/ui/button/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@shared/ui/select/select';
+import { Tabs, TabsList, TabsTrigger } from '@shared/ui/tabs/tabs';
+import { Clock, Flame, Calendar, Check, ChevronsUpDown, X } from 'lucide-react';
+
+import { SortMode, TimeRange } from '@entities/post/model/use-infinite-posts';
+
 import {
   Command,
   CommandEmpty,
@@ -13,16 +17,8 @@ import {
   CommandList,
 } from '@shared/ui/command/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@shared/ui/select/select';
-import { Tabs, TabsList, TabsTrigger } from '@shared/ui/tabs/tabs';
-import { Calendar, Check, ChevronsUpDown, Clock, Flame, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { cn } from '@shared/lib/utils';
+import type { Topic } from '@entities/topic/model/types';
 
 interface PostFilterProps {
   sortMode: SortMode;
@@ -47,8 +43,8 @@ export function PostFilter({
   const [openTopic, setOpenTopic] = useState(false);
 
   const selectedTopicName = useMemo(
-    () => topics.find((t) => t.id === selectedTopic)?.name ?? 'Chủ đề không tồn tại',
-    [topics, selectedTopic],
+    () => topics.find((t) => t.id === selectedTopic)?.title ?? 'Chủ đề không tồn tại',
+    [topics, selectedTopic]
   );
 
   const groupedTopics = useMemo(() => {
@@ -60,7 +56,7 @@ export function PostFilter({
     });
 
     Object.keys(groups).forEach((k) => {
-      groups[k] = [...groups[k]].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      groups[k] = [...groups[k]].sort((a, b) => (a.title || '').localeCompare(b.title || ''));
     });
 
     return groups;
@@ -68,12 +64,8 @@ export function PostFilter({
 
   return (
     <div className="flex flex-col gap-4 pb-4">
-      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-        <Tabs
-          value={sortMode}
-          onValueChange={(v) => onSortChange(v as SortMode)}
-          className="w-full sm:w-auto"
-        >
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <Tabs value={sortMode} onValueChange={(v) => onSortChange(v as SortMode)} className="w-full sm:w-auto">
           <TabsList>
             <TabsTrigger value="latest" className="gap-2">
               <Clock className="h-4 w-4" /> Mới nhất
@@ -84,12 +76,12 @@ export function PostFilter({
           </TabsList>
         </Tabs>
 
-        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {sortMode === 'trending' && (
-            <div className="animate-in fade-in slide-in-from-left-2 flex items-center gap-2">
+            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2">
               <Select value={timeRange} onValueChange={(v) => onTimeChange(v as TimeRange)}>
-                <SelectTrigger className="h-9 w-[130px]">
-                  <Calendar className="text-muted-foreground mr-2 h-4 w-4" />
+                <SelectTrigger className="w-[130px] h-9">
+                  <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -101,16 +93,16 @@ export function PostFilter({
             </div>
           )}
 
-          <div className="flex max-w-full items-center gap-2">
+          <div className="flex items-center gap-2 max-w-full">
             <Popover open={openTopic} onOpenChange={setOpenTopic}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   role="combobox"
                   aria-expanded={openTopic}
-                  className="h-9 w-[200px] justify-between font-normal"
+                  className="w-[200px] h-9 justify-between font-normal"
                 >
-                  <span className="flex-1 truncate text-left">
+                  <span className="truncate flex-1 text-left">
                     {selectedTopic ? selectedTopicName : 'Tất cả chủ đề'}
                   </span>
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -120,7 +112,7 @@ export function PostFilter({
               <PopoverContent className="w-60 p-0" align="end">
                 <Command>
                   <CommandInput placeholder="Tìm chủ đề..." />
-                  <CommandList className="max-h-[300px] overflow-x-hidden overflow-y-auto">
+                  <CommandList className="max-h-[300px] overflow-y-auto overflow-x-hidden">
                     <CommandEmpty>Không tìm thấy.</CommandEmpty>
 
                     <CommandGroup>
@@ -131,12 +123,7 @@ export function PostFilter({
                           setOpenTopic(false);
                         }}
                       >
-                        <Check
-                          className={cn(
-                            'mr-2 h-4 w-4',
-                            selectedTopic ? 'opacity-0' : 'opacity-100',
-                          )}
-                        />
+                        <Check className={cn('mr-2 h-4 w-4', selectedTopic ? 'opacity-0' : 'opacity-100')} />
                         Tất cả chủ đề
                       </CommandItem>
                     </CommandGroup>
@@ -146,19 +133,16 @@ export function PostFilter({
                         {list.map((t) => (
                           <CommandItem
                             key={t.id}
-                            value={t.name}
+                            value={t.title}
                             onSelect={() => {
                               onTopicChange(t.id);
                               setOpenTopic(false);
                             }}
                           >
                             <Check
-                              className={cn(
-                                'mr-2 h-4 w-4',
-                                selectedTopic === t.id ? 'opacity-100' : 'opacity-0',
-                              )}
+                              className={cn('mr-2 h-4 w-4', selectedTopic === t.id ? 'opacity-100' : 'opacity-0')}
                             />
-                            <span className="truncate">{t.name}</span>
+                            <span className="truncate">{t.title}</span>
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -172,7 +156,7 @@ export function PostFilter({
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-muted-foreground hover:text-foreground h-9 w-9 shrink-0"
+                className="h-9 w-9 text-muted-foreground hover:text-foreground shrink-0"
                 onClick={() => onTopicChange(null)}
                 title="Xóa lọc chủ đề"
               >

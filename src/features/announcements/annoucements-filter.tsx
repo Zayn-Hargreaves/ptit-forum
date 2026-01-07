@@ -1,12 +1,15 @@
-'use client';
+"use client";
 
-import { ANNOUNCEMENT_TYPE_LABEL, AnnouncementType } from '@entities/announcement/model/types';
-import { Button } from '@shared/ui/button/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@shared/ui/card/card';
-import { Checkbox } from '@shared/ui/checkbox/checkbox';
-import { Label } from '@shared/ui/label/label';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@shared/ui/card/card";
+import { Checkbox } from "@shared/ui/checkbox/checkbox";
+import { Label } from "@shared/ui/label/label";
+import { Button } from "@shared/ui/button/button";
+import {
+  AnnouncementType,
+  ANNOUNCEMENT_TYPE_LABEL,
+} from "@entities/announcement/model/types";
 
 export function AnnouncementsFilter() {
   const router = useRouter();
@@ -15,23 +18,25 @@ export function AnnouncementsFilter() {
   const handleTypeChange = useCallback(
     (type: AnnouncementType) => {
       const params = new URLSearchParams(searchParams.toString());
-      const currentTypes = params.getAll('type');
+      const currentTypes = params.getAll("type");
 
       if (currentTypes.includes(type)) {
-        params.delete('type');
-        currentTypes.filter((t) => t !== type).forEach((t) => params.append('type', t));
+        params.delete("type");
+        currentTypes
+          .filter((t) => t !== type)
+          .forEach((t) => params.append("type", t));
       } else {
-        params.append('type', type);
+        params.append("type", type);
       }
 
-      params.set('page', '1');
+      params.set("page", "1");
       router.push(`?${params.toString()}`, { scroll: false });
     },
-    [searchParams, router],
+    [searchParams, router]
   );
 
   const clearFilters = () => {
-    router.push('/announcements', { scroll: false });
+    router.push("/announcements", { scroll: false });
   };
 
   return (
@@ -47,10 +52,13 @@ export function AnnouncementsFilter() {
               <div key={type} className="flex items-center space-x-2">
                 <Checkbox
                   id={type}
-                  checked={searchParams.getAll('type').includes(type)}
+                  checked={searchParams.getAll("type").includes(type)}
                   onCheckedChange={() => handleTypeChange(type)}
                 />
-                <label htmlFor={type} className="cursor-pointer text-sm leading-none font-medium">
+                <label
+                  htmlFor={type}
+                  className="text-sm font-medium leading-none cursor-pointer"
+                >
                   {ANNOUNCEMENT_TYPE_LABEL[type]}
                 </label>
               </div>
@@ -60,7 +68,11 @@ export function AnnouncementsFilter() {
 
         {/* Phần Khoa/Viện: Nếu BE chưa có filter theo Khoa cho Public API -> Ẩn đi hoặc Comment lại chờ update */}
 
-        <Button variant="outline" className="w-full bg-transparent" onClick={clearFilters}>
+        <Button
+          variant="outline"
+          className="w-full bg-transparent"
+          onClick={clearFilters}
+        >
           Xóa bộ lọc
         </Button>
       </CardContent>

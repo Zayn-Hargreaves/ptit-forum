@@ -13,10 +13,4 @@ export interface IComment {
   isLiked?: boolean;
   reactionCount?: number;
   parentId?: string | null;
-  permissions?: {
-    canEdit: boolean;
-    canDelete: boolean;
-    canReport: boolean;
-  };
-  commentCreator?: boolean;
 }

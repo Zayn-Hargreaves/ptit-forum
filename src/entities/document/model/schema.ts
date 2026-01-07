@@ -1,30 +1,6 @@
 import { z } from 'zod';
 
-export const DocumentStatusSchema = z
-  .enum([
-    'PROCESSING',
-    'PENDING',
-    'PUBLISHED',
-    'REJECTED',
-    'FAILED',
-    'APPROVED',
-    'processing',
-    'pending',
-    'published',
-    'rejected',
-    'failed',
-    'approved',
-  ])
-  .transform(
-    (val) =>
-      val.toUpperCase() as
-        | 'PROCESSING'
-        | 'PENDING'
-        | 'PUBLISHED'
-        | 'REJECTED'
-        | 'FAILED'
-        | 'APPROVED',
-  );
+export const DocumentStatusSchema = z.enum(['PROCESSING', 'PENDING', 'PUBLISHED', 'REJECTED', 'FAILED', 'APPROVED', 'processing', 'pending', 'published', 'rejected', 'failed', 'approved']).transform(val => val.toUpperCase() as 'PROCESSING' | 'PENDING' | 'PUBLISHED' | 'REJECTED' | 'FAILED' | 'APPROVED');
 
 export enum DocumentType {
   COURSE_BOOK = 'COURSE_BOOK',
@@ -56,7 +32,6 @@ export const DocumentSchema = z.object({
   uploadDate: z.string().datetime(), // ISO string
   isPremium: z.boolean(),
   status: DocumentStatusSchema,
-  rejectionReason: z.string().optional(),
   previewImages: z.array(z.string().url()),
   author: DocumentAuthorSchema,
   subject: DocumentSubjectSchema,

@@ -1,52 +1,53 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import React from 'react';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React from "react";
 
 import {
   Select,
+  SelectTrigger,
   SelectContent,
-  SelectGroup,
   SelectItem,
+  SelectGroup,
   SelectLabel,
   SelectSeparator,
-  SelectTrigger,
   SelectValue,
-} from './select';
+} from "./select";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Select> = {
-  title: 'shared/Form/Select',
+  title: "shared/Form/Select",
   component: Select,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   args: {
     defaultValue: undefined,
   },
   argTypes: {
     defaultValue: {
-      control: 'text',
-      description: 'Initial selected value (uncontrolled).',
+      control: "text",
+      description: "Initial selected value (uncontrolled).",
       table: {
-        defaultValue: { summary: 'undefined' },
+        defaultValue: { summary: "undefined" },
       },
     },
     value: {
-      control: 'text',
-      description: 'Controlled selected value.',
+      control: "text",
+      description: "Controlled selected value.",
     },
     disabled: {
-      control: 'boolean',
-      description: 'Disable the entire select.',
+      control: "boolean",
+      description: "Disable the entire select.",
     },
     onValueChange: {
-      action: 'value changed',
-      description: 'Called when the selected value changes.',
+      action: "value changed",
+      description: "Called when the selected value changes.",
     },
     children: {
       control: false,
-      description: 'Composition of SelectTrigger, SelectContent, SelectItem, etc.',
+      description:
+        "Composition of SelectTrigger, SelectContent, SelectItem, etc.",
     },
   },
 };
@@ -58,7 +59,7 @@ type Story = StoryObj<typeof Select>;
 // --- DEMO COMPONENTS FOR HOOK USAGE ---
 
 const ControlledDemo: React.FC = () => {
-  const [value, setValue] = React.useState('light');
+  const [value, setValue] = React.useState("light");
 
   return (
     <div className="flex flex-col gap-3">
@@ -75,7 +76,7 @@ const ControlledDemo: React.FC = () => {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <p className="text-muted-foreground text-xs">
+      <p className="text-xs text-muted-foreground">
         Selected: <span className="font-medium">{value}</span>
       </p>
     </div>
@@ -138,7 +139,7 @@ export const Sizes: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
-        <span className="text-muted-foreground w-16 text-xs">Default</span>
+        <span className="w-16 text-xs text-muted-foreground">Default</span>
         <Select defaultValue="md">
           <SelectTrigger className="w-[180px]" size="default">
             <SelectValue placeholder="Default size" />
@@ -152,7 +153,7 @@ export const Sizes: Story = {
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="text-muted-foreground w-16 text-xs">Small</span>
+        <span className="w-16 text-xs text-muted-foreground">Small</span>
         <Select defaultValue="md">
           <SelectTrigger className="w-[180px]" size="sm">
             <SelectValue placeholder="Small size" />

@@ -1,10 +1,10 @@
-import { ApiResponse } from '@entities/announcement/model/types'; // Temporary import location
+import { apiClient } from '@shared/api/axios-client';
 import {
-  mapUserProfileResponseDtoToUserProfile,
   UserProfile,
   UserProfileResponseDto,
+  mapUserProfileResponseDtoToUserProfile,
 } from '@entities/session/model/types';
-import { apiClient } from '@shared/api/axios-client';
+import { ApiResponse } from '@entities/announcement/model/types'; // Temporary import location
 
 export const getUserProfile = async (userId: string): Promise<UserProfile> => {
   const response = await apiClient.get<ApiResponse<UserProfileResponseDto>>(`/users/${userId}`);

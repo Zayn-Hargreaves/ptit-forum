@@ -1,8 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Monitor, Smartphone } from 'lucide-react';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import {
-  Area,
-  AreaChart,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "./chart";
+import {
   Bar,
   BarChart,
   CartesianGrid,
@@ -12,39 +17,33 @@ import {
   PieChart,
   XAxis,
   YAxis,
-} from 'recharts';
-
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from './chart';
+  Area,
+  AreaChart,
+} from "recharts";
+import { Monitor, Smartphone } from "lucide-react";
 
 // --- MOCK DATA ---
 
 const chartData = [
-  { month: 'January', desktop: 186, mobile: 80 },
-  { month: 'February', desktop: 305, mobile: 200 },
-  { month: 'March', desktop: 237, mobile: 120 },
-  { month: 'April', desktop: 73, mobile: 190 },
-  { month: 'May', desktop: 209, mobile: 130 },
-  { month: 'June', desktop: 214, mobile: 140 },
+  { month: "January", desktop: 186, mobile: 80 },
+  { month: "February", desktop: 305, mobile: 200 },
+  { month: "March", desktop: 237, mobile: 120 },
+  { month: "April", desktop: 73, mobile: 190 },
+  { month: "May", desktop: 209, mobile: 130 },
+  { month: "June", desktop: 214, mobile: 140 },
 ];
 
 // --- CONFIG DEFINITION ---
 
 const chartConfig = {
   desktop: {
-    label: 'Desktop',
-    color: '#2563eb', // Blue-600
+    label: "Desktop",
+    color: "#2563eb", // Blue-600
     icon: Monitor,
   },
   mobile: {
-    label: 'Mobile',
-    color: '#60a5fa', // Blue-400
+    label: "Mobile",
+    color: "#60a5fa", // Blue-400
     icon: Smartphone,
   },
 } satisfies ChartConfig;
@@ -52,29 +51,29 @@ const chartConfig = {
 // --- META DEFINITION ---
 
 const meta: Meta<typeof ChartContainer> = {
-  title: 'shared/UI/Chart',
+  title: "shared/UI/Chart",
   component: ChartContainer,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
   args: {
     config: chartConfig,
-    className: 'min-h-[200px] w-full',
+    className: "min-h-[200px] w-full",
   },
   argTypes: {
     config: {
-      control: 'object',
-      description: 'Cấu hình màu sắc, label và icon cho các key dữ liệu.',
+      control: "object",
+      description: "Cấu hình màu sắc, label và icon cho các key dữ liệu.",
     },
     children: {
       control: false,
-      description: 'Recharts components (BarChart, LineChart, etc.).',
+      description: "Recharts components (BarChart, LineChart, etc.).",
     },
   },
   decorators: [
     (Story) => (
-      <div className="mx-auto w-full max-w-2xl rounded-xl border p-4">
+      <div className="mx-auto max-w-2xl w-full p-4 border rounded-xl">
         <Story />
       </div>
     ),
@@ -179,7 +178,10 @@ export const AreaChartGradient: Story = {
           tickMargin={8}
           tickFormatter={(value) => value.slice(0, 3)}
         />
-        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent indicator="line" />}
+        />
 
         {/* Gradients definitions would typically go in <defs> */}
         <Area
@@ -222,7 +224,13 @@ export const TooltipOptions: Story = {
         {/* Custom props for TooltipContent */}
         <ChartTooltip
           cursor={false}
-          content={<ChartTooltipContent hideLabel indicator="dashed" className="w-[150px]" />}
+          content={
+            <ChartTooltipContent
+              hideLabel
+              indicator="dashed"
+              className="w-[150px]"
+            />
+          }
         />
         <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
         <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
@@ -239,44 +247,55 @@ export const PieChartDemo: Story = {
   render: () => {
     // Specific data for Pie Chart
     const pieData = [
-      { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
-      { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
-      { browser: 'firefox', visitors: 187, fill: 'var(--color-firefox)' },
-      { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
-      { browser: 'other', visitors: 90, fill: 'var(--color-other)' },
+      { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+      { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+      { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
+      { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
+      { browser: "other", visitors: 90, fill: "var(--color-other)" },
     ];
 
     const pieConfig = {
       visitors: {
-        label: 'Visitors',
+        label: "Visitors",
       },
       chrome: {
-        label: 'Chrome',
-        color: '#2563eb',
+        label: "Chrome",
+        color: "#2563eb",
       },
       safari: {
-        label: 'Safari',
-        color: '#60a5fa',
+        label: "Safari",
+        color: "#60a5fa",
       },
       firefox: {
-        label: 'Firefox',
-        color: '#f97316',
+        label: "Firefox",
+        color: "#f97316",
       },
       edge: {
-        label: 'Edge',
-        color: '#8b5cf6',
+        label: "Edge",
+        color: "#8b5cf6",
       },
       other: {
-        label: 'Other',
-        color: '#94a3b8',
+        label: "Other",
+        color: "#94a3b8",
       },
     } satisfies ChartConfig;
 
     return (
-      <ChartContainer config={pieConfig} className="mx-auto aspect-square max-h-[250px]">
+      <ChartContainer
+        config={pieConfig}
+        className="mx-auto aspect-square max-h-[250px]"
+      >
         <PieChart>
-          <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-          <Pie data={pieData} dataKey="visitors" nameKey="browser" innerRadius={60} />
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent hideLabel />}
+          />
+          <Pie
+            data={pieData}
+            dataKey="visitors"
+            nameKey="browser"
+            innerRadius={60}
+          />
         </PieChart>
       </ChartContainer>
     );

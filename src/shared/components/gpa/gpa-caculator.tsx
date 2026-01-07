@@ -1,20 +1,26 @@
-'use client';
+"use client";
 
-import { Button } from '@shared/ui/button/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@shared/ui/card/card';
-import { Input } from '@shared/ui/input/input';
-import { Label } from '@shared/ui/label/label';
+import { useState } from "react";
+
+import { Plus, Trash2, Calculator } from "lucide-react";
+import { GPAResult } from "./gpa-result";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@shared/ui/card/card";
+import { Label } from "@shared/ui/label/label";
+import { Input } from "@shared/ui/input/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@shared/ui/select/select';
-import { Calculator, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
-
-import { GPAResult } from './gpa-result';
+} from "@shared/ui/select/select";
+import { Button } from "@shared/ui/button/button";
 
 interface Course {
   id: string;
@@ -24,24 +30,29 @@ interface Course {
 }
 
 const gradePoints: Record<string, number> = {
-  'A+': 4.0,
+  "A+": 4.0,
   A: 4.0,
-  'B+': 3.5,
+  "B+": 3.5,
   B: 3.0,
-  'C+': 2.5,
+  "C+": 2.5,
   C: 2.0,
-  'D+': 1.5,
+  "D+": 1.5,
   D: 1.0,
   F: 0.0,
 };
 
 export function GPACalculator() {
-  const [courses, setCourses] = useState<Course[]>([{ id: '1', name: '', credits: 3, grade: '' }]);
+  const [courses, setCourses] = useState<Course[]>([
+    { id: "1", name: "", credits: 3, grade: "" },
+  ]);
   const [gpa, setGpa] = useState<number | null>(null);
   const [totalCredits, setTotalCredits] = useState<number>(0);
 
   const addCourse = () => {
-    setCourses([...courses, { id: Date.now().toString(), name: '', credits: 3, grade: '' }]);
+    setCourses([
+      ...courses,
+      { id: Date.now().toString(), name: "", credits: 3, grade: "" },
+    ]);
   };
 
   const removeCourse = (id: string) => {
@@ -50,9 +61,15 @@ export function GPACalculator() {
     }
   };
 
-  const updateCourse = (id: string, field: keyof Course, value: string | number) => {
+  const updateCourse = (
+    id: string,
+    field: keyof Course,
+    value: string | number
+  ) => {
     setCourses(
-      courses.map((course) => (course.id === id ? { ...course, [field]: value } : course)),
+      courses.map((course) =>
+        course.id === id ? { ...course, [field]: value } : course
+      )
     );
   };
 
@@ -74,7 +91,7 @@ export function GPACalculator() {
   };
 
   const resetCalculator = () => {
-    setCourses([{ id: '1', name: '', credits: 3, grade: '' }]);
+    setCourses([{ id: "1", name: "", credits: 3, grade: "" }]);
     setGpa(null);
     setTotalCredits(0);
   };
@@ -84,10 +101,12 @@ export function GPACalculator() {
       <Card>
         <CardHeader>
           <CardTitle>Nhập điểm các môn học</CardTitle>
-          <CardDescription>Thêm các môn học và điểm số để tính GPA</CardDescription>
+          <CardDescription>
+            Thêm các môn học và điểm số để tính GPA
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {courses.map((course, _index) => (
+          {courses.map((course, index) => (
             <div key={course.id} className="flex gap-2">
               <div className="flex-1 space-y-2">
                 <Label htmlFor={`course-${course.id}`} className="sr-only">
@@ -97,7 +116,9 @@ export function GPACalculator() {
                   id={`course-${course.id}`}
                   placeholder="Tên môn học"
                   value={course.name}
-                  onChange={(e) => updateCourse(course.id, 'name', e.target.value)}
+                  onChange={(e) =>
+                    updateCourse(course.id, "name", e.target.value)
+                  }
                 />
               </div>
               <div className="w-24 space-y-2">
@@ -112,7 +133,11 @@ export function GPACalculator() {
                   placeholder="TC"
                   value={course.credits}
                   onChange={(e) =>
-                    updateCourse(course.id, 'credits', Number.parseInt(e.target.value))
+                    updateCourse(
+                      course.id,
+                      "credits",
+                      Number.parseInt(e.target.value)
+                    )
                   }
                 />
               </div>
@@ -122,7 +147,9 @@ export function GPACalculator() {
                 </Label>
                 <Select
                   value={course.grade}
-                  onValueChange={(value) => updateCourse(course.id, 'grade', value)}
+                  onValueChange={(value) =>
+                    updateCourse(course.id, "grade", value)
+                  }
                 >
                   <SelectTrigger id={`grade-${course.id}`}>
                     <SelectValue placeholder="Điểm" />

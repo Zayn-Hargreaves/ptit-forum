@@ -1,20 +1,16 @@
 // src/entities/session/api/session-api.ts
 import { apiClient } from '@shared/api/axios-client';
+import { UpdateProfilePayload, UserProfile, UserProfileResponseDto } from '../model/types';
 import { ApiResponse } from '@shared/api/types';
 
-import { UpdateProfilePayload, UserProfile } from '../model/types';
-
-const mapToUser = (data: unknown): UserProfile => {
-  const d = data as Record<string, unknown>;
+const mapToUser = (data: any): UserProfile => {
   return {
-    id: d.id as string,
-    email: d.email as string,
-    fullName: d.fullName as string,
-    avatarUrl: (d.avatarUrl || d.avatar) as string,
-    studentCode: (d.studentCode || d.studentId) as string,
-    classCode: (d.classCode || d.className) as string,
-    facultyName: (d.facultyName || d.faculty) as string,
-    role: (d.permissions as string[])?.includes('ROLE_ADMIN') ? 'ADMIN' : 'USER',
+    ...data,
+    avatarUrl: data.avatarUrl || data.avatar,
+    studentCode: data.studentCode || data.studentId,
+    classCode: data.classCode || data.className,
+    facultyName: data.facultyName || data.faculty,
+    role: data.permissions?.includes('ROLE_ADMIN') ? 'ADMIN' : 'USER',
   };
 };
 
@@ -25,25 +21,27 @@ export const sessionApi = {
   },
 
   getProfile: async () => {
-    const { data } = await apiClient.get<ApiResponse<unknown>>('/users/profile');
+    const { data } = await apiClient.get<ApiResponse<any>>('/users/profile');
     return mapToUser(data.result);
   },
 
   updateProfile: async (payload: UpdateProfilePayload, avatar?: File) => {
     const formData = new FormData();
-
-    if (payload.fullName) formData.append('fullName', payload.fullName);
-    if (payload.phone) formData.append('phone', payload.phone);
-    if (payload.studentCode) formData.append('studentCode', payload.studentCode);
-    if (payload.classCode) formData.append('classCode', payload.classCode);
-
+    
+    // CRITICAL: Create Blob with application/json type for Spring Boot @RequestPart
+    const jsonPart = new Blob([JSON.stringify(payload)], { 
+      type: "application/json" 
+    });
+    formData.append("data", jsonPart);
+    
     if (avatar) {
-      formData.append('image', avatar);
+      formData.append("avatar", avatar);
     }
-
-    const { data } = await apiClient.put<ApiResponse<unknown>>('/users/profile', formData, {
+    
+    // CRITICAL: Remove Content-Type header to let axios auto-set multipart/form-data with boundary
+    const { data } = await apiClient.put<ApiResponse<any>>('/users/profile', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': undefined, // Let axios handle it
       },
     });
     return mapToUser(data.result);

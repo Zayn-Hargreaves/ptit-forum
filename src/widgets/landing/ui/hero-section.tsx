@@ -1,22 +1,23 @@
-import { getLandingStats } from '@entities/landing/api/get-landing-stats';
-import { Button } from '@shared/ui/button/button';
-import { ArrowRight } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Suspense } from 'react';
-
-import heroImage from '../../../../public/team-collaboration.png';
+import { Suspense } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@shared/ui/button/button";
+import { getLandingStats } from "@entities/landing/api/get-landing-stats";
+import heroImage from "../../../../public/team-collaboration.png";
 
 async function HeroStats() {
   try {
     const stats = await getLandingStats();
 
     return (
-      <div className="border-primary/10 animate-in fade-in slide-in-from-bottom-4 mt-20 grid grid-cols-2 gap-8 border-t pt-10 duration-700 md:grid-cols-3">
+      <div className="mt-20 grid grid-cols-2 gap-8 border-t border-primary/10 pt-10 md:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
         {stats.map((s) => (
           <div key={s.label}>
-            <div className="text-foreground text-3xl font-bold md:text-4xl">{s.value}</div>
-            <div className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
+            <div className="text-3xl font-bold text-foreground md:text-4xl">
+              {s.value}
+            </div>
+            <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               {s.label}
             </div>
           </div>
@@ -24,18 +25,18 @@ async function HeroStats() {
       </div>
     );
   } catch (error) {
-    console.error('Failed to fetch landing stats:', error);
+    console.error("Failed to fetch landing stats:", error);
     return null;
   }
 }
 
 function StatsSkeleton() {
   return (
-    <div className="border-primary/10 mt-20 grid grid-cols-2 gap-8 border-t pt-10 md:grid-cols-3">
+    <div className="mt-20 grid grid-cols-2 gap-8 border-t border-primary/10 pt-10 md:grid-cols-3">
       {[1, 2, 3].map((i) => (
         <div key={i} className="space-y-2">
-          <div className="bg-muted/50 h-10 w-20 animate-pulse rounded-md" />
-          <div className="bg-muted/30 h-4 w-24 animate-pulse rounded-md" />
+          <div className="h-10 w-20 rounded-md bg-muted/50 animate-pulse" />
+          <div className="h-4 w-24 rounded-md bg-muted/30 animate-pulse" />
         </div>
       ))}
     </div>
@@ -43,21 +44,23 @@ function StatsSkeleton() {
 }
 
 const HERO_CONTENT = {
-  badge: 'Cộng đồng sinh viên PTIT',
-  title: 'Nơi kết nối và chia sẻ: tri thức',
+  badge: "Cộng đồng sinh viên PTIT",
+  title: "Nơi kết nối và chia sẻ: tri thức",
   description:
-    'Tham gia cộng đồng sinh viên Học viện Công nghệ Bưu chính Viễn thông. Thảo luận, chia sẻ tài liệu, và cùng nhau phát triển.',
-  primaryAction: { label: 'Bắt đầu ngay', href: '/register' },
-  secondaryAction: { label: 'Khám phá thư viện', href: '/documents' },
+    "Tham gia cộng đồng sinh viên Học viện Công nghệ Bưu chính Viễn thông. Thảo luận, chia sẻ tài liệu, và cùng nhau phát triển.",
+  primaryAction: { label: "Bắt đầu ngay", href: "/register" },
+  secondaryAction: { label: "Khám phá thư viện", href: "/documents" },
 };
 
 function renderTitle(title: string) {
-  const parts = title.split(':');
+  const parts = title.split(":");
   return (
     <>
       <span className="block">{parts[0]?.trim()}:</span>
       {parts[1] && (
-        <span className="text-primary block italic">{parts.slice(1).join(':').trim()}</span>
+        <span className="block text-primary italic">
+          {parts.slice(1).join(":").trim()}
+        </span>
       )}
     </>
   );
@@ -78,20 +81,20 @@ export function HeroSection() {
           placeholder="blur"
           quality={90}
           sizes="100vw"
-          className="object-cover opacity-30 dark:opacity-20"
+          className="object-cover opacity-30 dark:opacity-20 "
         />
-        <div className="from-background via-background/80 to-background absolute inset-0 bg-linear-to-b" />
+        <div className="absolute inset-0 bg-linear-to-b from-background via-background/80 to-background" />
       </div>
 
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl text-center">
           {/* Badge */}
-          <div className="bg-primary/5 mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 backdrop-blur-md">
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border bg-primary/5 px-4 py-1.5 backdrop-blur-md">
             <span className="relative flex h-2 w-2">
-              <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-              <span className="bg-primary relative inline-flex h-2 w-2 rounded-full" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
             </span>
-            <span className="text-primary text-xs font-bold tracking-wider uppercase">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">
               {HERO_CONTENT.badge}
             </span>
           </div>
@@ -99,12 +102,12 @@ export function HeroSection() {
           {/* Heading */}
           <h1
             id="hero-heading"
-            className="text-5xl font-extrabold tracking-tight text-balance md:text-7xl"
+            className="text-balance text-5xl font-extrabold tracking-tight md:text-7xl"
           >
             {renderTitle(HERO_CONTENT.title)}
           </h1>
 
-          <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg text-pretty md:text-xl">
+          <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground md:text-xl">
             {HERO_CONTENT.description}
           </p>
 
@@ -113,7 +116,7 @@ export function HeroSection() {
             <Button
               size="lg"
               asChild
-              className="shadow-primary/20 w-full px-10 font-bold shadow-xl sm:w-auto"
+              className="w-full sm:w-auto px-10 shadow-xl shadow-primary/20 font-bold"
             >
               <Link href={HERO_CONTENT.primaryAction.href}>
                 {HERO_CONTENT.primaryAction.label}
@@ -125,7 +128,7 @@ export function HeroSection() {
               size="lg"
               variant="outline"
               asChild
-              className="bg-background/60 w-full backdrop-blur-sm sm:w-auto"
+              className="w-full sm:w-auto bg-background/60 backdrop-blur-sm"
             >
               <Link href={HERO_CONTENT.secondaryAction.href}>
                 {HERO_CONTENT.secondaryAction.label}

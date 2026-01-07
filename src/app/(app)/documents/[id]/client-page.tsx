@@ -1,15 +1,15 @@
 'use client';
 
 import { useDocumentDetail } from '@features/document/view/model/use-document-detail';
-import { DocumentErrorFallback } from '@features/document/view/ui/document-error-fallback';
-import { DocumentInfo } from '@features/document/view/ui/document-info';
 import { PdfViewer } from '@features/document/view/ui/pdf-viewer';
+import { DocumentInfo } from '@features/document/view/ui/document-info';
 import { Button } from '@shared/ui/button/button';
-import { Skeleton } from '@shared/ui/skeleton/skeleton';
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { Skeleton } from '@shared/ui/skeleton/skeleton';
+import { DocumentErrorFallback } from '@features/document/view/ui/document-error-fallback';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useEffect, useRef, useState } from 'react';
 
 export default function DocumentDetailClient({ id }: { id: string }) {
   const router = useRouter();
@@ -24,7 +24,7 @@ export default function DocumentDetailClient({ id }: { id: string }) {
       if (containerRef.current) {
         setContainerWidth(containerRef.current.offsetWidth);
       }
-    };
+    }
 
     updateWidth(); // Initial calculation
 
@@ -43,9 +43,9 @@ export default function DocumentDetailClient({ id }: { id: string }) {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto space-y-8 py-8">
+      <div className="container mx-auto py-8 space-y-8">
         <Skeleton className="h-8 w-1/3" />
-        <div className="grid gap-8 lg:grid-cols-[1fr_350px]">
+        <div className="grid lg:grid-cols-[1fr_350px] gap-8">
           <Skeleton className="h-[600px] w-full rounded-lg" />
           <div className="space-y-4">
             <Skeleton className="h-10 w-full" />
@@ -71,13 +71,13 @@ export default function DocumentDetailClient({ id }: { id: string }) {
     <div className="container mx-auto py-6">
       <Button
         variant="ghost"
-        className="text-muted-foreground hover:text-foreground mb-4 gap-2 pl-0"
+        className="mb-4 gap-2 text-muted-foreground hover:text-foreground pl-0"
         onClick={() => router.back()}
       >
-        <ChevronLeft className="h-4 w-4" /> Back to Documents
+        <ChevronLeft className="w-4 h-4" /> Back to Documents
       </Button>
 
-      <div className="grid items-start gap-8 lg:grid-cols-[1fr_350px]">
+      <div className="grid lg:grid-cols-[1fr_350px] gap-8 items-start">
         {/* Main Content: PDF Viewer */}
         <div className="w-full" ref={containerRef}>
           <ErrorBoundary
@@ -89,13 +89,7 @@ export default function DocumentDetailClient({ id }: { id: string }) {
               />
             )}
           >
-            {containerWidth > 0 && (
-              <PdfViewer
-                url={document.fileUrl}
-                isPremium={document.isPremium}
-                width={containerWidth}
-              />
-            )}
+            {containerWidth > 0 && <PdfViewer url={document.fileUrl} isPremium={document.isPremium} width={containerWidth} />}
           </ErrorBoundary>
         </div>
 

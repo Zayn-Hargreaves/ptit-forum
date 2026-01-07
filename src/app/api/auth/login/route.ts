@@ -1,5 +1,5 @@
-import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '@shared/constants/constants';
 import { BackendResponseSchema, loginSchema } from '@shared/validators/auth';
+import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '@shared/constants/constants';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -26,24 +26,17 @@ export async function POST(req: Request) {
     let data;
     try {
       const contentType = res.headers.get('content-type');
-      if (contentType?.includes('application/json')) {
-        data = await res.json();
-      } else {
+      if (!res.ok || !contentType?.includes('application/json')) {
         const rawText = await res.text();
-        if (!res.ok) {
-          throw new Error(
-            `Backend login failed: Status ${res.status} ${res.statusText}, Response: ${rawText}`,
-          );
-        }
-        // If it is 200 but not JSON? Probably shouldn't happen based on backend contract, but handle if needed.
-        // Assuming success is always JSON.
-        throw new Error(`Invalid content-type: ${contentType}`);
+        throw new Error(`Backend login failed: Status ${res.status} ${res.statusText}, Response: ${rawText}`);
       }
+      data = await res.json();
     } catch (parseError) {
       if (parseError instanceof SyntaxError) {
         // JSON parsing failed, get raw text
+        const rawText = await res.text();
         throw new Error(
-          `Backend login response parsing failed: Status ${res.status} ${res.statusText}`,
+          `Backend login response parsing failed: Status ${res.status} ${res.statusText}, Raw response: ${rawText}`
         );
       }
       throw parseError; // Re-throw other errors like network errors
@@ -53,13 +46,11 @@ export async function POST(req: Request) {
       return NextResponse.json(data, { status: res.status });
     }
 
+
     const parsedData = BackendResponseSchema.safeParse(data);
     if (!parsedData.success) {
       console.error('Backend login contract changed:', parsedData.error);
-      return NextResponse.json(
-        { message: 'Upstream Server Error: Invalid response format' },
-        { status: 502 },
-      );
+      return NextResponse.json({ message: 'Upstream Server Error: Invalid response format' }, { status: 502 });
     }
 
     const { accessToken, refreshToken, user } = parsedData.data.result;

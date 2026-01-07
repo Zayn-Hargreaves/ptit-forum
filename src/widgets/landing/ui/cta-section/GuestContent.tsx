@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { Button } from '@shared/ui';
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { Button } from "@shared/ui";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export function GuestContent() {
   return (
     <div className="mx-auto max-w-3xl">
-      <h2 className="mb-4 text-3xl font-bold text-balance md:text-4xl">
+      <h2 className="mb-4 text-3xl font-bold md:text-4xl text-balance">
         Sẵn sàng tham gia cộng đồng?
       </h2>
-      <p className="text-muted-foreground mb-8 text-lg">
-        Đăng ký ngay để kết nối với hàng nghìn sinh viên PTIT, chia sẻ kiến thức và cùng nhau phát
-        triển.
+      <p className="mb-8 text-lg text-muted-foreground">
+        Đăng ký ngay để kết nối với hàng nghìn sinh viên PTIT, chia sẻ kiến thức
+        và cùng nhau phát triển.
       </p>
       <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
         <Button size="lg" asChild>

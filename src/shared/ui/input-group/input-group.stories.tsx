@@ -1,39 +1,39 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { AtSign, Search, Send, X } from 'lucide-react';
-import React, { useState } from 'react';
-
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React, { useState } from "react";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
-  InputGroupText,
   InputGroupTextarea,
-} from './input-group';
+  InputGroupText,
+} from "./input-group";
+import { Search, X, Send, AtSign } from "lucide-react";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof InputGroup> = {
-  title: 'shared/Form/InputGroup',
+  title: "shared/Form/InputGroup",
   component: InputGroup,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   args: {
-    className: 'max-w-md',
+    className: "max-w-md",
   },
   argTypes: {
     className: {
-      control: 'text',
-      description: 'Custom className for the InputGroup container.',
+      control: "text",
+      description: "Custom className for the InputGroup container.",
       table: {
-        defaultValue: { summary: 'max-w-md' },
+        defaultValue: { summary: "max-w-md" },
       },
     },
     children: {
       control: false,
-      description: 'Inner structure of the input group (addons, input, textarea, buttons…).',
+      description:
+        "Inner structure of the input group (addons, input, textarea, buttons…).",
     },
   },
 };
@@ -90,11 +90,13 @@ export const BlockAlignedAddons: Story = {
   render: (args) => (
     <InputGroup {...args}>
       <InputGroupAddon align="block-start">
-        <span className="text-muted-foreground text-xs">Project name (public)</span>
+        <span className="text-xs text-muted-foreground">
+          Project name (public)
+        </span>
       </InputGroupAddon>
       <InputGroupInput placeholder="my-awesome-project" />
       <InputGroupAddon align="block-end">
-        <span className="text-muted-foreground text-[11px]">
+        <span className="text-[11px] text-muted-foreground">
           This name will be visible to collaborators.
         </span>
       </InputGroupAddon>
@@ -110,11 +112,11 @@ export const WithTextarea: Story = {
   render: (args) => (
     <InputGroup {...args}>
       <InputGroupAddon align="block-start">
-        <span className="text-muted-foreground text-xs">Message</span>
+        <span className="text-xs text-muted-foreground">Message</span>
       </InputGroupAddon>
       <InputGroupTextarea placeholder="Type your message here..." rows={3} />
       <InputGroupAddon align="block-end">
-        <div className="text-muted-foreground flex w-full items-center justify-between text-[11px]">
+        <div className="flex w-full items-center justify-between text-[11px] text-muted-foreground">
           <span>Markdown supported</span>
           <span>0/500</span>
         </div>
@@ -160,7 +162,9 @@ export const ErrorState: Story = {
           defaultValue="@@invalid-query"
         />
       </InputGroup>
-      <p className="text-destructive text-xs">This query format is not supported.</p>
+      <p className="text-xs text-destructive">
+        This query format is not supported.
+      </p>
     </div>
   ),
 };
@@ -171,10 +175,11 @@ export const ErrorState: Story = {
  */
 export const ControlledWithSend: Story = {
   render: (args) => {
-    const [value, setValue] = useState('');
+    const [value, setValue] = useState("");
 
     const handleSend = () => {
-      alert(`Sent: ${value || '(empty message)'}`);
+      // eslint-disable-next-line no-alert
+      alert(`Sent: ${value || "(empty message)"}`);
     };
 
     return (
@@ -189,13 +194,18 @@ export const ControlledWithSend: Story = {
             onChange={(e) => setValue(e.target.value)}
           />
           <InputGroupAddon align="inline-end">
-            <InputGroupButton size="xs" variant="ghost" type="button" onClick={handleSend}>
+            <InputGroupButton
+              size="xs"
+              variant="ghost"
+              type="button"
+              onClick={handleSend}
+            >
               <Send className="size-3.5" />
               Send
             </InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           Click anywhere on the addons to focus the input.
         </p>
       </div>

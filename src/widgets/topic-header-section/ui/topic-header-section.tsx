@@ -1,16 +1,13 @@
 'use client';
 
-import { TargetType } from '@entities/interaction/model/types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { topicApi } from '@entities/topic/api/topic-api';
 import { topicMemberApi } from '@entities/topic/api/topic-member-api';
 import { TopicCover } from '@entities/topic/ui/topic-cover';
-import { ReportDialog } from '@features/report/ui/report-dialog';
-import { Button } from '@shared/ui/button/button';
 import { Skeleton } from '@shared/ui/skeleton/skeleton';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AlertTriangle, Check, Clock, Lock, UserPlus } from 'lucide-react';
-import { useState } from 'react';
+import { Button } from '@shared/ui/button/button';
 import { toast } from 'sonner';
+import { Lock, Check, Clock, UserPlus } from 'lucide-react';
 
 interface TopicHeaderSectionProps {
   topicId: string;
@@ -18,13 +15,8 @@ interface TopicHeaderSectionProps {
 
 export function TopicHeaderSection({ topicId }: TopicHeaderSectionProps) {
   const queryClient = useQueryClient();
-  const [isReportOpen, setIsReportOpen] = useState(false);
-
-  const {
-    data: topic,
-    isLoading,
-    isError,
-  } = useQuery({
+  
+  const { data: topic, isLoading, isError } = useQuery({
     queryKey: ['topic', topicId],
     queryFn: () => topicApi.getOne(topicId),
   });
@@ -36,40 +28,37 @@ export function TopicHeaderSection({ topicId }: TopicHeaderSectionProps) {
       const isApproved = data.approved;
       if (isApproved) {
         toast.success('Đã tham gia nhóm thành công!', {
-          description: 'Bạn có thể xem và tham gia thảo luận ngay bây giờ.',
+          description: 'Bạn có thể xem và tham gia thảo luận ngay bây giờ.'
         });
       } else {
         toast.success('Đã gửi yêu cầu tham gia!', {
-          description:
-            'Quản trị viên sẽ xem xét yêu cầu của bạn. Bạn sẽ nhận được thông báo khi được chấp nhận.',
-          duration: 5000,
+          description: 'Quản trị viên sẽ xem xét yêu cầu của bạn. Bạn sẽ nhận được thông báo khi được chấp nhận.',
+          duration: 5000
         });
       }
       // Refresh topic data
       queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
     },
-    onError: (error: unknown) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const err = error as any;
-      const message = err?.response?.data?.message || 'Không thể gửi yêu cầu';
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || 'Không thể gửi yêu cầu';
       toast.error('Không thể tham gia', {
-        description: message,
+        description: message
       });
     },
   });
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-48 w-full rounded-t-xl" />
-        <div className="relative -mt-12 px-6">
-          <Skeleton className="border-background h-32 w-32 rounded-xl border-4" />
-          <div className="mt-4 max-w-lg space-y-2">
-            <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-4 w-full" />
-          </div>
+        <div className="space-y-4">
+           <Skeleton className="h-48 w-full rounded-t-xl" />
+           <div className="px-6 relative -mt-12">
+              <Skeleton className="h-32 w-32 rounded-xl border-4 border-background" />
+              <div className="mt-4 space-y-2 max-w-lg">
+                  <Skeleton className="h-8 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+              </div>
+           </div>
         </div>
-      </div>
     );
   }
 
@@ -87,9 +76,9 @@ export function TopicHeaderSection({ topicId }: TopicHeaderSectionProps) {
     // Already a member - show badge
     if (isMember) {
       return (
-        <div className="mt-4 flex flex-col items-end gap-2 px-6">
-          <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-2">
-            <Check className="h-4 w-4 text-green-600" />
+        <div className="px-6 mt-4 flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-lg">
+            <Check className="w-4 h-4 text-green-600" />
             <span className="text-sm font-medium text-green-700">Bạn đã là thành viên</span>
           </div>
         </div>
@@ -99,44 +88,39 @@ export function TopicHeaderSection({ topicId }: TopicHeaderSectionProps) {
     // Pending approval - show status
     if (requestStatus === 'PENDING') {
       return (
-        <div className="mt-4 flex flex-col items-end gap-2 px-6">
-          <Button
+        <div className="px-6 mt-4 flex flex-col items-end gap-2">
+          <Button 
             disabled
             variant="outline"
             className="border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-50"
           >
-            <Clock className="mr-2 h-4 w-4" />
+            <Clock className="w-4 h-4 mr-2" />
             Đang chờ phê duyệt
           </Button>
-          <p className="text-muted-foreground max-w-xs text-right text-xs">
-            Yêu cầu của bạn đang được quản trị viên xem xét. Bạn sẽ nhận được thông báo khi được
-            chấp nhận.
+          <p className="text-xs text-muted-foreground text-right max-w-xs">
+            Yêu cầu của bạn đang được quản trị viên xem xét. Bạn sẽ nhận được thông báo khi được chấp nhận.
           </p>
         </div>
       );
     }
 
     // Not a member - show join button
-    const buttonIcon = isPrivate ? (
-      <Lock className="mr-2 h-4 w-4" />
-    ) : (
-      <UserPlus className="mr-2 h-4 w-4" />
-    );
+    const buttonIcon = isPrivate ? <Lock className="w-4 h-4 mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />;
     const buttonText = isPrivate ? 'Gửi yêu cầu tham gia' : 'Tham gia ngay';
-    const helperText = isPrivate
+    const helperText = isPrivate 
       ? 'Nhóm riêng tư - Cần được quản trị viên phê duyệt'
       : 'Tham gia để xem và thảo luận trong nhóm';
 
     return (
-      <div className="mt-4 flex flex-col items-end gap-2 px-6">
-        <Button
+      <div className="px-6 mt-4 flex flex-col items-end gap-2">
+        <Button 
           onClick={() => joinMutation.mutate()}
           disabled={joinMutation.isPending}
-          className="bg-red-500 text-white hover:bg-red-600"
+          className="bg-red-500 hover:bg-red-600 text-white"
         >
           {joinMutation.isPending ? (
             <>
-              <Clock className="mr-2 h-4 w-4 animate-spin" />
+              <Clock className="w-4 h-4 mr-2 animate-spin" />
               Đang xử lý...
             </>
           ) : (
@@ -146,34 +130,17 @@ export function TopicHeaderSection({ topicId }: TopicHeaderSectionProps) {
             </>
           )}
         </Button>
-        <p className="text-muted-foreground max-w-xs text-right text-xs">{helperText}</p>
+        <p className="text-xs text-muted-foreground text-right max-w-xs">
+          {helperText}
+        </p>
       </div>
     );
   };
 
   return (
-    <div className="bg-card relative overflow-hidden rounded-xl border pb-4 shadow-sm">
+    <div className="bg-card rounded-xl shadow-sm border overflow-hidden pb-4">
       <TopicCover topic={topic} />
       {renderJoinSection()}
-
-      <div className="absolute top-6 right-6">
-        <Button
-          variant="secondary"
-          size="sm"
-          className="opacity-80 hover:opacity-100"
-          onClick={() => setIsReportOpen(true)}
-        >
-          <AlertTriangle className="mr-2 h-4 w-4" />
-          Báo cáo
-        </Button>
-      </div>
-
-      <ReportDialog
-        open={isReportOpen}
-        onOpenChange={setIsReportOpen}
-        targetId={topicId}
-        targetType={TargetType.TOPIC}
-      />
     </div>
   );
 }

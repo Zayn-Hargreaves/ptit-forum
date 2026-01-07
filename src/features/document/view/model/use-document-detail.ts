@@ -1,10 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-
-import { getDocumentById } from '@/shared/api/document.service';
+import { useQuery } from "@tanstack/react-query";
+import { getDocumentById } from "@/shared/api/document.service";
 
 export const useDocumentDetail = (id: string) => {
   return useQuery({
-    queryKey: ['document', id],
+    queryKey: ["document", id],
     queryFn: () => getDocumentById(id),
     staleTime: Infinity,
   });

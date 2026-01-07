@@ -1,6 +1,5 @@
 import { apiClient } from '@shared/api/axios-client';
 import { ApiResponse } from '@shared/api/types';
-
 import { ICategory } from '../model/types';
 
 export const categoryApi = {
@@ -16,3 +15,5 @@ export const categoryApi = {
     return data.result;
   },
 };
+
+

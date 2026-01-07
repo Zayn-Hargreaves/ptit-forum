@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Slash } from 'lucide-react'; // Import an icon for custom separator
-import * as React from 'react';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { Slash } from "lucide-react"; // Import an icon for custom separator
+import * as React from "react";
 
 import {
   Breadcrumb,
@@ -10,16 +10,16 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from './breadcrumb';
+} from "./breadcrumb";
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Breadcrumb> = {
-  title: 'shared/UI/Breadcrumb',
+  title: "shared/UI/Breadcrumb",
   component: Breadcrumb,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
 
   argTypes: {
@@ -131,7 +131,10 @@ export const WithAsChild: Story = {
         <BreadcrumbItem>
           {/* This link will be rendered as a button, but look like a link */}
           <BreadcrumbLink asChild>
-            <button type="button" onClick={() => alert('Home (as Button) Clicked!')}>
+            <button
+              type="button"
+              onClick={() => alert("Home (as Button) Clicked!")}
+            >
               Home (as Button)
             </button>
           </BreadcrumbLink>
