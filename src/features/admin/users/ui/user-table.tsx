@@ -1,5 +1,13 @@
 'use client';
 
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  PaginationState,
+  useReactTable,
+} from '@tanstack/react-table';
+
 import { Button } from '@/shared/ui/button/button';
 import {
   Table,
@@ -9,16 +17,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/ui/table/table';
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  PaginationState,
-  useReactTable,
-} from '@tanstack/react-table';
 
-import { User } from '../model/types';
 import { UserSearchFormValues } from '../model/schema';
+import { User } from '../model/types';
 import { UserTableToolbar } from './user-table-toolbar';
 
 interface UserTableProps {
@@ -65,10 +66,7 @@ export function UserTable({
                     <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
                 })}
@@ -77,17 +75,14 @@ export function UserTable({
           </TableHeader>
           <TableBody>
             {loading ? (
-               <TableRow>
+              <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
                   Đang tải dữ liệu...
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -116,7 +111,7 @@ export function UserTable({
           Trước
         </Button>
         <div className="text-sm">
-            Trang {pagination.pageIndex + 1} / {Math.max(1, table.getPageCount())}
+          Trang {pagination.pageIndex + 1} / {Math.max(1, table.getPageCount())}
         </div>
         <Button
           variant="outline"

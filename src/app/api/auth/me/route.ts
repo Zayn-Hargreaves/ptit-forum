@@ -30,7 +30,7 @@ export async function GET() {
       id: data.id,
       email: data.email,
       fullName: data.fullName,
-      avatarUrl: data.avatar, // Map backend 'avatar' to frontend 'avatarUrl'
+      avatarUrl: data.avatarUrl, // Map backend 'avatarUrl' to frontend 'avatarUrl'
       role: data.permissions?.includes('ROLE_ADMIN') ? 'ADMIN' : 'USER',
       studentCode: data.studentCode,
       classCode: data.classCode,

@@ -2,6 +2,7 @@
 
 import { Button, Input, Label, RadioGroup, RadioGroupItem, ScrollArea } from '@shared/ui';
 import { Search } from 'lucide-react';
+import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { DocumentType } from '@/entities/document/model/schema';
@@ -16,10 +17,15 @@ interface SearchSidebarProps {
 
 export function SearchSidebar({ subjects, initialFilters }: SearchSidebarProps) {
   const { filters, setSubject, setType, clearFilters, setSearch } = useDocumentFilters();
+  const [subjectSearch, setSubjectSearch] = useState('');
 
   const handleSearch = useDebouncedCallback((term: string) => {
     setSearch(term);
   }, 500);
+
+  const filteredSubjects = subjects.filter((subject) =>
+    subject.subjectName.toLowerCase().includes(subjectSearch.toLowerCase()),
+  );
 
   // Vietnamese mapping for DocumentType
   const documentTypeLabels: Record<DocumentType, string> = {
@@ -58,12 +64,21 @@ export function SearchSidebar({ subjects, initialFilters }: SearchSidebarProps) 
           )}
         </div>
 
+        <div className="mb-2">
+          <Input
+            placeholder="Tìm môn học..."
+            value={subjectSearch}
+            onChange={(e) => setSubjectSearch(e.target.value)}
+            className="h-8 text-sm"
+          />
+        </div>
+
         <ScrollArea className="h-[300px] pr-4">
           <RadioGroup
             value={filters.subjectId || ''}
             onValueChange={(val) => setSubject(val === filters.subjectId ? null : val)}
           >
-            {subjects.map((subject) => (
+            {filteredSubjects.map((subject) => (
               <div key={subject.id} className="mb-2 flex items-center space-x-2">
                 <RadioGroupItem value={subject.id} id={subject.id} />
                 <Label htmlFor={subject.id} className="cursor-pointer text-sm font-normal">

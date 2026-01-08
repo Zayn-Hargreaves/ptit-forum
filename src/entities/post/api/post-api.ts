@@ -11,14 +11,17 @@ interface PostDto {
     id: string;
     fullName: string;
     avatarUrl?: string;
+    email?: string;
   };
   createdDateTime?: string;
   createdAt?: string;
   postStatus: 'PENDING' | 'APPROVED' | 'REJECTED';
   attachments?: {
+    id: string;
     contentType?: string;
     fileName: string;
     url: string;
+    size?: number;
   }[];
   reactionCount?: number;
   isLiked?: boolean;
@@ -46,7 +49,7 @@ const mapToIPost = (data: PostDto): IPost => {
     content: data.content,
     author: {
       id: data.author?.id || 'unknown',
-      fullName: data.author?.fullName || 'Người dùng ẩn danh',
+      fullName: data.author?.fullName || data.author?.email || 'Người dùng ẩn danh',
       avatarUrl: data.author?.avatarUrl || '',
     },
     createdAt: createdAt,
@@ -70,10 +73,18 @@ const mapToIPost = (data: PostDto): IPost => {
           url: file.url,
           type: file.contentType || 'application/octet-stream',
         })) || [],
+    attachments:
+      data.attachments?.map((file) => ({
+        id: file.id,
+        name: file.fileName,
+        fileName: file.fileName,
+        url: file.url,
+        type: file.contentType || 'application/octet-stream',
+        size: file.size || 0,
+      })) || [],
     isLiked: data.isLiked || false,
     stats: {
       likeCount: data.reactionCount || 0,
-      commentCount: 0,
       commentCount: 0,
       viewCount: 0,
     },

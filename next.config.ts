@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "firebasestorage.googleapis.com",
         pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "avatar.iran.liara.run",
+        pathname: "/**",
       }
     ],
   },

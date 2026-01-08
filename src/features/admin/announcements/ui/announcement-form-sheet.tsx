@@ -1,13 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { ANNOUNCEMENT_TYPE_LABEL, AnnouncementType } from '@entities/announcement/model/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { Paperclip, X } from 'lucide-react';
-
+import { announcementApi } from '@shared/api/announcement.service';
+import { FileMetadata, useFileUpload } from '@shared/hooks/use-file-upload';
+import { useMediaQuery } from '@shared/hooks/use-media-query';
 import { Button } from '@shared/ui/button/button';
 import {
   Dialog,
@@ -25,7 +22,17 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@shared/ui/drawer/drawer';
-import { useMediaQuery } from '@shared/hooks/use-media-query';
+import { GithubEditor } from '@shared/ui/editor/github-editor';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@shared/ui/form/form';
+import { Input } from '@shared/ui/input/input';
+import { ScrollArea } from '@shared/ui/scroll-area/scroll-area';
 import {
   Select,
   SelectContent,
@@ -33,64 +40,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@shared/ui/select/select';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@shared/ui/form/form';
-import { Input } from '@shared/ui/input/input';
-import { Switch } from '@shared/ui/switch/switch';
-import { Checkbox } from '@shared/ui/checkbox/checkbox';
-import { ScrollArea } from '@shared/ui/scroll-area/scroll-area';
-import { GithubEditor } from '@shared/ui/editor/github-editor';
-import { useFileUpload, FileMetadata } from '@shared/hooks/use-file-upload';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Paperclip, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { useAnnouncementStore } from '../model/announcement-store';
-import { CreateAnnouncementFormValues, createAnnouncementSchema } from '../model/schema';
-import { announcementApi } from '@shared/api/announcement.service';
-import { getAllFaculties, Faculty } from '@shared/api/faculty.service';
-import { ANNOUNCEMENT_TYPE_LABEL, AnnouncementType } from '@entities/announcement/model/types';
-import { CohortCode } from '@shared/api/classroom.service';
-
-// Mock Cohort Codes if not exported as value (it is likely an Enum or Union type)
-// I will check the file content first, but assuming it matches backend Enum.
-const COHORT_CODES = Object.values(CohortCode).filter((v) => typeof v === 'string');
+import { DraftAnnouncementFormValues, draftAnnouncementSchema } from '../model/schema';
 
 export function AnnouncementFormSheet() {
   const { isOpenConfig, close, selectedAnnouncement } = useAnnouncementStore();
   const queryClient = useQueryClient();
   const router = useRouter();
   const isEdit = !!selectedAnnouncement;
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery('(min-width: 768px)');
 
-  // Fetch Faculties
-  const { data: faculties = [] } = useQuery({
-    queryKey: ['faculties'],
-    queryFn: async () => {
-      const res = await getAllFaculties({ size: 100 }); 
-      return res.data;
-    },
-    enabled: isOpenConfig,
-  });
-
-  const { upload, isUploading, result } = useFileUpload<FileMetadata>({
+  const { upload, isUploading } = useFileUpload<FileMetadata>({
     validate: { maxSizeMB: 20 },
   });
 
-  const form = useForm<CreateAnnouncementFormValues>({
-    resolver: zodResolver(createAnnouncementSchema),
+  const form = useForm<DraftAnnouncementFormValues>({
+    resolver: zodResolver(draftAnnouncementSchema),
     defaultValues: {
       title: '',
       content: '',
       announcementType: AnnouncementType.GENERAL,
-      isGlobal: false,
-      targetFaculties: [],
-      targetCohorts: [],
-      specificClassCodes: [],
       attachments: [],
     },
   });
@@ -100,73 +76,80 @@ export function AnnouncementFormSheet() {
     if (isOpenConfig) {
       if (selectedAnnouncement) {
         form.reset({
-            title: selectedAnnouncement.title,
-            content: selectedAnnouncement.content,
-            announcementType: selectedAnnouncement.announcementType,
-            // Default to empty for now to prevent crash. 
-            // TODO: Fetch detailed targets or map if available in selectedAnnouncement
-            targetFaculties: [],
-            targetCohorts: [],
-            specificClassCodes: [],
-            isGlobal: false,
-            attachments: [],
+          title: selectedAnnouncement.title,
+          content: selectedAnnouncement.content,
+          announcementType: selectedAnnouncement.announcementType,
+          attachments: [],
+          existingAttachments: selectedAnnouncement.attachments || [],
         });
       } else {
         form.reset({
           title: '',
           content: '',
           announcementType: AnnouncementType.GENERAL,
-          isGlobal: false,
-          targetFaculties: [],
-          targetCohorts: [],
-          specificClassCodes: [],
           attachments: [],
+          existingAttachments: [],
         });
       }
     }
   }, [isOpenConfig, selectedAnnouncement, form]);
 
   const mutation = useMutation({
-    mutationFn: async (data: CreateAnnouncementFormValues) => {
+    mutationFn: async (data: DraftAnnouncementFormValues) => {
       const fileMetadataIds: string[] = [];
       const files: File[] = data.attachments || [];
 
+      // upload new files
       if (Array.isArray(files)) {
-         for (const file of files) {
-            const res = await upload(file, '/files/upload', 'POST', 'file', { folderName: 'announcements' });
-            if (res?.id) fileMetadataIds.push(res.id);
-         }
+        for (const file of files) {
+          const res = await upload(file, '/files/upload', 'POST', 'file', {
+            resourceType: 'ANNOUNCEMENT',
+          });
+          if (res?.id) fileMetadataIds.push(res.id);
+        }
+      }
+
+      // Add existing files
+      if (data.existingAttachments && Array.isArray(data.existingAttachments)) {
+        data.existingAttachments.forEach((file: any) => {
+          fileMetadataIds.push(file.id);
+        });
       }
 
       if (isEdit && selectedAnnouncement) {
         return announcementApi.update(selectedAnnouncement.id, {
-            title: data.title,
-            content: data.content,
-            announcementType: data.announcementType,
-            announcementStatus: selectedAnnouncement.announcementStatus,
-            facultyIds: data.targetFaculties,
-            classCodes: data.specificClassCodes,
-            schoolYearCodes: data.targetCohorts as any,
+          title: data.title,
+          content: data.content,
+          announcementType: data.announcementType,
+          announcementStatus: selectedAnnouncement.announcementStatus,
+          // Targeting fields are NOT updated here to preserve existing targeting
+          // or empty if not yet released.
+          facultyIds: [],
+          classCodes: [],
+          schoolYearCodes: [],
+          fileMetadataIds,
         });
       } else {
         return announcementApi.create({
           title: data.title,
           content: data.content,
           announcementType: data.announcementType,
-          isGlobal: data.isGlobal,
-          targetFaculties: data.targetFaculties,
-          targetCohorts: data.targetCohorts,
-          specificClassCodes: data.specificClassCodes,
+          isGlobal: false, // Defaulting to false as targeting is done in Release step
+          targetFaculties: [],
+          targetCohorts: [],
+          specificClassCodes: [],
           fileMetadataIds,
         });
       }
     },
     onSuccess: (data) => {
-      toast.success(isEdit ? 'Cập nhật thành công' : 'Tạo thông báo thành công');
+      toast.success(isEdit ? 'Cập nhật thành công' : 'Tạo bản nháp thành công');
       queryClient.invalidateQueries({ queryKey: ['admin-announcements'] });
       close();
+
+      // UX: Redirect to detail page immediately after creation/update
       if (data?.id) {
-          router.push(`/admin/announcements/${data.id}`);
+        router.push(`/admin/announcements/${data.id}`);
       }
     },
     onError: (error) => {
@@ -175,7 +158,7 @@ export function AnnouncementFormSheet() {
     },
   });
 
-  const onSubmit = (data: CreateAnnouncementFormValues) => {
+  const onSubmit = (data: DraftAnnouncementFormValues) => {
     mutation.mutate(data);
   };
 
@@ -193,8 +176,14 @@ export function AnnouncementFormSheet() {
     form.setValue('attachments', newFiles);
   };
 
+  const removeExistingFile = (index: number) => {
+    const currentFiles = (form.getValues('existingAttachments') as any[]) || [];
+    const newFiles = currentFiles.filter((_, i) => i !== index);
+    form.setValue('existingAttachments', newFiles);
+  };
+
   const attachments = (form.watch('attachments') as File[]) || [];
-  const isGlobal = form.watch('isGlobal');
+  const existingAttachments = (form.watch('existingAttachments') as any[]) || [];
 
   const content = (
     <Form {...form}>
@@ -252,197 +241,80 @@ export function AnnouncementFormSheet() {
           )}
         />
 
-        <div className="space-y-4 rounded-lg border p-4">
-          <h3 className="font-medium">Đối tượng nhận thông báo</h3>
-          
-          <FormField
-            control={form.control}
-            name="isGlobal"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">Thông báo toàn trường</FormLabel>
-                  <FormDescription>
-                    Gửi đến tất cả sinh viên và giảng viên.
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
+        {/* Attachments */}
+        <div className="space-y-3">
+          <FormLabel>Tài liệu đính kèm</FormLabel>
+          <Input
+            type="file"
+            multiple
+            className="cursor-pointer"
+            onChange={handleFileChange}
+            disabled={isUploading || mutation.isPending}
           />
 
-          {!isGlobal && (
-            <>
-              {/* Select Faculties */}
-              <FormField
-                control={form.control}
-                name="targetFaculties"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Khoa</FormLabel>
-                    <ScrollArea className="h-40 rounded-md border p-4">
-                        <div className="space-y-2">
-                            {faculties.map((faculty: any) => (
-                                <FormField
-                                    key={faculty.id}
-                                    control={form.control}
-                                    name="targetFaculties"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem
-                                                key={faculty.id}
-                                                className="flex flex-row items-start space-x-3 space-y-0"
-                                            >
-                                                <FormControl>
-                                                    <Checkbox
-                                                        checked={field.value?.includes(faculty.id)}
-                                                        onCheckedChange={(checked) => {
-                                                            return checked
-                                                                ? field.onChange([...field.value, faculty.id])
-                                                                : field.onChange(
-                                                                    field.value?.filter(
-                                                                        (value) => value !== faculty.id
-                                                                    )
-                                                                )
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                    {faculty.facultyName}
-                                                </FormLabel>
-                                            </FormItem>
-                                        )
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    </ScrollArea>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* Existing Attachments */}
+          {existingAttachments.length > 0 && (
+            <div className="space-y-2">
+              <div className="text-muted-foreground text-sm font-medium">Đã tải lên:</div>
+              {existingAttachments.map((file, index) => (
+                <div
+                  key={`existing-${index}`}
+                  className="bg-muted/50 flex items-center justify-between rounded-md p-2 text-sm"
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <Paperclip className="text-muted-foreground h-4 w-4" />
+                    <span className="max-w-[200px] truncate">{file.fileName || file.name}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeExistingFile(index)}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
 
-              {/* Select Cohorts */}
-              <FormField
-                control={form.control}
-                name="targetCohorts"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Khóa học</FormLabel>
-                    <ScrollArea className="h-40 rounded-md border p-4">
-                          <div className="grid grid-cols-2 gap-2">
-                            {COHORT_CODES.map((code) => (
-                                <FormField
-                                    key={code}
-                                    control={form.control}
-                                    name="targetCohorts"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem
-                                                key={code}
-                                                className="flex flex-row items-start space-x-3 space-y-0"
-                                            >
-                                                <FormControl>
-                                                    <Checkbox
-                                                        checked={field.value?.includes(code)}
-                                                        onCheckedChange={(checked) => {
-                                                            return checked
-                                                                ? field.onChange([...field.value, code])
-                                                                : field.onChange(
-                                                                    field.value?.filter(
-                                                                        (value) => value !== code
-                                                                    )
-                                                                )
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormLabel className="font-normal">
-                                                    {code}
-                                                </FormLabel>
-                                            </FormItem>
-                                        )
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    </ScrollArea>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Specific CLasses */}
-                <FormField
-                  control={form.control}
-                  name="specificClassCodes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mã lớp cụ thể (phân cách bởi dấu phẩy)</FormLabel>
-                      <FormControl>
-                        <Input 
-                            placeholder="D20CQCN01-B, D21CQcn02-B..." 
-                            {...field} 
-                            value={(Array.isArray(field.value) ? field.value : []).join(', ')} // Display as string
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                field.onChange(val.split(',').map(s => s.trim()).filter(Boolean));
-                            }}
-                        />
-                      </FormControl>
-                      <FormDescription>Nhập chính xác mã lớp.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-            </>
+          {/* New Attachments */}
+          {attachments.length > 0 && (
+            <div className="space-y-2">
+              {existingAttachments.length > 0 && (
+                <div className="text-muted-foreground mt-2 text-sm font-medium">Mới tải lên:</div>
+              )}
+              {attachments.map((file, index) => (
+                <div
+                  key={`new-${index}`}
+                  className="bg-muted/50 flex items-center justify-between rounded-md p-2 text-sm"
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <Paperclip className="text-muted-foreground h-4 w-4" />
+                    <span className="max-w-[200px] truncate">{file.name}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeFile(index)}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
         </div>
-
-        {/* Attachments */}
-          <div className="space-y-3">
-              <FormLabel>Tài liệu đính kèm</FormLabel>
-              <Input
-                type="file"
-                multiple
-                className="cursor-pointer"
-                onChange={handleFileChange}
-                disabled={isUploading || mutation.isPending}
-              />
-              {attachments.length > 0 && (
-                <div className="space-y-2">
-                  {attachments.map((file, index) => (
-                    <div
-                      key={index}
-                      className="bg-muted/50 flex items-center justify-between rounded-md p-2 text-sm"
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <Paperclip className="text-muted-foreground h-4 w-4" />
-                        <span className="max-w-[200px] truncate">{file.name}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(index)}
-                        className="text-muted-foreground hover:text-destructive"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-          </div>
 
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={close} disabled={mutation.isPending}>
             Hủy
           </Button>
           <Button type="submit" disabled={mutation.isPending || isUploading}>
-            {mutation.isPending || isUploading ? 'Đang xử lý...' : (isEdit ? 'Cập nhật' : 'Tạo mới')}
+            {mutation.isPending || isUploading
+              ? 'Đang xử lý...'
+              : isEdit
+                ? 'Cập nhật'
+                : 'Tạo bản nháp'}
           </Button>
         </div>
       </form>
@@ -452,11 +324,11 @@ export function AnnouncementFormSheet() {
   if (isDesktop) {
     return (
       <Dialog open={isOpenConfig} onOpenChange={(open) => !open && close()}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{isEdit ? 'Chỉnh sửa thông báo' : 'Tạo thông báo mới'}</DialogTitle>
+            <DialogTitle>{isEdit ? 'Chỉnh sửa thông báo' : 'Tạo bản nháp thông báo'}</DialogTitle>
             <DialogDescription>
-               Điền thông tin chi tiết và chọn đối tượng nhận thông báo.
+              Nhập tiêu đề và nội dung. Bạn sẽ chọn đối tượng gửi sau khi tạo xong.
             </DialogDescription>
           </DialogHeader>
           {content}
@@ -469,14 +341,12 @@ export function AnnouncementFormSheet() {
     <Drawer open={isOpenConfig} onOpenChange={(open) => !open && close()}>
       <DrawerContent>
         <DrawerHeader className="text-left">
-          <DrawerTitle>{isEdit ? 'Chỉnh sửa thông báo' : 'Tạo thông báo mới'}</DrawerTitle>
+          <DrawerTitle>{isEdit ? 'Chỉnh sửa thông báo' : 'Tạo bản nháp thông báo'}</DrawerTitle>
           <DrawerDescription>
-            Điền thông tin chi tiết và chọn đối tượng nhận thông báo.
+            Nhập tiêu đề và nội dung. Bạn sẽ chọn đối tượng gửi sau khi tạo xong.
           </DrawerDescription>
         </DrawerHeader>
-        <ScrollArea className="h-[80vh] px-4">
-          {content}
-        </ScrollArea>
+        <ScrollArea className="h-[80vh] px-4">{content}</ScrollArea>
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Hủy</Button>

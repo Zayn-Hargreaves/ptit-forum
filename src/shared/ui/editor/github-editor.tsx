@@ -47,6 +47,7 @@ interface GithubEditorProps {
   value?: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  editorContentClassName?: string;
 }
 
 export interface GithubEditorRef {
@@ -106,7 +107,7 @@ const ToolbarButton = ({
 );
 
 export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(function GithubEditor(
-  { value = '', onChange, disabled },
+  { value = '', onChange, disabled, editorContentClassName },
   ref,
 ) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -130,7 +131,7 @@ export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(funct
       }
 
       const result = await upload(file, '/files/upload', 'POST', 'file', {
-        folderName: 'posts',
+        resourceType: 'POST',
       });
 
       const finalResult = Array.isArray(result) ? result[0] : result;
@@ -172,11 +173,13 @@ export const GithubEditor = forwardRef<GithubEditorRef, GithubEditorProps>(funct
     content: value,
     editorProps: {
       attributes: {
-        class:
-          'min-h-[300px] w-full bg-transparent px-3 py-3 text-sm outline-none prose dark:prose-invert max-w-none ' +
-          '[&_img]:rounded-md [&_img]:max-h-[320px] [&_img]:object-contain ' +
-          '[&_video]:rounded-md [&_video]:max-h-[360px] ' +
+        class: cn(
+          'min-h-[300px] w-full bg-transparent px-3 py-3 text-sm outline-none prose dark:prose-invert max-w-none',
+          '[&_img]:rounded-md [&_img]:max-h-[320px] [&_img]:object-contain',
+          '[&_video]:rounded-md [&_video]:max-h-[360px]',
           '[&_table]:border-collapse [&_table]:w-full [&_td]:border [&_td]:border-border [&_td]:p-2 [&_th]:border [&_th]:border-border [&_th]:p-2 [&_th]:bg-muted/50',
+          editorContentClassName,
+        ),
       },
 
       handlePaste: (_view, event) => {

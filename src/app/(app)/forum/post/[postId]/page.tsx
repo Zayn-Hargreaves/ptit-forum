@@ -50,7 +50,7 @@ export default function PostDetailPage() {
   }
 
   // User info with fallbacks
-  const authorName = getUserDisplayName(post.author?.fullName);
+  const authorName = getUserDisplayName(post.author?.fullName || post.author?.email);
   const authorAvatar = getAvatarUrl(post.author?.avatarUrl);
 
   return (

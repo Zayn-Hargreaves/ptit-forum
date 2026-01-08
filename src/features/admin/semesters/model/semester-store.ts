@@ -3,15 +3,15 @@
 import { create } from 'zustand';
 
 interface SemesterStore {
-    isOpenCreate: boolean;
-    openCreate: () => void;
-    close: () => void;
+  isOpenCreate: boolean;
+  openCreate: () => void;
+  close: () => void;
 }
 
 export const useSemesterStore = create<SemesterStore>((set) => ({
-    isOpenCreate: false,
+  isOpenCreate: false,
 
-    openCreate: () => set({ isOpenCreate: true }),
+  openCreate: () => set({ isOpenCreate: true }),
 
-    close: () => set({ isOpenCreate: false }),
+  close: () => set({ isOpenCreate: false }),
 }));

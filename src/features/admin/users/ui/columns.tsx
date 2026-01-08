@@ -15,9 +15,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/shared/ui/alert-dialog/alert-dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar/avatar';
 import { Badge } from '@/shared/ui/badge/badge';
 import { Button } from '@/shared/ui/button/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar/avatar';
 
 import { deleteUser } from '../api/user.service';
 import { User } from '../model/types';
@@ -56,7 +56,8 @@ const UserActionsCell = ({ user }: { user: User }) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
             <AlertDialogDescription>
-              Hành động này không thể hoàn tác. Người dùng &quot;{user.fullName}&quot; ({user.email}) sẽ bị xóa vĩnh viễn khỏi hệ thống.
+              Hành động này không thể hoàn tác. Người dùng &quot;{user.fullName}&quot; ({user.email}
+              ) sẽ bị xóa vĩnh viễn khỏi hệ thống.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -89,7 +90,7 @@ export const columns: ColumnDef<User>[] = [
           <AvatarFallback>{row.original.fullName?.charAt(0) || 'U'}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <span className="font-medium text-sm">{row.original.fullName}</span>
+          <span className="text-sm font-medium">{row.original.fullName}</span>
           <span className="text-muted-foreground text-xs">{row.original.email}</span>
         </div>
       </div>
@@ -98,24 +99,26 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'studentCode',
     header: 'Mã SV',
-    cell: ({ row }) => (
+    cell: ({ row }) =>
       row.original.studentCode ? (
         <Badge variant="outline" className="font-mono">
           {row.original.studentCode}
         </Badge>
-      ) : <span className="text-muted-foreground text-xs">-</span>
-    ),
+      ) : (
+        <span className="text-muted-foreground text-xs">-</span>
+      ),
   },
   {
     accessorKey: 'classCode',
     header: 'Lớp',
-    cell: ({ row }) => (
+    cell: ({ row }) =>
       row.original.classCode ? (
         <Badge variant="secondary" className="font-mono">
           {row.original.classCode}
         </Badge>
-      ) : <span className="text-muted-foreground text-xs">-</span>
-    ),
+      ) : (
+        <span className="text-muted-foreground text-xs">-</span>
+      ),
   },
   {
     accessorKey: 'roles',
@@ -123,7 +126,11 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => (
       <div className="flex flex-wrap gap-1">
         {row.original.roles?.map((role) => (
-          <Badge key={role.name} variant={role.name === 'ADMIN' ? 'destructive' : 'default'} className="text-[10px]">
+          <Badge
+            key={role.name}
+            variant={role.name === 'ADMIN' ? 'destructive' : 'default'}
+            className="text-[10px]"
+          >
             {role.name}
           </Badge>
         ))}

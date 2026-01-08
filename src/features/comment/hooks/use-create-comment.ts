@@ -40,13 +40,12 @@ export function useCreateComment({ postId, rootCommentId }: UseCreateCommentProp
         replyToUser: null,
         author: {
           id: me?.id || 'temp-user',
-          fullName: me?.fullName || 'Tôi',
+          fullName: me?.fullName || me?.email || 'Tôi',
           avatarUrl: me?.avatarUrl || '',
         },
-        stats: { reactionCount: 0, replyCount: 0 },
-        userState: { liked: false },
+
+        isLiked: false,
         permissions: { canEdit: true, canDelete: true, canReport: false },
-        attachments: [],
         parentId: newCommentPayload.parentId || null,
         reactionCount: 0,
       };

@@ -65,7 +65,11 @@ export function CommentForm({
 
   return (
     <div className="mt-4 flex gap-3">
-      <UserAvatar name={me?.fullName} avatarUrl={currentAvatar} className="mt-1 h-8 w-8" />
+      <UserAvatar
+        name={me?.fullName || me?.email}
+        avatarUrl={currentAvatar}
+        className="mt-1 h-8 w-8"
+      />
 
       <div className="flex-1">
         <form onSubmit={handleSubmit}>

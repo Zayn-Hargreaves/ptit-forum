@@ -4,6 +4,7 @@ import { AxiosError } from 'axios';
 import { Loader2, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 import { GpaEditor } from '@/features/cpa/components/GpaEditor';
 import { GpaFormValues } from '@/features/cpa/validators/gpa.schema';
@@ -14,6 +15,7 @@ import {
   GpaProfileResponse as _GpaProfileResponse,
 } from '@/shared/api/cpa.service';
 import { BACKEND_ERROR_CODES } from '@/shared/constants/error-codes';
+import { useAuth } from '@/shared/providers/auth-provider';
 import {
   Accordion,
   AccordionContent,
@@ -25,10 +27,10 @@ import { Button } from '@/shared/ui/button/button';
 // ... (existing imports)
 
 export default function CpaPage() {
+  const { user } = useAuth();
   const [cpaProfile, setCpaProfile] = useState<CpaProfileResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [missingStudentId, setMissingStudentId] = useState(false);
-  // const { toast } = useToast();
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -40,6 +42,9 @@ export default function CpaPage() {
       const error = err as AxiosError<{ code: number }>;
       if (error?.response?.data?.code === BACKEND_ERROR_CODES.STUDENT_CODE_NULL) {
         setMissingStudentId(true);
+        toast.error('Bạn cần cập nhật Mã sinh viên và Lớp để sử dụng tính năng này.');
+      } else {
+        toast.error('Không thể tải bảng điểm. Vui lòng thử lại.');
       }
       console.error('Failed to load CPA profile', error);
     } finally {
@@ -57,7 +62,9 @@ export default function CpaPage() {
     try {
       const updated = await cpaService.addGpaProfileForCpaProfile(cpaProfile.id);
       setCpaProfile(updated);
+      toast.success('Đã thêm học kỳ mới thành công');
     } catch (error) {
+      toast.error('Không thể thêm học kỳ. Vui lòng thử lại.');
       console.error('Failed to add semester', error);
     } finally {
       setIsLoading(false);
@@ -98,7 +105,9 @@ export default function CpaPage() {
     try {
       const updatedProfile = await cpaService.updateCpaScore(cpaProfile.id, request);
       setCpaProfile(updatedProfile);
+      toast.success('Đã lưu điểm thành công');
     } catch (error) {
+      toast.error('Không thể cập nhật điểm. Vui lòng thử lại.');
       console.error('Update failed', error);
     }
   };
@@ -120,7 +129,7 @@ export default function CpaPage() {
             Bạn cần cập nhật Mã sinh viên và Lớp để sử dụng tính năng này.
           </p>
         </div>
-        <Link href="/profile">
+        <Link href="/settings/profile">
           <Button>Cập nhật hồ sơ</Button>
         </Link>
       </div>

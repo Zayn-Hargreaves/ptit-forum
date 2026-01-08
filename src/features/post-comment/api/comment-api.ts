@@ -14,6 +14,7 @@ interface CommentDto {
     id: string;
     fullName: string;
     avatarUrl?: string;
+    email?: string;
   };
   createdDateTime: string;
   repliesCount?: number;
@@ -40,7 +41,10 @@ const mapDtoToComment = (c: CommentDto): IComment => {
     content: c.content,
     author: {
       id: c.authorId || (c.author ? c.author.id : 'unknown'),
-      fullName: c.authorName || (c.author ? c.author.fullName : 'Người dùng ẩn danh'),
+      fullName:
+        c.authorName ||
+        (c.author ? c.author.fullName || c.author.email : '') ||
+        'Người dùng ẩn danh',
       avatar: c.authorAvatarUrl || (c.author ? c.author.avatarUrl : '') || '',
     },
     createdAt: normalizeDate(c.createdDateTime),

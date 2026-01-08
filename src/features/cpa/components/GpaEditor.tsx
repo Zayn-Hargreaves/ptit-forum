@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
 
 import { SubjectResponse, subjectService } from '@/shared/api/subject.service';
@@ -72,18 +73,15 @@ export const GpaEditor = ({ initialData, onSave }: GpaEditorProps) => {
   const stats = calculateGPA(subjectsToCalculate);
 
   useEffect(() => {
-    if (!debouncedSearch) {
-      setSearchResults([]);
-      return;
-    }
+    if (!openSearch) return;
 
     const search = async () => {
       setIsSearching(true);
       try {
-        const results = await subjectService.search({ subjectName: debouncedSearch, limit: 5 });
-        // Handle different response structures if needed. Assuming SubjectResponse[] or PageResponse
-        // The service returns response.data which is PageResponse<SubjectResponse>
-        // We need the content.
+        const results = await subjectService.search({
+          subjectName: debouncedSearch || '',
+          limit: 10,
+        });
         if (results && 'content' in results) {
           setSearchResults(results.content as SubjectResponse[]);
         } else {
@@ -96,11 +94,17 @@ export const GpaEditor = ({ initialData, onSave }: GpaEditorProps) => {
       }
     };
     search();
-  }, [debouncedSearch]);
+  }, [debouncedSearch, openSearch]);
 
   const handleAddSubject = (subject: SubjectResponse) => {
     // Prevent duplicates? logic if needed.
     // allow duplicates for now (e.g. retake)
+    // Update: User requested to block duplicates in same semester
+    const isDuplicate = fields.some((field) => field.subjectId === subject.id);
+    if (isDuplicate) {
+      toast.error('Môn học này đã được chọn trong kỳ này.');
+      return;
+    }
 
     append({
       subjectId: subject.id,
@@ -173,8 +177,10 @@ export const GpaEditor = ({ initialData, onSave }: GpaEditorProps) => {
                           render={({ field: formField }) => (
                             <FormItem>
                               <Select
-                                onValueChange={formField.onChange}
-                                defaultValue={formField.value || ''}
+                                onValueChange={(val) =>
+                                  formField.onChange(val === 'unselected' ? '' : val)
+                                }
+                                defaultValue={formField.value || 'unselected'}
                               >
                                 <FormControl>
                                   <SelectTrigger className="w-[100px]">
@@ -182,7 +188,7 @@ export const GpaEditor = ({ initialData, onSave }: GpaEditorProps) => {
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  <SelectItem value="">-</SelectItem>
+                                  <SelectItem value="unselected">-</SelectItem>
                                   <SelectItem value="A+">A+</SelectItem>
                                   <SelectItem value="A">A</SelectItem>
                                   <SelectItem value="B+">B+</SelectItem>
