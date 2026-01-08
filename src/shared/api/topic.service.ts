@@ -9,7 +9,7 @@ import {
 import { apiClient } from './axios-client';
 import type { ApiResponse, PageResponse } from './types';
 
-const BASE_URL = '/admin/topics';
+const BASE_URL = '/topics';
 
 export const topicApi = {
   // GET /api/admin/topics

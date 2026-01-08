@@ -21,7 +21,7 @@ export default function AdminTopicsPage() {
     queryKey: ['admin-topics', page, size, keyword, visibility],
     queryFn: () =>
       topicApi.search({
-        page: page + 1, // API Spring Boot thường tính page từ 1
+        page: page, // API Spring Boot uses 0-based indexing
         size,
         keyword: keyword || undefined,
         visibility: visibility === 'ALL' ? undefined : visibility,
