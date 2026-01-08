@@ -4,6 +4,7 @@ import { AuthProvider } from '@shared/providers/auth-provider';
 import QueryProvider from '@shared/providers/query-provider';
 import { ThemeProvider } from '@shared/providers/theme-provider';
 import { ToastProvider } from '@shared/providers/toast-provider';
+import { WebSocketProvider } from '@shared/realtime/websocket-provider';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -22,8 +23,10 @@ export default function RootLayout({
         <ThemeProvider>
           <QueryProvider>
             <AuthProvider>
-              {children}
-              <ToastProvider />
+              <WebSocketProvider>
+                {children}
+                <ToastProvider />
+              </WebSocketProvider>
             </AuthProvider>
           </QueryProvider>
         </ThemeProvider>

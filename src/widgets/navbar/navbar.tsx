@@ -1,10 +1,12 @@
 'use client';
 
 import { useAuth } from '@shared/providers/auth-provider';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@shared/ui';
-import { Bell, Upload } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+
+import { Button } from '@/shared/ui';
+import { NotificationBell } from '@/widgets/header/ui/notification-bell';
 
 import { isActiveRoute, NAV_LINKS } from './model/nav-links';
 import { NavbarAuthActions } from './ui/auth-actions';
@@ -50,20 +52,7 @@ export function Navbar() {
             </Button>
           )}
 
-          {!isLoading && user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative shrink-0">
-                  <Bell className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <div className="text-muted-foreground p-4 text-center text-sm">
-                  Thông báo (Coming Soon)
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          {!isLoading && user && <NotificationBell />}
 
           <NavbarAuthActions />
 
