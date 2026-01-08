@@ -21,6 +21,7 @@ export interface IPost {
     commentCount?: number;
     likeCount?: number;
   };
+  reactionCount?: number; // Added from backend mapping
   permissions?: {
     canEdit?: boolean;
     canDelete?: boolean;
@@ -52,4 +53,9 @@ export interface TrendingPost {
   category: string;
   comments: number;
   views: number;
+}
+
+export interface PostStatDTO {
+  date: string;
+  count: number;
 }

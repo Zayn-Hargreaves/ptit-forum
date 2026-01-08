@@ -30,7 +30,9 @@ export const announcementApi = {
 
   // GET /api/admin/announcements/{id}
   getDetail: async (id: string) => {
-    const res = await apiClient.get<ApiResponse<BackendAnnouncementDetail>>(`${BASE_URL}/${id}`);
+    const res = await apiClient.get<ApiResponse<BackendAnnouncementDetail>>(
+      `${BASE_URL}/${id}`,
+    );
     return res.data.result;
   },
 
@@ -61,6 +63,11 @@ export const announcementApi = {
   // DELETE /api/admin/announcements/{id}
   delete: async (id: string) => {
     const res = await apiClient.delete<ApiResponse<string>>(`${BASE_URL}/${id}`);
+    return res.data.result;
+  },
+
+  getLatest: async () => {
+    const res = await apiClient.get<ApiResponse<AnnouncementResponse[]>>(`${BASE_URL}/latest`);
     return res.data.result;
   },
 };

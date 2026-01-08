@@ -38,6 +38,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user || user.role !== 'ADMIN') return null;
 
   const navItems = [
+    { href: '/admin/dashboard', label: 'Dashboard', icon: Settings }, // Using Settings icon as placeholder if needed, or change to something else
     { href: '/admin/faculties', label: 'Faculties', icon: GraduationCap },
     { href: '/admin/classrooms', label: 'Classrooms', icon: Presentation },
     { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
