@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { Document } from '@/entities/document/model/schema';
 import { PdfViewer } from '@/features/document/view/ui/pdf-viewer';
 import { PdfWrapper } from '@/features/document/view/ui/pdf-wrapper';
-import { documentService } from '@/shared/api/mock/document.service';
+import { getDocumentById } from '@/shared/api/document.service';
 import { Button } from '@/shared/ui/button/button';
 import { ErrorBoundary } from '@/shared/ui/error-boundary/error-boundary';
 
@@ -24,7 +24,7 @@ export const DocumentDetailView = ({ id, initialData }: DocumentDetailViewProps)
     isError,
   } = useQuery({
     queryKey: ['document', id],
-    queryFn: () => documentService.getDocumentById(id),
+    queryFn: () => getDocumentById(id),
     initialData: initialData, // Hydrate with server data
     enabled: !!id,
   });

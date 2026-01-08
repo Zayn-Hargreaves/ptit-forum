@@ -64,7 +64,7 @@ export function CreatePostDialog({ defaultTopicId }: { defaultTopicId?: string }
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{TriggerButton}</DialogTrigger>
 
-      <DialogContent className="flex h-dvh w-full flex-col gap-0 p-0 sm:h-[90vh] sm:max-w-[90vw] md:max-w-[1000px]">
+      <DialogContent className="flex h-dvh w-full flex-col gap-0 p-0 sm:h-[90vh] sm:max-w-[95vw] lg:max-w-[85vw]">
         <DialogHeader className="border-b px-6 py-4">
           <DialogTitle>Tạo bài viết mới</DialogTitle>
         </DialogHeader>

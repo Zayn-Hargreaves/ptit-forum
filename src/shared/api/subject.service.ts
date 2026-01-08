@@ -22,7 +22,7 @@ export const subjectService = {
       },
     );
 
-    return response.data;
+    return response.data.result;
   },
 };
 

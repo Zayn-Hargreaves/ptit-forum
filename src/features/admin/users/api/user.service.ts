@@ -5,12 +5,12 @@ import { SearchUserParams, User } from '../model/types';
 
 export const getUsers = async (params: SearchUserParams) => {
   const { page, size, sort, ...filters } = params;
-  
+
   const queryParams = new URLSearchParams();
   if (page !== undefined) queryParams.append('page', page.toString());
   if (size !== undefined) queryParams.append('size', size.toString());
   if (sort) sort.forEach((s) => queryParams.append('sort', s));
-  
+
   // Filters
   if (filters.email) queryParams.append('email', filters.email);
   if (filters.fullName) queryParams.append('fullName', filters.fullName);

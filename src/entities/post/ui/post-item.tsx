@@ -26,7 +26,7 @@ const formatPostDate = (dateTime: string | undefined) => {
 
 export function PostItem({ post, actions }: Readonly<PostItemProps>) {
   // Defensive checks
-  const authorName = post.author?.fullName || 'Người dùng ẩn danh';
+  const authorName = post.author?.fullName || post.author?.email || 'Người dùng ẩn danh';
   const authorAvatar = post.author?.avatarUrl;
   const topicName = post.topic?.name ?? 'General';
 

@@ -1,36 +1,51 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { announcementApi } from '@shared/api/announcement.service';
 import { CohortCode } from '@shared/api/classroom.service';
 import { getAllFaculties } from '@shared/api/faculty.service';
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  ScrollArea,
 } from '@shared/ui';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Send } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useAnnouncementStore } from '../model/announcement-store';
+import { ReleaseAnnouncementFormValues, releaseAnnouncementSchema } from '../model/schema';
+
+// Mock Cohort Codes
+const COHORT_CODES = Object.values(CohortCode).filter((v) => typeof v === 'string');
 
 export function ReleaseDialog() {
   const { isOpenRelease, selectedAnnouncement, close } = useAnnouncementStore();
   const queryClient = useQueryClient();
-  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Form states (Giản lược: Chọn 1 Khoa, 1 Hệ cho demo. Thực tế dùng MultiSelect nếu có UI)
-  const [selectedFacultyId, setSelectedFacultyId] = useState<string>('ALL');
-  const [selectedCohort, setSelectedCohort] = useState<CohortCode | 'ALL'>('ALL');
+  const form = useForm<ReleaseAnnouncementFormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(releaseAnnouncementSchema) as any,
+    defaultValues: {
+      targetFaculties: [],
+      targetCohorts: [],
+      specificClassCodes: '',
+    },
+  });
 
   // Fetch Faculties
   const { data: facultiesRes } = useQuery({
@@ -40,94 +55,184 @@ export function ReleaseDialog() {
   });
   const faculties = facultiesRes?.data || [];
 
-  const handleRelease = async () => {
-    if (!selectedAnnouncement) return;
-
-    try {
-      setIsProcessing(true);
-
-      // Map lựa chọn "ALL" thành list rỗng (Backend hiểu là gửi hết?) hoặc logic tùy biến
-      // Ở đây giả định backend cần list ID cụ thể hoặc rỗng
-      const facultyIds = selectedFacultyId !== 'ALL' ? [selectedFacultyId] : [];
-      const schoolYearCodes = selectedCohort !== 'ALL' ? [selectedCohort] : [];
-
-      await announcementApi.release(selectedAnnouncement.id, {
-        facultyIds,
-        classCodes: [], // Chưa làm UI chọn lớp chi tiết
-        schoolYearCodes,
+  useEffect(() => {
+    if (isOpenRelease) {
+      form.reset({
+        targetFaculties: [],
+        targetCohorts: [],
+        specificClassCodes: '',
       });
+    }
+  }, [isOpenRelease, form]);
 
+  const mutation = useMutation({
+    mutationFn: async (data: ReleaseAnnouncementFormValues) => {
+      if (!selectedAnnouncement) throw new Error('No announcement selected');
+
+      // Cleaning class codes input
+      const classCodes = data.specificClassCodes
+        ? data.specificClassCodes
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [];
+
+      return announcementApi.release(selectedAnnouncement.id, {
+        facultyIds: data.targetFaculties,
+        schoolYearCodes: data.targetCohorts as CohortCode[],
+        classCodes,
+      });
+    },
+    onSuccess: () => {
       toast.success('Phát hành thông báo thành công');
+      // Invalidate current announcement detail to update status badge
+      if (selectedAnnouncement?.id) {
+        queryClient.invalidateQueries({ queryKey: ['announcement', selectedAnnouncement.id] });
+      }
       queryClient.invalidateQueries({ queryKey: ['admin-announcements'] });
       close();
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error(error);
       toast.error('Phát hành thất bại');
-    } finally {
-      setIsProcessing(false);
-    }
+    },
+  });
+
+  const onSubmit = (data: ReleaseAnnouncementFormValues) => {
+    mutation.mutate(data);
   };
 
   return (
     <Dialog open={isOpenRelease} onOpenChange={(open) => !open && close()}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Phát hành thông báo</DialogTitle>
-          <DialogDescription>
-            Chọn đối tượng nhận thông báo. Nếu để trống, thông báo sẽ gửi công khai.
-          </DialogDescription>
+          <DialogDescription>Chọn đối tượng nhận thông báo.</DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label>Khoa (Phạm vi)</Label>
-            <Select value={selectedFacultyId} onValueChange={setSelectedFacultyId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn khoa" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">Tất cả các khoa</SelectItem>
-                {faculties.map((f) => (
-                  <SelectItem key={f.id} value={f.id}>
-                    {f.facultyName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Faculties */}
+            <FormField
+              control={form.control}
+              name="targetFaculties"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Khoa</FormLabel>
+                  <ScrollArea className="h-40 rounded-md border p-4">
+                    <div className="space-y-2">
+                      {faculties.map((faculty: { id: string; facultyName: string }) => (
+                        <FormField
+                          key={faculty.id}
+                          control={form.control}
+                          name="targetFaculties"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={faculty.id}
+                                className="flex flex-row items-center space-y-0 space-x-3"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(faculty.id)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...(field.value || []), faculty.id])
+                                        : field.onChange(
+                                            field.value?.filter((value) => value !== faculty.id),
+                                          );
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal">{faculty.facultyName}</FormLabel>
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </ScrollArea>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <div className="grid gap-2">
-            <Label>Hệ đào tạo</Label>
-            <Select
-              value={selectedCohort}
-              onValueChange={(val) => setSelectedCohort(val as CohortCode | 'ALL')}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn hệ" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">Tất cả hệ</SelectItem>
-                <SelectItem value="D">Đại học</SelectItem>
-                <SelectItem value="M">Cao học</SelectItem>
-                <SelectItem value="P">Tiến sĩ</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+            {/* Cohorts */}
+            <FormField
+              control={form.control}
+              name="targetCohorts"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Khóa học</FormLabel>
+                  <ScrollArea className="h-32 rounded-md border p-4">
+                    <div className="grid grid-cols-2 gap-2">
+                      {COHORT_CODES.map((code) => (
+                        <FormField
+                          key={code}
+                          control={form.control}
+                          name="targetCohorts"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={code}
+                                className="flex flex-row items-center space-y-0 space-x-3"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(code)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...(field.value || []), code])
+                                        : field.onChange(
+                                            field.value?.filter((value) => value !== code),
+                                          );
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal">{code}</FormLabel>
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </ScrollArea>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <DialogFooter>
-          <Button variant="outline" onClick={close} disabled={isProcessing}>
-            Hủy
-          </Button>
-          <Button onClick={handleRelease} disabled={isProcessing}>
-            {isProcessing ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="mr-2 h-4 w-4" />
-            )}
-            Phát hành ngay
-          </Button>
-        </DialogFooter>
+            {/* Specific Classes */}
+            <FormField
+              control={form.control}
+              name="specificClassCodes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Mã lớp cụ thể</FormLabel>
+                  <FormControl>
+                    <Input placeholder="D20CQCN01-B, D21CQcn02-B..." {...field} />
+                  </FormControl>
+                  <FormDescription>Ngăn cách bởi dấu phẩy.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DialogFooter className="pt-4">
+              <Button type="button" variant="outline" onClick={close} disabled={mutation.isPending}>
+                Hủy
+              </Button>
+              <Button type="submit" disabled={mutation.isPending}>
+                {mutation.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="mr-2 h-4 w-4" />
+                )}
+                Phát hành ngay
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

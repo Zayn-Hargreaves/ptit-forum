@@ -1,7 +1,7 @@
 'use client';
 
-import { PaginationState } from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
+import { PaginationState } from '@tanstack/react-table';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useMemo } from 'react';
 
@@ -21,17 +21,22 @@ function UsersPageContent() {
   // Extract params
   const page = Number(searchParams.get('page')) || 1;
   const size = Number(searchParams.get('size')) || 10;
-  
+
   const queryParams: SearchUserParams = useMemo(() => {
     return {
       page: page - 1, // API is 0-indexed usually, but let's check. Java Pageable is 0-indexed.
-                      // URL page=1 means index 0.
+      // URL page=1 means index 0.
       size,
       email: searchParams.get('email') || undefined,
       fullName: searchParams.get('fullName') || undefined,
       studentCode: searchParams.get('studentCode') || undefined,
       classCode: searchParams.get('classCode') || undefined,
-      enable: searchParams.get('enable') === 'true' ? true : searchParams.get('enable') === 'false' ? false : undefined,
+      enable:
+        searchParams.get('enable') === 'true'
+          ? true
+          : searchParams.get('enable') === 'false'
+            ? false
+            : undefined,
     };
   }, [searchParams, page, size]);
 
@@ -47,7 +52,7 @@ function UsersPageContent() {
   const handleFiltersChange = useCallback(
     (values: UserSearchFormValues) => {
       const params = new URLSearchParams(searchParams.toString());
-      
+
       // Reset to page 1 on filter change
       params.set('page', '1');
 
@@ -68,7 +73,7 @@ function UsersPageContent() {
 
       router.push(`${pathname}?${params.toString()}`);
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams],
   );
 
   const handlePaginationChange = useCallback(
@@ -78,16 +83,19 @@ function UsersPageContent() {
       params.set('size', pagination.pageSize.toString());
       router.push(`${pathname}?${params.toString()}`);
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams],
   );
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <Heading title={`Quản lý người dùng (${data?.meta.total || 0})`} description="Quản lý danh sách người dùng, sinh viên trong hệ thống" />
+        <Heading
+          title={`Quản lý người dùng (${data?.meta.total || 0})`}
+          description="Quản lý danh sách người dùng, sinh viên trong hệ thống"
+        />
       </div>
       <Separator />
-      
+
       <UserTable
         data={data?.data || []}
         columns={columns}

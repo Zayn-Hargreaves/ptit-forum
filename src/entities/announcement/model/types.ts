@@ -151,6 +151,7 @@ export interface UpdateAnnouncementPayload {
   facultyIds: string[];
   classCodes: string[];
   schoolYearCodes: CohortCode[];
+  fileMetadataIds?: string[];
 }
 
 // Tương ứng: SearchAnnouncementRequest

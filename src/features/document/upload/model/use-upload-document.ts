@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
@@ -64,9 +65,19 @@ export const useUploadDocument = () => {
       router.push('/profile/me');
     },
     onError: (error: unknown) => {
-      toast.error('Tải lên thất bại', {
-        description: getErrorMessage(error),
-      });
+      // Check for specific duplicate title error (code 1048)
+      if (axios.isAxiosError(error) && error.response?.data?.code === 1048) {
+        toast.error('Tên tài liệu bị trùng', {
+          description:
+            'Tên tài liệu này đã tồn tại trong môn học. Vui lòng chọn tên khác hoặc thêm năm/kỳ học để phân biệt.',
+          duration: 6000,
+        });
+      } else {
+        // Generic error fallback
+        toast.error('Tải lên thất bại', {
+          description: getErrorMessage(error),
+        });
+      }
     },
   });
 };

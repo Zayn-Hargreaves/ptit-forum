@@ -1,5 +1,8 @@
 'use client';
 
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
 import { ChevronLeft, ChevronRight, Lock, ZoomIn, ZoomOut } from 'lucide-react';
 import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';

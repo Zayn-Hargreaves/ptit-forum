@@ -79,7 +79,7 @@ export function LiteEditor({
       }
 
       const result = await upload(file, '/files/upload', 'POST', 'file', {
-        folderName: 'comments',
+        resourceType: 'COMMENT',
       });
 
       const resultData = Array.isArray(result) ? result[0] : result;

@@ -24,6 +24,14 @@ export function ReportItem({ report, onProcess, isProcessing }: Readonly<ReportI
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<ReportAction | null>(null);
 
+  // Handle backward compatibility
+  const reporter = report.reporter || {
+    id: report.reporterId || '',
+    fullName: report.reporterFullName || 'Người dùng ẩn danh',
+    avatarUrl: report.reporterAvatarUrl || '',
+    email: '', // Legacy data didn't have email
+  };
+
   const handleActionClick = (action: ReportAction) => {
     setSelectedAction(action);
     setDialogOpen(true);
@@ -40,12 +48,14 @@ export function ReportItem({ report, onProcess, isProcessing }: Readonly<ReportI
         <CardHeader className="bg-muted/50 flex flex-row items-center justify-between space-y-0 p-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={getAvatarUrl(report.reporterAvatarUrl)} />
-              <AvatarFallback>{getUserInitials(report.reporterFullName)}</AvatarFallback>
+              <AvatarImage src={getAvatarUrl(reporter.avatarUrl)} />
+              <AvatarFallback>
+                {getUserInitials(reporter.fullName || reporter.email)}
+              </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
               <span className="text-sm font-medium">
-                {getUserDisplayName(report.reporterFullName)}
+                {getUserDisplayName(reporter.fullName, reporter.email || 'Người dùng ẩn danh')}
               </span>
               <span className="text-muted-foreground flex items-center text-xs">
                 <Clock className="mr-1 h-3 w-3" />

@@ -1,10 +1,10 @@
-import { X } from 'lucide-react';
-import { Table } from '@tanstack/react-table';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { Table } from '@tanstack/react-table';
+import { X } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 
 import { Button } from '@/shared/ui/button/button';
+import { Form, FormControl, FormField, FormItem } from '@/shared/ui/form/form';
 import { Input } from '@/shared/ui/input/input';
 import {
   Select,
@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/select/select';
-import { Form, FormControl, FormField, FormItem } from '@/shared/ui/form/form';
 
 import { UserSearchFormValues, userSearchSchema } from '../model/schema';
 
@@ -22,9 +21,7 @@ interface UserTableToolbarProps<TData> {
   onFiltersChange: (filters: UserSearchFormValues) => void;
 }
 
-export function UserTableToolbar<TData>({
-  onFiltersChange,
-}: UserTableToolbarProps<TData>) {
+export function UserTableToolbar<TData>({ onFiltersChange }: UserTableToolbarProps<TData>) {
   const form = useForm<UserSearchFormValues>({
     resolver: zodResolver(userSearchSchema),
     defaultValues: {
@@ -42,10 +39,10 @@ export function UserTableToolbar<TData>({
   };
 
   // Watch for changes and debounce if needed, or stick to explicit submit/enter.
-  // For now, let's use explicit 'Enter' or blur on inputs, or a search button. 
-  // Actually, standard Pattern is often auto-search or search button. 
+  // For now, let's use explicit 'Enter' or blur on inputs, or a search button.
+  // Actually, standard Pattern is often auto-search or search button.
   // Let's rely on standard form submission for filters or simpler onChange.
-  
+
   // Let's use a "Search" button or simple useEffect debounce could be better but let's stick to simple "Enter" key approach via form submit or specific inputs.
   // Actually `onKeydown` Enter.
 
@@ -137,11 +134,11 @@ export function UserTableToolbar<TData>({
                   enable: 'all',
                 });
                 onFiltersChange({
-                    email: undefined,
-                    fullName: undefined,
-                    studentCode: undefined,
-                    classCode: undefined,
-                    enable: 'all'
+                  email: undefined,
+                  fullName: undefined,
+                  studentCode: undefined,
+                  classCode: undefined,
+                  enable: 'all',
                 });
               }}
             >
