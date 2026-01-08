@@ -1,25 +1,27 @@
-import "server-only";
-import { BackendTrendingResponseSchema } from "./post.schema";
-import { mapTrendingPost } from "../lib/map-post";
-import { cookies } from "next/headers";
+import 'server-only';
+
+import { cookies } from 'next/headers';
+
+import { mapTrendingPost } from '../lib/map-post';
+import { BackendTrendingResponseSchema } from './post.schema';
 
 export async function fetchTrendingPosts() {
   const baseUrl = process.env.INTERNAL_BACKEND_URL;
 
   if (!baseUrl) {
-    throw new Error("Missing INTERNAL_BACKEND_URL");
+    throw new Error('Missing INTERNAL_BACKEND_URL');
   }
 
   const url = new URL(`${baseUrl}/posts`);
-  url.searchParams.set("sort", "reactionCount,desc");
-  url.searchParams.set("size", "3");
+  url.searchParams.set('sort', 'reactionCount,desc');
+  url.searchParams.set('size', '3');
 
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken");
+  const accessToken = cookieStore.get('accessToken');
 
   const headers: Record<string, string> = {};
   if (accessToken) {
-    headers["Authorization"] = `Bearer ${accessToken.value}`;
+    headers['Authorization'] = `Bearer ${accessToken.value}`;
   }
 
   try {
@@ -27,7 +29,7 @@ export async function fetchTrendingPosts() {
       headers,
       next: {
         revalidate: 60,
-        tags: ["trending-posts"],
+        tags: ['trending-posts'],
       },
     });
 
@@ -41,13 +43,13 @@ export async function fetchTrendingPosts() {
     const parsed = BackendTrendingResponseSchema.safeParse(json);
 
     if (!parsed.success) {
-      console.error("Invalid Trending Schema:", parsed.error);
+      console.error('Invalid Trending Schema:', parsed.error);
       return [];
     }
 
     return parsed.data.map(mapTrendingPost);
   } catch (error) {
-    console.error("Network error fetching trending:", error);
+    console.error('Network error fetching trending:', error);
     return [];
   }
 }

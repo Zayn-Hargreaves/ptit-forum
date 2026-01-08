@@ -8,11 +8,7 @@
 function parseExpiry(
   envName: string,
   defaultVal: number,
-  {
-    min,
-    max,
-    allowZero = false,
-  }: { min: number; max: number; allowZero?: boolean }
+  { min, max, allowZero = false }: { min: number; max: number; allowZero?: boolean },
 ): number {
   const envValue = process.env[envName];
   if (envValue === undefined) {
@@ -22,21 +18,19 @@ function parseExpiry(
   const parsed = Number(envValue);
   if (!Number.isFinite(parsed) || Number.isNaN(parsed)) {
     console.error(
-      `Invalid ${envName}: "${envValue}" is not a valid number. Using default: ${defaultVal}`
+      `Invalid ${envName}: "${envValue}" is not a valid number. Using default: ${defaultVal}`,
     );
     return defaultVal;
   }
 
   if (!allowZero && parsed === 0) {
-    console.error(
-      `Invalid ${envName}: 0 is not allowed. Using default: ${defaultVal}`
-    );
+    console.error(`Invalid ${envName}: 0 is not allowed. Using default: ${defaultVal}`);
     return defaultVal;
   }
 
   if (parsed < min || parsed > max) {
     console.error(
-      `Invalid ${envName}: ${parsed} is out of range (${min} to ${max}). Using default: ${defaultVal}`
+      `Invalid ${envName}: ${parsed} is out of range (${min} to ${max}). Using default: ${defaultVal}`,
     );
     return defaultVal;
   }
@@ -44,38 +38,34 @@ function parseExpiry(
   return parsed;
 }
 
-export const ACCESS_TOKEN_EXPIRY = parseExpiry("ACCESS_TOKEN_EXPIRY", 15 * 60, {
+export const ACCESS_TOKEN_EXPIRY = parseExpiry('ACCESS_TOKEN_EXPIRY', 15 * 60, {
   min: 1,
   max: 24 * 60 * 60, // 1 day max
   allowZero: false,
 }); // 15 minutes
 
-export const REFRESH_TOKEN_EXPIRY = parseExpiry(
-  "REFRESH_TOKEN_EXPIRY",
-  7 * 24 * 60 * 60,
-  {
-    min: 1,
-    max: 365 * 24 * 60 * 60, // 1 year max
-    allowZero: false,
-  }
-); // 7 days
+export const REFRESH_TOKEN_EXPIRY = parseExpiry('REFRESH_TOKEN_EXPIRY', 7 * 24 * 60 * 60, {
+  min: 1,
+  max: 365 * 24 * 60 * 60, // 1 year max
+  allowZero: false,
+}); // 7 days
 
 export const ALLOWED_DOCUMENT_MIMES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/vnd.ms-excel",
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  "text/markdown",
-  "text/plain",
-  "text/csv",
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'text/markdown',
+  'text/plain',
+  'text/csv',
 ];
 
 export const ALLOWED_MEDIA_MINES = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
-  "video/mp4",
-  "video/webm",
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'video/mp4',
+  'video/webm',
 ];

@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import DOMPurify from 'isomorphic-dompurify';
 import { cn } from '@shared/lib/utils';
+import DOMPurify from 'isomorphic-dompurify';
+import React, { useMemo } from 'react';
 
 interface PostContentProps {
   content: string;
@@ -58,9 +58,9 @@ export function PostContent({ content, className }: Readonly<PostContentProps>) 
   return (
     <div
       className={cn(
-        'prose prose-stone max-w-none dark:prose-invert',
+        'prose prose-stone dark:prose-invert max-w-none',
 
-        className
+        className,
       )}
       dangerouslySetInnerHTML={{ __html: cleanContent }}
     />

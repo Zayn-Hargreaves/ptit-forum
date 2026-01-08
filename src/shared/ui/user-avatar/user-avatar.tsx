@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@shared/ui/avatar/avatar";
-import { cn } from "@shared/lib/utils";
+import { cn } from '@shared/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar/avatar';
+import { useMemo } from 'react';
 
 interface UserAvatarProps {
   name?: string | null;
@@ -16,22 +16,18 @@ function stringToColor(str: string) {
     hash = str.codePointAt(i)! + ((hash << 5) - hash);
   }
   const c = (hash & 0x00ffffff).toString(16).toUpperCase();
-  return "#" + "000000".substring(0, 6 - c.length) + c;
+  return '#' + '000000'.substring(0, 6 - c.length) + c;
 }
 
-export function UserAvatar({
-  name,
-  avatarUrl,
-  className,
-}: Readonly<UserAvatarProps>) {
-  const displayName = name || "User";
+export function UserAvatar({ name, avatarUrl, className }: Readonly<UserAvatarProps>) {
+  const displayName = name || 'User';
 
   const initials = useMemo(() => {
     return displayName
-      .split(" ")
+      .split(' ')
       .filter((n) => n.length > 0)
       .map((n) => n[0])
-      .join("")
+      .join('')
       .substring(0, 2)
       .toUpperCase();
   }, [displayName]);
@@ -39,19 +35,13 @@ export function UserAvatar({
   const bgColor = useMemo(() => stringToColor(displayName), [displayName]);
 
   return (
-    <Avatar
-      className={cn("border transition-opacity hover:opacity-80", className)}
-    >
+    <Avatar className={cn('border transition-opacity hover:opacity-80', className)}>
       {avatarUrl ? (
-        <AvatarImage
-          src={avatarUrl}
-          alt={displayName}
-          className="object-cover"
-        />
+        <AvatarImage src={avatarUrl} alt={displayName} className="object-cover" />
       ) : null}
 
       <AvatarFallback
-        className="text-white font-bold"
+        className="font-bold text-white"
         style={{ backgroundColor: avatarUrl ? undefined : bgColor }}
       >
         {initials}

@@ -1,44 +1,36 @@
-'use client';
-
-import { useState } from 'react';
-import { CreatePostDialog } from '@features/post/create-post/ui/create-post-dialog';
-import { PostList } from '@shared/components/forum/post-list';
-import { PostFilter } from '@features/post/feed/ui/post-filter';
-import { SortMode, TimeRange } from '@entities/post/model/use-infinite-posts';
-import { Topic } from '@entities/topic/model/types';
+import { ICategory } from '@entities/category/model/types';
+import { CategoryGrid } from '@entities/category/ui/category-grid';
+import { ForumSidebar } from '@shared/components/forum/forum-sidebar';
+import { HomeHero } from '@widgets/home-hero/ui/home-hero';
+import { TopicDiscovery } from '@widgets/topic-discovery/ui/topic-discovery';
 
 interface ForumClientViewProps {
-    initialTopics: Topic[];
+  initialCategories: ICategory[];
 }
 
-export function ForumClientView({ initialTopics }: Readonly<ForumClientViewProps>) {
-    const [sortMode, setSortMode] = useState<SortMode>('latest');
-    const [timeRange, setTimeRange] = useState<TimeRange>('week');
-    const [topicId, setTopicId] = useState<string | null>(null);
+export function ForumClientView({ initialCategories }: Readonly<ForumClientViewProps>) {
+  return (
+    <div className="container mx-auto space-y-8 px-4 py-8">
+      <HomeHero />
 
-    return (
-        <div className="container mx-auto max-w-5xl py-8 px-4 space-y-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Diễn đàn</h1>
-                    <p className="text-muted-foreground mt-1">Nơi trao đổi kiến thức...</p>
-                </div>
-                <CreatePostDialog />
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+        <div className="lg:col-span-3">
+          <div className="space-y-10">
+            {/* Categories Section (Secondary -> Moved to Primary) */}
+            <div className="border-b pb-8">
+              <h2 className="mb-4 text-xl font-semibold">Danh mục chủ đề</h2>
+              <CategoryGrid categories={initialCategories} />
             </div>
 
-            <div className="grid gap-6">
-                <PostFilter
-                    sortMode={sortMode}
-                    onSortChange={setSortMode}
-                    timeRange={timeRange}
-                    onTimeChange={setTimeRange}
-                    topics={initialTopics}
-                    selectedTopic={topicId}
-                    onTopicChange={setTopicId}
-                />
-
-                <PostList sortMode={sortMode} timeRange={timeRange} topicId={topicId} />
-            </div>
+            {/* Topic Feed Section (Main Content) */}
+            <TopicDiscovery />
+          </div>
         </div>
-    );
+
+        <div className="hidden lg:col-span-1 lg:block">
+          <ForumSidebar />
+        </div>
+      </div>
+    </div>
+  );
 }

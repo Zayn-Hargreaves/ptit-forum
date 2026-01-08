@@ -1,45 +1,51 @@
 // src/entities/session/api/session-api.ts
 import { apiClient } from '@shared/api/axios-client';
-import { UpdateProfilePayload, UserProfile, UserProfileResponseDto } from '../model/types';
 import { ApiResponse } from '@shared/api/types';
 
-const mapToUser = (data: any): UserProfile => {
+import { UpdateProfilePayload, UserProfile } from '../model/types';
+
+const mapToUser = (data: unknown): UserProfile => {
+  const d = data as Record<string, unknown>;
   return {
-    ...data,
-    avatarUrl: data.avatarUrl || data.avatar,
-    studentCode: data.studentCode || data.studentId,
-    classCode: data.classCode || data.className,
-    facultyName: data.facultyName || data.faculty,
-    role: data.permissions?.includes('ROLE_ADMIN') ? 'ADMIN' : 'USER',
+    id: d.id as string,
+    email: d.email as string,
+    fullName: d.fullName as string,
+    avatarUrl: (d.avatarUrl || d.avatar) as string,
+    studentCode: (d.studentCode || d.studentId) as string,
+    classCode: (d.classCode || d.className) as string,
+    facultyName: (d.facultyName || d.faculty) as string,
+    role: (d.permissions as string[])?.includes('ROLE_ADMIN') ? 'ADMIN' : 'USER',
   };
 };
 
 export const sessionApi = {
   me: async () => {
-    const { data } = await apiClient.get<ApiResponse<any>>('/users/me');
-    return mapToUser(data.result);
+    const { data } = await apiClient.get<{ user: UserProfile }>('/auth/me'); // Call local Next.js API
+    return data.user;
   },
 
   getProfile: async () => {
-    const { data } = await apiClient.get<ApiResponse<any>>('/users/profile');
+    const { data } = await apiClient.get<ApiResponse<unknown>>('/users/profile');
     return mapToUser(data.result);
   },
 
-  updateProfile: async (payload: UpdateProfilePayload) => {
-    const { data } = await apiClient.patch<ApiResponse<any>>('/users/profile', payload);
-    return mapToUser(data.result);
-  },
-
-  uploadAvatar: async (file: File): Promise<UserProfile> => {
+  updateProfile: async (payload: UpdateProfilePayload, avatar?: File) => {
     const formData = new FormData();
-    formData.append('image', file);
 
-    const { data } = await apiClient.put<ApiResponse<UserProfileResponseDto>>('/users/profile/avatar', formData, {
+    if (payload.fullName) formData.append('fullName', payload.fullName);
+    if (payload.phone) formData.append('phone', payload.phone);
+    if (payload.studentCode) formData.append('studentCode', payload.studentCode);
+    if (payload.classCode) formData.append('classCode', payload.classCode);
+
+    if (avatar) {
+      formData.append('image', avatar);
+    }
+
+    const { data } = await apiClient.put<ApiResponse<unknown>>('/users/profile', formData, {
       headers: {
-        'Content-Type': null,
+        'Content-Type': 'multipart/form-data',
       },
     });
-
     return mapToUser(data.result);
   },
 

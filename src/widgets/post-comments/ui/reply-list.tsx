@@ -1,19 +1,27 @@
 'use client';
 
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { Loader2, CornerDownRight } from 'lucide-react';
-
 import { commentApi } from '@entities/interaction/api/comment-api';
-import { CommentItem } from './comment-item';
-import { Button } from '@shared/ui/button/button';
+import { User } from '@entities/session/model/types';
 import { useDeleteComment } from '@features/comment/hooks/use-delete-comment';
+import { Button } from '@shared/ui/button/button';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { CornerDownRight, Loader2 } from 'lucide-react';
+
+import { CommentItem } from './comment-item';
 
 interface ReplyListProps {
   rootCommentId: string;
   postId: string;
+  postAuthorId?: string;
+  currentUser?: User | null;
 }
 
-export function ReplyList({ rootCommentId, postId }: Readonly<ReplyListProps>) {
+export function ReplyList({
+  rootCommentId,
+  postId,
+  postAuthorId,
+  currentUser,
+}: Readonly<ReplyListProps>) {
   const queryClient = useQueryClient();
   const queryKey = ['comments', 'replies', rootCommentId] as const;
 
@@ -43,18 +51,24 @@ export function ReplyList({ rootCommentId, postId }: Readonly<ReplyListProps>) {
   }
 
   if (status === 'error') {
-    return <div className="ml-12 py-2 text-sm text-destructive">Không thể tải phản hồi. Vui lòng thử lại.</div>;
+    return (
+      <div className="text-destructive ml-12 py-2 text-sm">
+        Không thể tải phản hồi. Vui lòng thử lại.
+      </div>
+    );
   }
 
   const replies = data?.pages.flatMap((page) => page.content) || [];
 
   return (
-    <div className="ml-8 md:ml-12 space-y-3 mt-2">
+    <div className="mt-2 ml-8 space-y-3 md:ml-12">
       {replies.map((reply) => (
         <CommentItem
           key={reply.id}
           comment={reply}
           postId={postId}
+          postAuthorId={postAuthorId}
+          currentUser={currentUser}
           isReply={true}
           onDelete={(id) => {
             if (isDeleting) return;
@@ -70,9 +84,9 @@ export function ReplyList({ rootCommentId, postId }: Readonly<ReplyListProps>) {
           size="sm"
           onClick={() => fetchNextPage()}
           disabled={isFetchingNextPage}
-          className="text-xs text-muted-foreground ml-2"
+          className="text-muted-foreground ml-2 text-xs"
         >
-          <CornerDownRight className="h-3 w-3 mr-1" />
+          <CornerDownRight className="mr-1 h-3 w-3" />
           {isFetchingNextPage ? 'Đang tải...' : 'Xem thêm phản hồi'}
         </Button>
       )}

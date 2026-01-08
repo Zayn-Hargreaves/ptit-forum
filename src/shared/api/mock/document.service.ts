@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+
 import type { Document } from '@/entities/document/model/schema';
 
 // Helper to convert string ID to a numeric seed
@@ -32,8 +33,10 @@ export interface GetDocumentsParams {
   sort?: 'popular' | 'latest' | 'oldest';
 }
 
-export const getDocuments = async (params: GetDocumentsParams = {}): Promise<{ data: Document[]; total: number }> => {
-  const { page = 1, limit = 10, subjectId, sort } = params;
+export const getDocuments = async (
+  params: GetDocumentsParams = {},
+): Promise<{ data: Document[]; total: number }> => {
+  const { page = 1, limit = 10, subjectId, sort: _sort } = params;
 
   // Simulate network delay (500-800ms)
   await delay(500 + Math.random() * 300);
@@ -119,7 +122,8 @@ function generateMockDocument(id: string): Document {
     subject: {
       id: faker.string.uuid(),
       name: faker.commerce.department(),
-      code: faker.string.alpha(3).toUpperCase() + faker.number.int({ min: 100, max: 999 }).toString(),
+      code:
+        faker.string.alpha(3).toUpperCase() + faker.number.int({ min: 100, max: 999 }).toString(),
     },
   };
 

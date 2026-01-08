@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
 import { Eye, FileText } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
+
 import { Document } from '@/entities/document/model/schema';
 import { AspectRatio } from '@/shared/ui/aspect-ratio/aspect-ratio';
-import { cn } from '@/shared/lib/utils';
 
 interface DocumentCardProps {
   document: Document;
@@ -15,20 +16,29 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
   const [imgSrc, setImgSrc] = useState(document.thumbnailUrl);
 
   return (
-    <article className="group relative flex flex-col space-y-3 rounded-lg border p-3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+    <article className="group relative flex flex-col space-y-3 rounded-lg border p-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       {/* Click Overlay */}
-      <Link href={`/documents/${document.id}`} className="absolute inset-0 z-10">
-        <span className="sr-only">View {document.title}</span>
-      </Link>
+      {document.status === 'APPROVED' ? (
+        <Link href={`/documents/${document.id}`} className="absolute inset-0 z-10">
+          <span className="sr-only">View {document.title}</span>
+        </Link>
+      ) : (
+        <div className="absolute inset-0 z-10 cursor-not-allowed" />
+      )}
 
       {/* Thumbnail Section */}
-      <div className="relative overflow-hidden rounded-md">
+      <div
+        className={`relative overflow-hidden rounded-md ${document.status === 'PENDING' ? 'opacity-75' : ''}`}
+      >
         <AspectRatio ratio={3 / 4}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={imgSrc}
             alt={document.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            width={300}
+            height={400}
+            className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+              document.status === 'PENDING' ? 'grayscale-[50%]' : ''
+            }`}
             onError={() => {
               if (imgSrc !== 'https://placehold.co/300x400?text=No+Preview') {
                 setImgSrc('https://placehold.co/300x400?text=No+Preview');
@@ -38,8 +48,13 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
         </AspectRatio>
 
         {/* Badges/Overlays */}
-        {document.isPremium && (
-          <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+        {document.status === 'PENDING' && (
+          <div className="absolute top-2 right-2 rounded bg-yellow-400 px-2 py-1 text-xs font-bold text-yellow-900 shadow-sm">
+            PENDING
+          </div>
+        )}
+        {document.isPremium && document.status !== 'PENDING' && (
+          <div className="absolute top-2 right-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-bold text-white shadow-md">
             PRO
           </div>
         )}
@@ -47,12 +62,15 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
 
       {/* Content Section */}
       <div className="flex flex-col space-y-1">
-        <h3 className="font-semibold leading-tight line-clamp-2 min-h-[2.5rem]" title={document.title}>
+        <h3
+          className="line-clamp-2 min-h-[2.5rem] leading-tight font-semibold"
+          title={document.title}
+        >
           {document.title}
         </h3>
 
         {/* Meta Row */}
-        <div className="flex items-center text-xs text-muted-foreground space-x-3">
+        <div className="text-muted-foreground flex items-center space-x-3 text-xs">
           <div className="flex items-center">
             <Eye className="mr-1 h-3 w-3" />
             <span>{document.viewCount.toLocaleString()}</span>
@@ -64,10 +82,15 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
         </div>
 
         {/* Author (Optional extra) */}
-        <div className="pt-2 flex items-center gap-2 text-xs text-muted-foreground border-t mt-2">
+        <div className="text-muted-foreground mt-2 flex items-center gap-2 border-t pt-2 text-xs">
           {/* Using a small fallback approach for avatar if needed, but assuming valid currently */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={document.author.avatar} alt={document.author.name} className="w-5 h-5 rounded-full object-cover" />
+          <Image
+            src={document.author.avatar}
+            alt={document.author.name}
+            width={20}
+            height={20}
+            className="h-5 w-5 rounded-full object-cover"
+          />
           <span className="truncate">{document.author.name}</span>
         </div>
       </div>

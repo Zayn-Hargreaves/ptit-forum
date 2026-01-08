@@ -1,8 +1,9 @@
-
-import { Suspense, cache } from 'react';
-import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { documentService, GetDocumentsParams } from '@/shared/api/document.service';
+import { notFound } from 'next/navigation';
+import { cache, Suspense } from 'react';
+
+import { documentService } from '@/shared/api/document.service';
+
 import { DocumentDetailView } from './document-detail-view';
 
 function truncate(text: string | null | undefined, maxLen: number): string {
@@ -68,8 +69,8 @@ export default async function DocumentPage(props: Props) {
   return (
     <Suspense
       fallback={
-        <div className="container mx-auto py-10 px-4">
-          <div className="h-8 w-1/3 bg-muted rounded animate-pulse"></div>
+        <div className="container mx-auto px-4 py-10">
+          <div className="bg-muted h-8 w-1/3 animate-pulse rounded"></div>
         </div>
       }
     >

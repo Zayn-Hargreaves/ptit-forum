@@ -1,40 +1,40 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import React from "react";
-import { Separator } from "./separator";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import React from 'react';
+
+import { Separator } from './separator';
 
 // --- META DEFINITION ---
 
 const meta: Meta<typeof Separator> = {
-  title: "shared/UI/Separator",
+  title: 'shared/UI/Separator',
   component: Separator,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     orientation: {
-      control: "select",
-      options: ["horizontal", "vertical"],
-      description: "Orientation of the separator line.",
+      control: 'select',
+      options: ['horizontal', 'vertical'],
+      description: 'Orientation of the separator line.',
       table: {
-        defaultValue: { summary: "horizontal" },
+        defaultValue: { summary: 'horizontal' },
       },
     },
     decorative: {
-      control: "boolean",
-      description:
-        "Whether the separator is purely decorative (accessibility attribute).",
+      control: 'boolean',
+      description: 'Whether the separator is purely decorative (accessibility attribute).',
       table: {
-        defaultValue: { summary: "true" },
+        defaultValue: { summary: 'true' },
       },
     },
     className: {
-      control: "text",
-      description: "Custom className styling.",
+      control: 'text',
+      description: 'Custom className styling.',
     },
   },
   args: {
-    orientation: "horizontal",
+    orientation: 'horizontal',
     decorative: true,
   },
 };
@@ -63,7 +63,7 @@ export const Default: Story = {
  */
 export const Vertical: Story = {
   args: {
-    orientation: "vertical",
+    orientation: 'vertical',
   },
   render: (args) => (
     <div className="flex h-16 items-center gap-4">
@@ -79,12 +79,12 @@ export const Vertical: Story = {
  */
 export const Styled: Story = {
   args: {
-    orientation: "horizontal",
+    orientation: 'horizontal',
   },
   render: (args) => (
     <div className="flex w-72 flex-col gap-4">
       <span className="text-sm">Section Title</span>
-      <Separator {...args} className="h-2 bg-primary" />
+      <Separator {...args} className="bg-primary h-2" />
       <span className="text-muted-foreground text-xs">Content below</span>
     </div>
   ),
@@ -95,7 +95,7 @@ export const Styled: Story = {
  */
 export const Accessible: Story = {
   args: {
-    orientation: "horizontal",
+    orientation: 'horizontal',
     decorative: false,
   },
   render: (args) => (
