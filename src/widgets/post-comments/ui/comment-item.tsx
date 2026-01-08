@@ -113,7 +113,7 @@ export function CommentItem({
 
   const replyCount = comment.repliesCount || 0;
   const hasChildren = !!comment.children?.length;
-  const authorName = comment.author?.fullName || 'Ẩn danh';
+  const authorName = comment.author?.fullName || comment.author?.email || 'Người dùng ẩn danh';
   const avatarUrl = comment.author?.avatarUrl ?? '';
 
   // Permission logic: Trust backend first, fallback to frontend calculation
@@ -320,7 +320,7 @@ export function CommentItem({
                 initialIsLiked={comment.isLiked || false}
                 queryKey={
                   isReply
-                    ? ['comments', 'replies', comment.rootCommentId]
+                    ? ['comments', 'replies', comment.rootCommentId || comment.parentId]
                     : ['comments', 'roots', postId]
                 }
               />

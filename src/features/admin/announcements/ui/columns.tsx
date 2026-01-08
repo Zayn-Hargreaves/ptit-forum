@@ -2,9 +2,9 @@ import { AnnouncementResponse } from '@entities/announcement/model/types';
 import { Badge } from '@shared/ui';
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
+import Link from 'next/link';
 
 import { ActionCell } from './action-cell';
-import Link from 'next/link';
 
 // Map Enum Backend sang Tiếng Việt
 const TYPE_MAP: Record<string, string> = {
@@ -20,9 +20,9 @@ export const columns: ColumnDef<AnnouncementResponse>[] = [
     header: 'Tiêu đề',
     cell: ({ row }) => (
       <div className="flex max-w-[300px] flex-col">
-        <Link 
+        <Link
           href={`/admin/announcements/${row.original.id}`}
-          className="truncate font-medium hover:underline hover:text-primary transition-colors"
+          className="hover:text-primary truncate font-medium transition-colors hover:underline"
           title={row.original.title}
         >
           {row.original.title}

@@ -8,21 +8,11 @@ import {
   editPostSchema,
 } from '@entities/post/model/post.schema';
 import type { IPost, PostAttachment } from '@entities/post/model/types';
-import { topicApi } from '@entities/topic/api/topic-api';
-import type { ITopic } from '@entities/topic/model/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ALLOWED_DOCUMENT_MIMES } from '@shared/constants/constants';
 import { FileMetadata, useFileUpload } from '@shared/hooks/use-file-upload';
 import { cn } from '@shared/lib/utils';
 import { Button } from '@shared/ui/button/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@shared/ui/command/command';
 import { GithubEditor } from '@shared/ui/editor/github-editor';
 import {
   Form,
@@ -33,10 +23,9 @@ import {
   FormMessage,
 } from '@shared/ui/form/form';
 import { Input } from '@shared/ui/input/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@shared/ui/popover/popover';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Check, ChevronsUpDown, Loader2, Paperclip, X } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Check, Loader2, Paperclip, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -49,19 +38,6 @@ interface PostFormProps {
   defaultTopicId?: string;
 }
 
-interface TopicItemProps {
-  topic: ITopic;
-  selectedId?: string;
-  onSelect: (id: string) => void;
-}
-
-const TopicItem: React.FC<TopicItemProps> = ({ topic, selectedId, onSelect }) => (
-  <CommandItem key={topic.id} value={topic.name} onSelect={() => onSelect(topic.id)}>
-    <Check className={cn('mr-2 h-4 w-4', topic.id === selectedId ? 'opacity-100' : 'opacity-0')} />
-    <span className="truncate">{topic.name}</span>
-  </CommandItem>
-);
-
 export function PostForm({
   onSuccess,
   className,
@@ -71,7 +47,6 @@ export function PostForm({
   defaultTopicId,
 }: Readonly<PostFormProps>) {
   const queryClient = useQueryClient();
-  const [openTopic, setOpenTopic] = useState(false);
 
   const [existingFiles, setExistingFiles] = useState<PostAttachment[]>(
     initialData?.attachments || [],
@@ -80,29 +55,6 @@ export function PostForm({
   useEffect(() => {
     setExistingFiles(initialData?.attachments || []);
   }, [initialData?.attachments]);
-
-  /* =======================
-   * 1. FETCH TOPICS
-   * ======================= */
-  const {
-    data: topics = [],
-    isLoading: isLoadingTopics,
-    isError: isTopicsError,
-    error: topicsError,
-    refetch: refetchTopics,
-  } = useQuery<ITopic[]>({
-    queryKey: ['topicsPostable'],
-    queryFn: () => topicApi.getTopics(),
-    enabled: mode === 'create', // Only fetch topics in create mode
-    staleTime: 5 * 60 * 1000,
-    retry: 1,
-  });
-
-  React.useEffect(() => {
-    if (isTopicsError && topicsError) {
-      toast.error(topicsError.message || 'Không thể tải danh sách chủ đề');
-    }
-  }, [isTopicsError, topicsError]);
 
   /* =======================
    * 2. FORM SETUP
@@ -132,15 +84,6 @@ export function PostForm({
     });
   }, [initialData, form, defaultTopicId]);
 
-  const selectedTopicId = form.watch('topicId');
-  const selectedTopicName =
-    topics.find((t) => t.id === selectedTopicId)?.name || 'Chủ đề không tồn tại';
-
-  const handleTopicSelect = (topicId: string) => {
-    form.setValue('topicId', topicId, { shouldDirty: true, shouldValidate: true });
-    setOpenTopic(false);
-  };
-
   /* =======================
    * 3. FILE UPLOAD
    * ======================= */
@@ -159,9 +102,13 @@ export function PostForm({
   });
 
   const handleAttachmentSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      await upload(file, '/files/upload', 'POST', 'file', { folderName: 'posts/attachments' });
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      for (const file of files) {
+        await upload(file, '/files/upload', 'POST', 'file', {
+          resourceType: 'POST',
+        });
+      }
       e.target.value = '';
     }
   };
@@ -232,24 +179,13 @@ export function PostForm({
     },
   });
 
-  // Helper render item topic
-  const groupedTopics = useMemo(() => {
-    const groups: Record<string, ITopic[]> = {};
-    topics.forEach((t) => {
-      const category = t.categoryName || 'Khác';
-      if (!groups[category]) groups[category] = [];
-      groups[category].push(t);
-    });
-    return groups;
-  }, [topics]);
-
   const isLoading = isPending || isUploadingAttachment;
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit((values) => submitPost(values))} className={className}>
         <div className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
+          <div className="grid gap-4">
             {/* Title Field */}
             <FormField
               control={form.control}
@@ -266,89 +202,6 @@ export function PostForm({
                 </FormItem>
               )}
             />
-
-            {/* Topic Field - Only show in CREATE mode */}
-            {mode === 'create' && (
-              <FormField
-                control={form.control}
-                name="topicId"
-                render={({ field }) => {
-                  let displayText;
-                  if (isLoadingTopics) {
-                    displayText = 'Đang tải...';
-                  } else if (isTopicsError) {
-                    displayText = 'Không thể tải chủ đề';
-                  } else if (field.value) {
-                    displayText = selectedTopicName;
-                  } else {
-                    displayText = 'Chọn chủ đề';
-                  }
-                  return (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>
-                        Chủ đề <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <Popover open={openTopic} onOpenChange={setOpenTopic}>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              aria-expanded={openTopic}
-                              disabled={isTopicsError}
-                              className={cn(
-                                'h-10 w-full justify-between font-normal',
-                                !field.value && 'text-muted-foreground',
-                                isTopicsError && 'border-destructive',
-                              )}
-                            >
-                              <span className="flex-1 truncate text-left">{displayText}</span>
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-[300px] p-0"
-                          align="start"
-                          container={popoverContainer}
-                        >
-                          <Command>
-                            <CommandInput placeholder="Tìm kiếm chủ đề..." />
-                            <CommandList className="max-h-[300px] overflow-y-auto">
-                              <CommandEmpty>Không tìm thấy chủ đề.</CommandEmpty>
-                              {Object.entries(groupedTopics).map(([category, list]) => (
-                                <CommandGroup key={category} heading={category}>
-                                  {list.map((t) => (
-                                    <TopicItem
-                                      key={t.id}
-                                      topic={t}
-                                      selectedId={field.value}
-                                      onSelect={handleTopicSelect}
-                                    />
-                                  ))}
-                                </CommandGroup>
-                              ))}
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      {isTopicsError && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => refetchTopics()}
-                          className="mt-2 w-full"
-                        >
-                          Thử lại
-                        </Button>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            )}
           </div>
 
           {/* Content Field */}
@@ -359,7 +212,11 @@ export function PostForm({
               <FormItem>
                 <FormLabel>Nội dung</FormLabel>
                 <FormControl>
-                  <GithubEditor value={field.value || ''} onChange={field.onChange} />
+                  <GithubEditor
+                    value={field.value || ''}
+                    onChange={field.onChange}
+                    editorContentClassName="min-h-[600px]"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -374,6 +231,7 @@ export function PostForm({
               </FormLabel>
               <Input
                 type="file"
+                multiple
                 className="hidden"
                 id="attachment-upload"
                 onChange={handleAttachmentSelect}
@@ -405,7 +263,7 @@ export function PostForm({
                 >
                   <span className="flex max-w-[200px] items-center gap-2 truncate">
                     <Check className="h-3 w-3 text-green-500" />
-                    {file.name}
+                    {file.fileName ?? file.name}
                   </span>
                   <Button
                     type="button"
@@ -441,7 +299,7 @@ export function PostForm({
           </div>
         </div>
 
-        <div className="mt-4 flex justify-end gap-2 border-t pt-4">
+        <div className="bg-background sticky bottom-0 z-20 mt-4 flex justify-end gap-2 border-t pt-4 pb-4">
           <Button type="submit" disabled={isLoading} className="min-w-[120px]">
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {mode === 'edit' ? 'Lưu thay đổi' : 'Đăng bài'}

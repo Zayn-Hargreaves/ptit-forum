@@ -13,7 +13,7 @@ export const subjectApi = {
     const response = await apiClient.get<ApiResponse<PageResponse<Subject>>>('/subjects/search', {
       params: {
         page: 0,
-        size: 100, // Get enough subjects for filter
+        size: 1000, // Get enough subjects for filter
       },
     });
     return response.data.result.content;

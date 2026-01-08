@@ -25,12 +25,24 @@ export const commentApi = {
   },
 
   create: async (payload: CreateCommentPayload) => {
-    const { postId: _postId, ...body } = payload;
-    const { data } = await apiClient.post<ApiResponse<Comment>>(
-      `/comments/post/${payload.postId}`,
-      body,
-    );
-    return data.result;
+    const { postId, parentId, ...body } = payload;
+
+    // Check if it's a reply (has parentId) or a root comment
+    if (parentId) {
+      // Endpoint: POST /api/comments/{parentId}/replies
+      const { data } = await apiClient.post<ApiResponse<Comment>>(
+        `/comments/${parentId}/replies`,
+        body, // Body contains content only (CommentRequest)
+      );
+      return data.result;
+    } else {
+      // Endpoint: POST /api/comments/post/{postId}
+      const { data } = await apiClient.post<ApiResponse<Comment>>(
+        `/comments/post/${postId}`,
+        body, // Body contains content only (CommentRequest)
+      );
+      return data.result;
+    }
   },
 
   update: async (commentId: string, payload: { content: string }) => {

@@ -2,7 +2,7 @@
 
 import { postApi } from '@entities/post/api/post-api';
 import { PostCard } from '@entities/post/ui/post-card';
-import { CreatePostDialog } from '@features/post-create/ui/create-post-dialog';
+import { CreatePostDialog } from '@features/post/create-post/ui/create-post-dialog';
 import { Skeleton } from '@shared/ui/skeleton/skeleton';
 import { useQuery } from '@tanstack/react-query';
 import { AlertCircle } from 'lucide-react';
@@ -43,7 +43,7 @@ export function PostFeed({ topicId }: PostFeedProps) {
   return (
     <div className="space-y-4">
       {/* Create Post Trigger - Always visible */}
-      <CreatePostDialog topicId={topicId} />
+      <CreatePostDialog defaultTopicId={topicId} />
 
       {/* Empty state or posts list */}
       {!posts || posts.content.length === 0 ? (

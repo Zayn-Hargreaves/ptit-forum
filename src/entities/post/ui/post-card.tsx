@@ -28,7 +28,7 @@ export function PostCard({ post, topicId }: PostCardProps) {
   const views = post.stats?.viewCount ?? 0;
 
   // User info with fallbacks
-  const authorName = getUserDisplayName(post.author?.fullName);
+  const authorName = getUserDisplayName(post.author?.fullName || post.author?.email);
   const authorAvatar = getAvatarUrl(post.author?.avatarUrl);
 
   const authorId = post.author?.id;
@@ -145,7 +145,7 @@ export function PostCard({ post, topicId }: PostCardProps) {
         <div className="flex gap-1">
           <ReactionButton
             topicId={topicId}
-            postId={post.id}
+            targetId={post.id}
             initialLikeCount={likes}
             initialIsLiked={post.isLiked}
           />

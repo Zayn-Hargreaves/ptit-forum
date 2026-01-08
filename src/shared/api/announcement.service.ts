@@ -5,7 +5,6 @@ import {
   AnnouncementSearchParams,
   BackendAnnouncementDetail,
   CreateAnnouncementPayload,
-  DetailedAnnouncement,
   ReleaseAnnouncementPayload,
   UpdateAnnouncementPayload,
 } from '@/entities/announcement/model/types';

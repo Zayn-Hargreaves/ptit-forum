@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -16,62 +15,42 @@ async function handler(req: NextRequest, { params }: { params: Promise<{ path: s
 
   const url = `${BACKEND_URL}/${pathStr}${req.nextUrl.search}`;
 
-  const headers: Record<string, string> = {};
+  const headers = new Headers();
 
   // 1. Forward Authorization
   if (accessToken) {
-    headers['Authorization'] = `Bearer ${accessToken}`;
+    headers.set('Authorization', `Bearer ${accessToken}`);
   }
 
-  // 2. Handle Content-Type and Body
+  // 2. Forward Content-Type if present (crucial for multipart/form-data boundaries)
   const contentType = req.headers.get('content-type');
-  let body: unknown = undefined;
-
-  if (req.method !== 'GET' && req.method !== 'DELETE') {
-    if (contentType?.includes('multipart/form-data')) {
-      // Forward the raw stream/buffer for file uploads
-      // IMPORTANT: We must pass the original Content-Type header because it contains the 'boundary'
-      headers['Content-Type'] = contentType;
-
-      // Reading as ArrayBuffer is safer for binary data in Edge/Node environments
-      const blob = await req.arrayBuffer();
-      body = Buffer.from(blob);
-    } else {
-      // Default to JSON
-      headers['Content-Type'] = 'application/json';
-      // Attempt to read json, handle empty body case
-      try {
-        const text = await req.text();
-        body = text ? JSON.parse(text) : undefined;
-      } catch (_e) {
-        console.warn('Failed to parse JSON body, sending undefined');
-        body = undefined;
-      }
-    }
+  if (contentType) {
+    headers.set('Content-Type', contentType);
   }
+
+  // 3. Prepare body
+  const body = req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined;
 
   try {
-    const response = await axios({
+    const response = await fetch(url, {
       method: req.method,
-      url: url,
-      data: body,
       headers: headers,
-      validateStatus: () => true,
-      // Important for axios to accept large bodies or binary
-      maxBodyLength: Infinity,
-      maxContentLength: Infinity,
+      body: body,
+      // @ts-expect-error - duplex is required for streaming bodies in Node.js runtime
+      duplex: 'half',
     });
 
-    return NextResponse.json(response.data, { status: response.status });
+    const data = await response.json();
+
+    return NextResponse.json(data, { status: response.status });
   } catch (error: unknown) {
-    const err = error as { message?: string; response?: { status?: number; data?: unknown } };
+    const err = error as Error;
     console.error(`Proxy Error [${req.method} ${pathStr}]:`, err.message);
 
-    // Better error details
-    const status = err.response?.status || 500;
-    const data = err.response?.data || { message: 'Internal Proxy Error' };
-
-    return NextResponse.json(data, { status });
+    return NextResponse.json(
+      { message: 'Internal Proxy Error', detail: err.message },
+      { status: 500 },
+    );
   }
 }
 

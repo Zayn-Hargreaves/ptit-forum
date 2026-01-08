@@ -1,3 +1,5 @@
+import { UserSummary } from '@entities/interaction/model/types';
+
 export enum ReportStatus {
   PENDING = 'PENDING',
   RESOLVED = 'RESOLVED',
@@ -20,9 +22,13 @@ export enum ReportAction {
 
 export interface ReportDTO {
   id: string;
-  reporterId: string;
-  reporterFullName: string;
+  reporter?: UserSummary;
+
+  // Legacy fields (kept for backward compatibility during migration)
+  reporterId?: string;
+  reporterFullName?: string;
   reporterAvatarUrl?: string;
+
   reason: ReportReason;
   description?: string;
   status: ReportStatus;

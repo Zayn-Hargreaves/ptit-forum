@@ -54,8 +54,8 @@ const FacultyActionsCell = ({ faculty }: { faculty: Faculty }) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
             <AlertDialogDescription>
-              Hành động này không thể hoàn tác. Khoa "{faculty.facultyName}" sẽ bị xóa vĩnh viễn
-              khỏi hệ thống.
+              Hành động này không thể hoàn tác. Dữ liệu của khoa &quot;{faculty.facultyName}&quot;
+              sẽ bị xóa vĩnh viễn.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

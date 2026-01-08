@@ -69,9 +69,9 @@ export function PendingPostList({ topicId }: PendingPostListProps) {
   return (
     <div className="space-y-3">
       {posts.content.map((post) => {
-        const authorName = getUserDisplayName(post.author?.fullName);
+        const authorName = getUserDisplayName(post.author?.fullName || post.author?.email);
         const authorAvatar = getAvatarUrl(post.author?.avatarUrl);
-        const authorInitials = getUserInitials(post.author?.fullName);
+        const authorInitials = getUserInitials(post.author?.fullName || post.author?.email);
 
         return (
           <div
