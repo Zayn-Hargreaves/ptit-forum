@@ -20,13 +20,6 @@ import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack
 
 import { TopicVisibility } from '@/entities/topic/model/types';
 
-// Map hiển thị Visibility
-const VISIBILITY_LABEL: Record<string, string> = {
-  PUBLIC: 'Công khai',
-  INTERNAL: 'Nội bộ',
-  PRIVATE: 'Riêng tư',
-};
-
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
