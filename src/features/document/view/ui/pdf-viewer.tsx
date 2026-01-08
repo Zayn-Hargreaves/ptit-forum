@@ -42,7 +42,7 @@ const PdfViewerContent = ({ url, isPremium = false, width }: PdfViewerProps) => 
     setScale((prevScale) => Math.max(0.5, Math.min(2.0, prevScale + delta)));
   };
 
-  const isBlurred = !isPremium && pageNumber > 3;
+
 
   return (
     <div className="flex w-full flex-col items-center space-y-4">
@@ -109,28 +109,10 @@ const PdfViewerContent = ({ url, isPremium = false, width }: PdfViewerProps) => 
               pageNumber={pageNumber}
               width={width * 0.95 > MAX_VIEWER_WIDTH ? MAX_VIEWER_WIDTH : width * 0.95} // Cap max width or use responsive width
               scale={scale}
-              className={`shadow-lg transition-all duration-200 ${
-                isBlurred ? 'pointer-events-none blur-md filter select-none' : ''
-              }`}
-              renderTextLayer={!isBlurred}
-              renderAnnotationLayer={!isBlurred}
+              className="shadow-lg transition-all duration-200"
+              renderTextLayer={true}
+              renderAnnotationLayer={true}
             />
-
-            {/* Freemium Overlay */}
-            {isBlurred && (
-              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/5 text-center">
-                <div className="bg-background/90 border-border/50 mx-4 max-w-sm rounded-xl border p-6 shadow-2xl backdrop-blur-sm">
-                  <div className="bg-primary/10 mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-                    <Lock className="text-primary h-6 w-6" />
-                  </div>
-                  <h3 className="mb-2 text-lg font-bold">Premium Content</h3>
-                  <p className="text-muted-foreground mb-4 text-sm">
-                    Upgrade to premium to unlock the full document.
-                  </p>
-                  <Button className="w-full font-semibold">Unlock Now</Button>
-                </div>
-              </div>
-            )}
           </div>
         </Document>
       </div>
