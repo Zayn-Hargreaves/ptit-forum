@@ -13,7 +13,7 @@ interface UserCommentListProps {
   userId: string;
 }
 
-const MAX_HEIGHT = 150; // Max height in pixels before truncation
+// const MAX_HEIGHT = 150; // Max height in pixels before truncation
 
 export function UserCommentList({ userId }: UserCommentListProps) {
   const { data, isLoading } = useUserComments(userId);
@@ -43,6 +43,7 @@ export function UserCommentList({ userId }: UserCommentListProps) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CommentItem({ comment }: { comment: any }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -76,7 +77,7 @@ function CommentItem({ comment }: { comment: any }) {
           />
           {/* We strictly don't know text height without Ref, but CSS masking is a good heuristic */}
           {!isExpanded && (comment.content.length > 300 || comment.content.includes('<img')) && (
-            <div className="from-background/10 to-background absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-b" />
+            <div className="from-background/10 to-background absolute right-0 bottom-0 left-0 h-12 bg-gradient-to-b" />
           )}
         </div>
 

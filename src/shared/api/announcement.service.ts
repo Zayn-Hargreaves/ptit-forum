@@ -30,9 +30,7 @@ export const announcementApi = {
 
   // GET /api/admin/announcements/{id}
   getDetail: async (id: string) => {
-    const res = await apiClient.get<ApiResponse<BackendAnnouncementDetail>>(
-      `${BASE_URL}/${id}`,
-    );
+    const res = await apiClient.get<ApiResponse<BackendAnnouncementDetail>>(`${BASE_URL}/${id}`);
     return res.data.result;
   },
 

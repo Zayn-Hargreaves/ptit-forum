@@ -3,15 +3,7 @@ import { useUserStats } from '@features/profile/api/use-user-stats';
 import { FollowButton } from '@features/user/follow/ui/follow-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar/avatar';
 import { Button } from '@shared/ui/button/button';
-import {
-  Calendar,
-  Edit,
-  Files,
-  FileText,
-  Link as LinkIcon,
-  MapPin,
-  Shield,
-} from 'lucide-react';
+import { Calendar, Edit, Files, FileText, Link as LinkIcon, MapPin, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 interface ProfileHeaderProps {
@@ -21,7 +13,7 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ user, isOwnProfile }: Readonly<ProfileHeaderProps>) {
   const { data: stats } = useUserStats(user.id);
-  
+
   let bioContent;
   if (user.bio) {
     bioContent = <p className="text-muted-foreground text-sm leading-relaxed">{user.bio}</p>;

@@ -32,7 +32,7 @@ export function LandingHero() {
         <div className="absolute inset-0 bg-black/60" />
       </div>
 
-      <div className="container relative z-10 px-4 md:px-6">
+      <div className="relative z-10 container px-4 md:px-6">
         <div className="flex flex-col items-center space-y-8 text-center">
           <div className="max-w-4xl space-y-4">
             <h1 className="bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-4xl font-bold tracking-tighter text-transparent sm:text-5xl md:text-6xl lg:text-7xl">
@@ -51,7 +51,7 @@ export function LandingHero() {
                 <input
                   type="text"
                   placeholder="Tìm kiếm môn học, tài liệu..."
-                  className="border-input bg-background/95 ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 pl-9 text-sm text-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  className="border-input bg-background/95 ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring text-foreground flex h-10 w-full rounded-md border px-3 py-2 pl-9 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                 />
@@ -61,7 +61,7 @@ export function LandingHero() {
 
             {!user && (
               <div className="flex justify-center space-x-4 pt-4">
-                <Button asChild size="lg" className="bg-red-600 hover:bg-red-700 text-white">
+                <Button asChild size="lg" className="bg-red-600 text-white hover:bg-red-700">
                   <Link href="/register">
                     Bắt đầu ngay <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -70,7 +70,7 @@ export function LandingHero() {
                   variant="outline"
                   asChild
                   size="lg"
-                  className="border-white text-white hover:bg-white hover:text-black bg-transparent"
+                  className="border-white bg-transparent text-white hover:bg-white hover:text-black"
                 >
                   <Link href="/login">Đăng nhập</Link>
                 </Button>
