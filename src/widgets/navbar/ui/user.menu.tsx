@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@shared/ui';
 import { UserAvatar } from '@shared/ui/user-avatar/user-avatar';
-import { LogOut, Settings, User as UserIcon } from 'lucide-react';
+import { LogOut, MessageSquare, Settings, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 
 interface NavbarUserMenuProps {
@@ -57,6 +57,18 @@ export function NavbarUserMenu({ user, onLogout }: Readonly<NavbarUserMenuProps>
           <Link href="/settings" className="cursor-pointer">
             <Settings className="mr-2 h-4 w-4" />
             Cài đặt tài khoản
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <Link
+            href="https://cloud.flowiseai.com/chatbot/ce102308-7471-4b49-8d30-db1069b3fbae"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cursor-pointer"
+          >
+            <MessageSquare className="mr-2 h-4 w-4" />
+            Hỗ trợ AI
           </Link>
         </DropdownMenuItem>
 

@@ -63,4 +63,9 @@ export const announcementApi = {
     const res = await apiClient.delete<ApiResponse<string>>(`${BASE_URL}/${id}`);
     return res.data.result;
   },
+
+  getLatest: async () => {
+    const res = await apiClient.get<ApiResponse<AnnouncementResponse[]>>(`${BASE_URL}/latest`);
+    return res.data.result;
+  },
 };

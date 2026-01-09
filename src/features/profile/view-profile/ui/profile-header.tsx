@@ -1,18 +1,9 @@
 import { UserProfile } from '@entities/session/model/types';
+import { useUserStats } from '@features/profile/api/use-user-stats';
 import { FollowButton } from '@features/user/follow/ui/follow-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@shared/ui/avatar/avatar';
 import { Button } from '@shared/ui/button/button';
-import {
-  Calendar,
-  Edit,
-  Files,
-  FileText,
-  Link as LinkIcon,
-  MapPin,
-  Shield,
-  UserPlus,
-  Users,
-} from 'lucide-react';
+import { Calendar, Edit, Files, FileText, Link as LinkIcon, MapPin, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 interface ProfileHeaderProps {
@@ -21,6 +12,8 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user, isOwnProfile }: Readonly<ProfileHeaderProps>) {
+  const { data: stats } = useUserStats(user.id);
+
   let bioContent;
   if (user.bio) {
     bioContent = <p className="text-muted-foreground text-sm leading-relaxed">{user.bio}</p>;
@@ -159,22 +152,12 @@ export function ProfileHeader({ user, isOwnProfile }: Readonly<ProfileHeaderProp
               <StatItem
                 icon={<FileText className="h-5 w-5 text-blue-500" />}
                 label="Posts"
-                value={user.stats?.postCount || 0}
+                value={stats?.postCount || 0}
               />
               <StatItem
                 icon={<Files className="h-5 w-5 text-indigo-500" />}
                 label="Docs"
-                value={user.stats?.docCount || 0}
-              />
-              <StatItem
-                icon={<Users className="h-5 w-5 text-emerald-500" />}
-                label="Followers"
-                value={user.stats?.followerCount || 0}
-              />
-              <StatItem
-                icon={<UserPlus className="h-5 w-5 text-purple-500" />}
-                label="Following"
-                value={user.stats?.followingCount || 0}
+                value={stats?.documentCount || 0}
               />
             </div>
           </div>

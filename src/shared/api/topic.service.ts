@@ -2,6 +2,7 @@
 
 import {
   DetailedTopicResponse,
+  ITopic,
   TopicResponse,
   TopicSearchParams,
 } from '@/entities/topic/model/types';
@@ -35,6 +36,11 @@ export const topicApi = {
   // DELETE /api/admin/topics/soft-delete/{topicId}
   softDelete: async (id: string) => {
     const res = await apiClient.delete<ApiResponse<TopicResponse>>(`${BASE_URL}/soft-delete/${id}`);
+    return res.data.result;
+  },
+
+  getTopMembers: async () => {
+    const res = await apiClient.get<ApiResponse<ITopic[]>>(`${BASE_URL}/dashboard/top-members`);
     return res.data.result;
   },
 };

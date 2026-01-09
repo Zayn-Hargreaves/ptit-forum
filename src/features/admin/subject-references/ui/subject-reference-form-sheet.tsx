@@ -109,7 +109,7 @@ export function SubjectReferenceFormSheet() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {facultiesRes?.data?.map((f: any) => (
+                  {facultiesRes?.data?.map((f: { id: string; facultyName: string }) => (
                     <SelectItem key={f.id} value={f.id}>
                       {f.facultyName}
                     </SelectItem>
@@ -135,11 +135,13 @@ export function SubjectReferenceFormSheet() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {subjectsRes?.data?.map((s: any) => (
-                    <SelectItem key={s.id} value={s.id}>
-                      {s.subjectName} ({s.subjectCode})
-                    </SelectItem>
-                  ))}
+                  {subjectsRes?.data?.map(
+                    (s: { id: string; subjectName: string; subjectCode: string }) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.subjectName} ({s.subjectCode})
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />

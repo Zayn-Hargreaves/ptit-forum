@@ -36,7 +36,7 @@ export const ActionCell = ({ category }: ActionCellProps) => {
       toast.success('Đã xóa danh mục');
       // Invalidate query key tương ứng với list category
       queryClient.invalidateQueries({ queryKey: ['admin-categories'] });
-    } catch (error) {
+    } catch (_error) {
       toast.error('Xóa thất bại. Có thể danh mục đang được sử dụng.');
     } finally {
       setIsDeleting(false);
