@@ -258,10 +258,7 @@ export function PostForm({
                   key={file.id}
                   className="bg-muted/30 flex items-center justify-between rounded-md border p-2 text-sm"
                 >
-                  <span className="flex max-w-[200px] items-center gap-2 truncate">
-                    <Check className="h-3 w-3 text-green-500" />
-                    {file.fileName ?? file.name}
-                  </span>
+                    <span className="min-w-0 flex-1 truncate">{file.fileName ?? file.name}</span>
                   <Button
                     type="button"
                     variant="ghost"
@@ -280,7 +277,7 @@ export function PostForm({
                   key={file.id}
                   className="bg-muted/50 flex items-center justify-between rounded-md border p-2 text-sm"
                 >
-                  <span className="max-w-[200px] truncate">{file.fileName}</span>
+                  <span className="min-w-0 flex-1 truncate">{file.fileName}</span>
                   <Button
                     type="button"
                     variant="ghost"

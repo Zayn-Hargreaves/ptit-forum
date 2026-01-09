@@ -167,7 +167,9 @@ export const UploadDocumentForm = () => {
 
           {file && (
             <div className="mt-4 flex items-center justify-center rounded bg-blue-50 p-2 text-sm text-blue-700">
-              Đã chọn: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+              <span className="truncate max-w-[200px] block">
+                Đã chọn: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+              </span>
             </div>
           )}
         </div>

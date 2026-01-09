@@ -1,6 +1,5 @@
 'use client';
 
-import { GraduationCap } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type React from 'react';
@@ -35,9 +34,7 @@ export default function AuthLayout({
       <div className="bg-background flex w-full flex-col items-center justify-center p-4 lg:w-1/2 lg:p-12">
         <div className="w-full max-w-md">
           <Link href="/" className="mb-8 flex flex-col items-center justify-center gap-4">
-            <div className="bg-primary flex h-16 w-16 items-center justify-center rounded-2xl">
-              <GraduationCap className="text-primary-foreground h-8 w-8" />
-            </div>
+            <Image src="/logo.svg" alt="Logo" width={64} height={64} className="h-16 w-16" />
             <div className="text-center">
               <h1 className="text-foreground text-3xl font-bold">PTIT Forum</h1>
               <p className="text-muted-foreground mt-2 text-sm">

@@ -13,7 +13,7 @@ export function AttachmentItem({ attachment }: AttachmentItemProps) {
       href={attachment.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group mt-2 flex min-h-[44px] items-center rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-all duration-200 hover:bg-gray-50 active:scale-[0.98]"
+      className="group mt-2 flex min-h-[44px] min-w-0 items-center rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-all duration-200 hover:bg-gray-50 active:scale-[0.98]"
     >
       {/* Icon Wrapper */}
       <div className="mr-3 flex-shrink-0 rounded-lg bg-blue-50 p-2 transition-colors group-hover:bg-blue-100">
@@ -23,10 +23,12 @@ export function AttachmentItem({ attachment }: AttachmentItemProps) {
       {/* Content */}
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-gray-900">{attachment.fileName}</p>
-        <p className="mt-0.5 flex items-center gap-2 text-xs text-gray-500">
-          {formatFileSize(attachment.size)}
-          <span className="h-1 w-1 rounded-full bg-gray-300" />
-          <span className="uppercase">{attachment.fileType.split('/').pop()}</span>
+        <p className="mt-0.5 flex min-w-0 items-center gap-2 text-xs text-gray-500">
+          <span className="shrink-0">{formatFileSize(attachment.size)}</span>
+          <span className="h-1 w-1 shrink-0 rounded-full bg-gray-300" />
+          <span className="min-w-0 flex-1 truncate uppercase">
+            {attachment.fileType.split('/').pop()}
+          </span>
         </p>
       </div>
 
