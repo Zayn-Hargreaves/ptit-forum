@@ -111,7 +111,7 @@ export function AnnouncementFormSheet() {
 
       // Add existing files
       if (data.existingAttachments && Array.isArray(data.existingAttachments)) {
-        data.existingAttachments.forEach((file: any) => {
+        data.existingAttachments.forEach((file: ExistingAttachment) => {
           fileMetadataIds.push(file.id);
         });
       }
@@ -176,14 +176,21 @@ export function AnnouncementFormSheet() {
     form.setValue('attachments', newFiles);
   };
 
+  // Define interface for existing attachments
+  interface ExistingAttachment {
+    id: string;
+    fileName?: string;
+    name?: string;
+  }
+
   const removeExistingFile = (index: number) => {
-    const currentFiles = (form.getValues('existingAttachments') as any[]) || [];
+    const currentFiles = (form.getValues('existingAttachments') as ExistingAttachment[]) || [];
     const newFiles = currentFiles.filter((_, i) => i !== index);
     form.setValue('existingAttachments', newFiles);
   };
 
   const attachments = (form.watch('attachments') as File[]) || [];
-  const existingAttachments = (form.watch('existingAttachments') as any[]) || [];
+  const existingAttachments = (form.watch('existingAttachments') as ExistingAttachment[]) || [];
 
   const content = (
     <Form {...form}>

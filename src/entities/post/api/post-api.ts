@@ -144,6 +144,12 @@ export const postApi = {
     mode?: string;
     range?: string;
   }): Promise<{ content: IPost[]; totalPages: number; number: number; last: boolean }> => {
+    let url = '/posts';
+    // If authorId is provided, use the user-specific endpoint which is public/protected correctly
+    if (params.authorId) {
+      url = `/posts/user/${params.authorId}`;
+    }
+
     const { data } = await apiClient.get<
       ApiResponse<{
         content: PostDto[];
@@ -151,13 +157,16 @@ export const postApi = {
         number: number;
         last: boolean;
       }>
-    >('/posts', {
+    >(url, {
       params: {
         page: params.pageParam || 0,
         size: params.size || 10,
         topicId: params.topicId,
-        authorId: params.authorId,
-        sort: params.mode === 'trending' ? 'viewCount,desc' : 'createdAt,desc',
+        // When using /posts/user/:id, we don't need authorId in params
+        // But if using /posts (search), we do.
+        // Keeping it for /posts case is fine, but for /user/:id it might be ignored or harmless.
+        authorId: params.authorId ? undefined : params.authorId,
+        sort: params.mode === 'trending' ? 'viewCount,desc' : 'createdDateTime,desc',
       },
     });
 
@@ -209,7 +218,7 @@ export const postApi = {
   },
 
   increaseView: async (postId: string): Promise<void> => {
-    await apiClient.post(`/posts/${postId}/view`);
+    await apiClient.get(`/posts/${postId}`);
   },
 
   getDetail: async (postId: string): Promise<IPost> => {

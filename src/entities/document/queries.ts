@@ -16,3 +16,19 @@ export function useMyDocuments(
     queryFn: () => documentService.getMyDocuments(params),
   });
 }
+
+export function usePublicDocuments(
+  params: {
+    page?: number;
+    limit?: number;
+    sort?: string;
+    keyword?: string;
+    uploaderId?: string;
+  } = {},
+) {
+  return useQuery({
+    queryKey: [...documentKeys.lists(), params],
+    queryFn: () => documentService.getDocuments(params),
+    enabled: !!params.uploaderId,
+  });
+}

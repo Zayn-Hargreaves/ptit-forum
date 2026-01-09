@@ -11,7 +11,6 @@ import type { IPost, PostAttachment } from '@entities/post/model/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ALLOWED_DOCUMENT_MIMES } from '@shared/constants/constants';
 import { FileMetadata, useFileUpload } from '@shared/hooks/use-file-upload';
-import { cn } from '@shared/lib/utils';
 import { Button } from '@shared/ui/button/button';
 import { GithubEditor } from '@shared/ui/editor/github-editor';
 import {
@@ -32,7 +31,6 @@ import { toast } from 'sonner';
 interface PostFormProps {
   onSuccess?: () => void;
   className?: string;
-  popoverContainer?: HTMLElement | null;
   initialData?: IPost;
   mode?: 'create' | 'edit';
   defaultTopicId?: string;
@@ -41,7 +39,6 @@ interface PostFormProps {
 export function PostForm({
   onSuccess,
   className,
-  popoverContainer,
   initialData,
   mode = 'create',
   defaultTopicId,

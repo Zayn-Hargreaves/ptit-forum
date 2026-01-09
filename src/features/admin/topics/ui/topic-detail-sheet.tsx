@@ -1,7 +1,7 @@
 // features/admin/topics/ui/topic-detail-sheet.tsx
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage, Badge, Button, Separator } from '@shared/ui';
+import { Avatar, AvatarFallback, Badge, Button, Separator } from '@shared/ui';
 import { format } from 'date-fns';
 import { Calendar, ExternalLink, Eye, Folder, MessageSquare, User } from 'lucide-react';
 import Link from 'next/link'; // Nếu muốn link ra trang bài viết gốc

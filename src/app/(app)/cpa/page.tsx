@@ -8,14 +8,8 @@ import { toast } from 'sonner';
 
 import { GpaEditor } from '@/features/cpa/components/GpaEditor';
 import { GpaFormValues } from '@/features/cpa/validators/gpa.schema';
-import {
-  CpaProfileRequest,
-  CpaProfileResponse,
-  cpaService,
-  GpaProfileResponse as _GpaProfileResponse,
-} from '@/shared/api/cpa.service';
+import { CpaProfileRequest, CpaProfileResponse, cpaService } from '@/shared/api/cpa.service';
 import { BACKEND_ERROR_CODES } from '@/shared/constants/error-codes';
-import { useAuth } from '@/shared/providers/auth-provider';
 import {
   Accordion,
   AccordionContent,
@@ -27,7 +21,6 @@ import { Button } from '@/shared/ui/button/button';
 // ... (existing imports)
 
 export default function CpaPage() {
-  const { user } = useAuth();
   const [cpaProfile, setCpaProfile] = useState<CpaProfileResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [missingStudentId, setMissingStudentId] = useState(false);

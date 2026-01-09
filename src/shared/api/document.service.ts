@@ -41,6 +41,7 @@ export interface GetDocumentsParams {
   keyword?: string;
   type?: string;
   q?: string; // Alias for keyword/title
+  uploaderId?: string;
 }
 
 const mapDtoToDocument = (dto: DocumentDto): Document => {
@@ -73,7 +74,7 @@ const mapDtoToDocument = (dto: DocumentDto): Document => {
 export const getDocuments = async (
   params: GetDocumentsParams = {},
 ): Promise<{ data: Document[]; total: number }> => {
-  const { page = 1, limit = 10, subjectId, sort, type, q, keyword } = params;
+  const { page = 1, limit = 10, subjectId, sort, type, q, keyword, uploaderId } = params;
 
   const pageIndex = page > 0 ? page - 1 : 0;
 
@@ -88,7 +89,8 @@ export const getDocuments = async (
         sort: sort || 'createdAt,desc',
         title: q || keyword || undefined,
         documentType: type || undefined,
-        documentStatus: 'PUBLISHED',
+        documentStatus: 'APPROVED', // Default to APPROVED for public search
+        uploaderId: uploaderId || undefined,
       },
     },
   );

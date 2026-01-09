@@ -24,7 +24,8 @@ export interface CreateSubjectPayload {
 }
 
 // Tương ứng: SubjectRequest (Java) - dùng chung cấu trúc cho Update
-export interface UpdateSubjectPayload extends CreateSubjectPayload {}
+// Tương ứng: SubjectRequest (Java) - dùng chung cấu trúc cho Update
+export type UpdateSubjectPayload = CreateSubjectPayload;
 
 // --- SEARCH PARAMS ---
 

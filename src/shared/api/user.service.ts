@@ -27,7 +27,19 @@ export const updateProfile = async (data: UpdateProfilePayload): Promise<UserPro
   return response.data.result;
 };
 
+export interface UserStats {
+  postCount: number;
+  documentCount: number;
+  commentCount: number;
+  reputation: number;
+}
+
 export const getMyProfile = async (): Promise<UserProfile> => {
   const response = await apiClient.get<ApiResponse<UserProfile>>('/users/profile');
+  return response.data.result;
+};
+
+export const getUserStats = async (userId: string): Promise<UserStats> => {
+  const response = await apiClient.get<ApiResponse<UserStats>>(`/users/${userId}/stats`);
   return response.data.result;
 };

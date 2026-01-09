@@ -3,7 +3,7 @@
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-import { ChevronLeft, ChevronRight, Lock, ZoomIn, ZoomOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Document, Page } from 'react-pdf';
@@ -21,11 +21,10 @@ const MAX_VIEWER_WIDTH = 800;
 
 interface PdfViewerProps {
   url: string;
-  isPremium?: boolean;
   width: number;
 }
 
-const PdfViewerContent = ({ url, isPremium = false, width }: PdfViewerProps) => {
+const PdfViewerContent = ({ url, width }: PdfViewerProps) => {
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.0);
@@ -41,8 +40,6 @@ const PdfViewerContent = ({ url, isPremium = false, width }: PdfViewerProps) => 
   const changeScale = (delta: number) => {
     setScale((prevScale) => Math.max(0.5, Math.min(2.0, prevScale + delta)));
   };
-
-
 
   return (
     <div className="flex w-full flex-col items-center space-y-4">
