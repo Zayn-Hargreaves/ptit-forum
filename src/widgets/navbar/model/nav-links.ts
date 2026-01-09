@@ -4,7 +4,6 @@ export const NAV_LINKS = [
   { href: '/forum', label: 'Diễn đàn' },
   { href: '/documents', label: 'Tài liệu' },
   { href: '/cpa', label: 'Tính CPA' },
-  { href: '/events', label: 'Sự kiện' },
 ] as const;
 
 export function isActiveRoute(pathname: string, href: string) {

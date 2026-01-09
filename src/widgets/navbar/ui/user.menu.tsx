@@ -78,7 +78,7 @@ export function NavbarUserMenu({ user, onLogout }: Readonly<NavbarUserMenuProps>
           <>
             <DropdownMenuItem asChild>
               <Link
-                href="/admin/documents"
+                href="/admin/dashboard"
                 className="cursor-pointer font-semibold text-yellow-600 focus:text-yellow-700"
               >
                 <span className="mr-2">⚡</span>
