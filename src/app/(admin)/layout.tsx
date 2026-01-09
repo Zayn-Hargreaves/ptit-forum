@@ -50,8 +50,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/categories', label: 'Categories', icon: FileText },
     { href: '/admin/topics', label: 'Topics', icon: FileText },
     { href: '/admin/semesters', label: 'Semesters', icon: FileText },
-
-    { href: '/admin/settings', label: 'Settings', icon: Settings },
   ];
 
   return (
