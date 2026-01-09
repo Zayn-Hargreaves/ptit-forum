@@ -6,6 +6,14 @@ import { ThemeProvider } from '@shared/providers/theme-provider';
 import { ToastProvider } from '@shared/providers/toast-provider';
 import { WebSocketProvider } from '@shared/realtime/websocket-provider';
 import type { Metadata } from 'next';
+import { Roboto } from 'next/font/google';
+
+const roboto = Roboto({
+  weight: ['300', '400', '500', '700'],
+  subsets: ['latin'],
+  variable: '--font-roboto',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -18,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={roboto.variable}>
       <body>
         <ThemeProvider>
           <QueryProvider>
