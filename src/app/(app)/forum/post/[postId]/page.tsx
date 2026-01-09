@@ -129,7 +129,7 @@ export default function PostDetailPage() {
                     key={idx}
                     className="bg-background hover:border-primary/50 group flex items-center justify-between rounded-md border p-3 transition-all"
                   >
-                    <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex flex-1 min-w-0 items-center gap-3">
                       <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded text-xs font-bold uppercase">
                         {doc.name.split('.').pop() || 'FILE'}
                       </div>

@@ -25,7 +25,7 @@ export const AccessTypeEnum = z.enum(['PUBLIC', 'PRIVATE']);
 export const FileMetadataSchema = z.object({
   id: z.string().uuid(),
   fileName: z.string(),
-  url: z.string().url().nullable().optional(),
+  url: z.string().nullable().optional(),
   contentType: z.string(),
   resourceType: ResourceTypeEnum.nullable().optional(),
   resourceId: z.string().uuid().nullable().optional(),
@@ -49,8 +49,8 @@ export const FileListResponseSchema = z.object({
 export const DriveFileSchema = z.object({
   id: z.string(),
   name: z.string(),
-  webViewLink: z.string().url().optional(),
-  webContentLink: z.string().url().optional(),
+  webViewLink: z.string().optional(),
+  webContentLink: z.string().optional(),
 });
 
 export const DriveFileListResponseSchema = z.array(DriveFileSchema);

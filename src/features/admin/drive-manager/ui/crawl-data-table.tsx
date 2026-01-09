@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { format } from 'date-fns';
-import { FileText, Loader2, UploadCloud } from 'lucide-react';
+import { Eye, FileText, Loader2, UploadCloud } from 'lucide-react';
 
 import { Badge } from '@/shared/ui/badge/badge';
 import { Button } from '@/shared/ui/button/button';
@@ -15,7 +16,9 @@ import {
   TableRow,
 } from '@/shared/ui/table/table';
 
+import { FileMetadata } from '../model/schema';
 import { useInternalFiles } from '../model/use-internal-files';
+import { FilePreviewSheet } from './file-preview-sheet';
 import { SearchBar } from './search-bar';
 
 export const CrawlDataTable = () => {
@@ -23,6 +26,7 @@ export const CrawlDataTable = () => {
     resourceType: 'ANNOUNCEMENT',
     folder: 'announcements/',
   });
+  const [previewFile, setPreviewFile] = useState<FileMetadata | null>(null);
 
   if (isLoading) {
     return (
@@ -55,9 +59,11 @@ export const CrawlDataTable = () => {
           <TableBody>
             {files.map((file) => (
               <TableRow key={file.id}>
-                <TableCell className="flex items-center gap-2 font-medium">
-                  <FileText className="h-4 w-4 text-orange-500" />
-                  {file.fileName}
+                <TableCell>
+                  <div className="flex items-center gap-2 font-medium" title={file.fileName}>
+                    <FileText className="h-4 w-4 shrink-0 text-orange-500" />
+                    <span className="max-w-[400px] truncate">{file.fileName}</span>
+                  </div>
                 </TableCell>
                 <TableCell>{file.resourceType || 'N/A'}</TableCell>
                 <TableCell>{format(new Date(file.createdAt), 'dd/MM/yyyy HH:mm')}</TableCell>
@@ -72,10 +78,22 @@ export const CrawlDataTable = () => {
                 </TableCell>
                 <TableCell>
                   {!file.onDrive && (
-                    <Button variant="outline" size="sm" onClick={() => syncToDrive(file.id)}>
-                      <UploadCloud className="mr-2 h-4 w-4" />
-                      Sync Drive
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      {file.url && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          title="Preview"
+                          onClick={() => setPreviewFile(file)}
+                        >
+                          <Eye className="h-4 w-4 text-gray-500" />
+                        </Button>
+                      )}
+                      <Button variant="outline" size="sm" onClick={() => syncToDrive(file.id)}>
+                        <UploadCloud className="mr-2 h-4 w-4" />
+                        Sync Drive
+                      </Button>
+                    </div>
                   )}
                   {file.onDrive && (
                     <Button variant="ghost" size="sm" disabled>
@@ -104,6 +122,11 @@ export const CrawlDataTable = () => {
           onPageChange={(p) => setPage(p - 1)}
         />
       </div>
+      <FilePreviewSheet
+        file={previewFile}
+        isOpen={!!previewFile}
+        onClose={() => setPreviewFile(null)}
+      />
     </div>
   );
 };
