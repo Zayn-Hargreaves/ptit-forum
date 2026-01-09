@@ -44,7 +44,7 @@ export function DailyPostChart({ data }: { data: PostStatDTO[] }) {
               type="natural"
               stroke="var(--color-posts)"
               strokeWidth={2}
-              dot={false}
+              dot={true}
             />
           </LineChart>
         </ChartContainer>

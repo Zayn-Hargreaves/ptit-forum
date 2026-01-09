@@ -33,7 +33,7 @@ export function MonthlyPostChart({ data }: { data: PostStatDTO[] }) {
             <CartesianGrid vertical={false} />
             <XAxis dataKey="date" tickLine={false} tickMargin={10} axisLine={false} />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Bar dataKey="count" fill="var(--color-posts)" radius={4} />
+            <Bar dataKey="count" fill="var(--color-posts)" radius={4} maxBarSize={50} />
           </BarChart>
         </ChartContainer>
       </CardContent>
