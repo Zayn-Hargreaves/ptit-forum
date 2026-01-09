@@ -44,12 +44,7 @@ export interface TopicResponse {
   createdBy: string;
 }
 
-export interface DetailedTopicResponse extends TopicResponse {
-  // Nếu BE trả thêm field thì bổ sung ở đây
-  // ví dụ:
-  // comments: CommentResponse[];
-  // attachments: TopicFileResponse[];
-}
+export type DetailedTopicResponse = TopicResponse;
 
 // Tương ứng: SearchTopicRequest
 export interface TopicSearchParams {
