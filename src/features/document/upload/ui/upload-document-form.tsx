@@ -45,7 +45,7 @@ export const UploadDocumentForm = () => {
         setIsLoadingSubjects(true);
         const res = await subjectService.search({ limit: 100 });
         // Handle response mapping based on what subjectService returns (PageResponse)
-        setSubjects(res.result.content);
+        setSubjects(res.content);
       } catch (error) {
         console.error('Failed to load subjects', error);
       } finally {

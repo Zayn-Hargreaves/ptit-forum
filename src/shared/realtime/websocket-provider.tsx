@@ -1,5 +1,6 @@
 'use client';
 
+import { useAuth } from '@shared/providers/auth-provider';
 import { Client, IMessage } from '@stomp/stompjs';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
@@ -18,11 +19,15 @@ const WSContext = createContext<WSContextValue | null>(null);
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [connected, setConnected] = useState(false);
   const clientRef = useRef<Client | null>(null);
+  const { isAuthenticated } = useAuth(); // integrate auth
 
   const wsUrl = process.env.NEXT_PUBLIC_WS_URL || '';
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !wsUrl) return;
+    // Only connect if we have a URL and the user is authenticated
+    if (typeof window === 'undefined' || !wsUrl || !isAuthenticated) {
+      return;
+    }
 
     if (clientRef.current?.active) return;
 
@@ -43,7 +48,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         setConnected(false);
       }
     };
-  }, [wsUrl]);
+  }, [wsUrl, isAuthenticated]);
 
   const subscribe: SubscribeFn = useCallback((destination, cb) => {
     const client = clientRef.current;
